@@ -112,7 +112,8 @@ function get-runningos
     $Object | Add-Member -MemberType NoteProperty -Name Webrequestor -Value $webrequestor
     Write-Output $Object
 }
-
+Push-Location
+Set-Location $PSScriptRoot
 if (!$location) {
     $Location = Read-Host "Please enter your Region Name [local for asdk]"
 }
@@ -253,7 +254,7 @@ $StopWatch_deploy.Start()
 Write-host "Starting $deploymentcolor Deployment of $opsManFQDNPrefix $opsmanVersion" -ForegroundColor $deploymentcolor
 if (!$OpsmanUpdate) {
     $parameters.Add("dnsZoneName", $dnsZoneName) 
-    New-AzureRmResourceGroupDeployment -Name $resourceGroup -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile .\pcf\azuredeploy.json -TemplateParameterObject $parameters
+    New-AzureRmResourceGroupDeployment -Name $resourceGroup -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile ./azuredeploy.json -TemplateParameterObject $parameters
     $MyStorageaccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup | Where-Object StorageAccountName -match $storageaccount
     $MyStorageaccount | Set-AzureRmCurrentStorageAccount
     Write-Host "Creating Container Stemcell in $($MyStorageaccount.StorageAccountName)"
@@ -283,7 +284,7 @@ $StopWatch_deploy.Stop()
 
 Write-Host "Preparation and BLOB copy job took $($StopWatch_prepare.Elapsed.Hours) hours, $($StopWatch_prepare.Elapsed.Minutes) minutes and $($StopWatch_prepare.Elapsed.Seconds) seconds" -ForegroundColor Magenta
 Write-Host "ARM Deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds" -ForegroundColor Magenta
-
+Pop-Location
 ##// create storage containers
 
     
