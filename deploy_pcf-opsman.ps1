@@ -151,8 +151,17 @@ if (!$OpsmanUpdate) {
     Write-Host "==>Creating ResourceGroup $resourceGroup" -nonewline   
     $new_rg = New-AzureRmResourceGroup -Name $resourceGroup -Location $location
     Write-Host -ForegroundColor green "[done]"
-    $account_available = Get-AzureRmStorageAccountNameAvailability -Name $storageaccount -ErrorAction SilentlyContinue
-    if ($account_available.NameAvailable -eq $true) {
+    if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
+        $account_available = Get-AzureRmStorageAccountNameAvailability -Name $storageaccount -ErrorAction SilentlyContinue
+        $account_free = $account_available.NameAvailable
+    }
+    else {
+        Write-Warning "we have a netcore bug with azurestack and can not test stoprageaccount availabilty"
+        $account_free = $true
+    }
+    # bug not working in netcore against azurestack, as we can not set profiles :-( 
+    
+    if ($account_free -eq $true) {
          Write-Host "==>Creating StorageAccount $storageaccount" -nonewline
     $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $resourceGroup `
         -Name $storageAccount -Location $location `
