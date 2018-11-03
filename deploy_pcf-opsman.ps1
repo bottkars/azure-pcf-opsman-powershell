@@ -152,7 +152,7 @@ if (!$OpsmanUpdate) {
     $new_rg = New-AzureRmResourceGroup -Name $resourceGroup -Location $location
     Write-Host -ForegroundColor green "[done]"
     if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
-        $account_available = Get-AzureRmStorageAccountNameAvailability -Name $storageaccount -ErrorAction SilentlyContinue
+        $account_available = Get-AzureRmStorageAccountNameAvailability -Name $storageaccount 
         $account_free = $account_available.NameAvailable
     }
     else {
