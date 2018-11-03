@@ -1,0 +1,32 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "apiProfile": "2018-03-01-hybrid",
+    "parameters": {
+      "storageAccountType": {
+        "type": "string",
+        "allowedValues": [
+          "Standard_LRS"
+        ],
+        "defaultValue": "Standard_LRS",
+        "metadata": {
+          "description": "Type of redundancy for your storage account"
+        }
+      },
+      "storageAccountName": {
+        "type": "string"
+      }    
+    },
+    "resources": [
+      {
+        "name": "[parameters('storageAccountName')]",
+        "type": "Microsoft.Storage/storageAccounts",
+        "location": "[resourceGroup().location]",
+        "properties": {
+          "accountType": "[parameters('storageAccountType')]"
+        }
+      }
+    ],
+    "outputs": {}
+  
+  }

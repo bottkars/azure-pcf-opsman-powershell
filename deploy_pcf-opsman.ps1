@@ -55,8 +55,7 @@
 )
 
 
-function get-runningos 
-{
+function get-runningos {
     # backward copatibility for peeps runnin powershell 5
     write-verbose "trying to get os type ... "
     if ($env:windir) {
@@ -163,11 +162,18 @@ if (!$OpsmanUpdate) {
     # waiting for new az netcore module with updated api profiles
     # new 
     if ($account_free -eq $true) {
-         Write-Host "==>Creating StorageAccount $storageaccount" -nonewline
-    $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $resourceGroup `
-        -Name $storageAccount -Location $location `
-        -Type $storageType
-    Write-Host -ForegroundColor green "[done]"
+
+        Write-Host "==>Creating StorageAccount $storageaccount" -nonewline
+        if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
+            $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $resourceGroup `
+                -Name $storageAccount -Location $location `
+                -Type $storageType
+        }
+        else {
+            New-AzureRmResourceGroupDeployment -TemplateFile ./createstorageaacount.json -ResourceGroupName $resourceGroup -storageAccountName $storageaccount
+        }
+
+        Write-Host -ForegroundColor green "[done]"
     }
     else {
         Write-Host "$storageaccount already exists, operations might fail if not owner in same location" 
