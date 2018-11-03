@@ -161,6 +161,7 @@ if (!$OpsmanUpdate) {
     }
     # bug not working in netcore against azurestack, as we can not set profiles :-( 
     # waiting for new az netcore module with updated api profiles
+    # new 
     if ($account_free -eq $true) {
          Write-Host "==>Creating StorageAccount $storageaccount" -nonewline
     $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $resourceGroup `
