@@ -131,11 +131,11 @@ function get-runningos {
     $Object | Add-Member -MemberType NoteProperty -Name Webrequestor -Value $webrequestor
     Write-Output $Object
 }
-if ($Environment -eq "AzureStack" -and (get-runningos).OSType -ne "win_x86_64 ")
+if ($Environment -eq "AzureStack" -and (get-runningos).OSType -ne "win_x86_64")
 {
  Write-Warning "can only deploy to stack from Windows with full AzureRM modules"
- $Environment
- (get-runningos).OSType
+ Write-Host "Current Environment: $Environment"
+ Write-Host "Current OSType $((get-runningos).OSType)"
  Break
 }
 Push-Location
