@@ -61,7 +61,7 @@ function get-runningos {
     if ($env:windir) {
         $OS_Version = Get-Command "$env:windir\system32\ntdll.dll"
         $OS_Version = $OS_Version.Version
-        $Global:deploy_os_type = "win_x86_64"
+        $deploy_os_type = "win_x86_64"
         $webrequestor = ".Net"
     }
     elseif ($OS = uname) {
@@ -110,6 +110,11 @@ function get-runningos {
     $Object | Add-Member -MemberType NoteProperty -Name OSType -Value $deploy_os_type
     $Object | Add-Member -MemberType NoteProperty -Name Webrequestor -Value $webrequestor
     Write-Output $Object
+}
+if ($Environment -eq "AzureStack" -and (get-runningos).OSType -ne "win_x86_64 ")
+{
+ Write-Warning "can only deploy to stack from Windows with full AzureRM modules"
+ Break
 }
 Push-Location
 Set-Location $PSScriptRoot
