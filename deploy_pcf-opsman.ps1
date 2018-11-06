@@ -1,19 +1,37 @@
 ﻿param(
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet('https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.296.vhd',
+    [ValidateSet(
+        ## 2.1 starts here
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.204.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.212.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.214.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.304.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.314.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.318.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.326.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.335.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.340.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.341.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.348.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.350.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.355.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.361.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.372.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.377.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.389.vhd',
+        ## 2.2 starts here
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.292.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.296.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.300.vhd',
-        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.305.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.304.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.312.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.316.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.319.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.334.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.352.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.359.vhd',
+        ## 2.3 starts here
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.146.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.167.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.170.vhd',
