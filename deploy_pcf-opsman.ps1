@@ -134,6 +134,8 @@ function get-runningos {
 if ($Environment -eq "AzureStack" -and (get-runningos).OSType -ne "win_x86_64 ")
 {
  Write-Warning "can only deploy to stack from Windows with full AzureRM modules"
+ $Environment
+ (get-runningos).OSType
  Break
 }
 Push-Location
