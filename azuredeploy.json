@@ -124,7 +124,7 @@
     "pcfVNetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
     "opsManNicName": "[concat('OPSMANNIC_',parameters('deploymentcolor'))]",
     "addressSpace": "[concat(parameters('mask'),'.0.0/16')]",
-    "ManagementaddressPrefix": "[concat(parameters('mask'),'.4.0/22')]",
+    "ManagementaddressPrefix": "[concat(parameters('mask'),'.4.0/26')]",
     "ServicesaddressPrefix": "[concat(parameters('mask'),'.8.0/22')]",
     "DeploymentaddressPrefix": "[concat(parameters('mask'),'.12.0/22')]",
     "OpsManGreenIP": "[concat(parameters('mask'),'.4.4')]",
