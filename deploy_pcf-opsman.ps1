@@ -150,7 +150,7 @@ $blobbaseuri = (Get-AzureRmContext).Environment.StorageEndpointSuffix
 $BaseNetworkVersion = [version]$subnet.IPAddressToString
 $mask = "$($BaseNetworkVersion.Major).$($BaseNetworkVersion.Minor)"
 Write-Host "Using the following Network Assignments:" -ForegroundColor Magenta
-Write-Host "infrastructure: $Mask.4.0/22"
+Write-Host "infrastructure: $Mask.4.0/26"
 Write-Host "services: $Mask.8.0/22"
 Write-Host "pas: $Mask.12.0/22"
 Write-Host "$($opsManFQDNPrefix)green $Mask.4.4/32"
