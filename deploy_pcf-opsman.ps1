@@ -31,16 +31,25 @@
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.334.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.352.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.359.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.372.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.376.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.380.vhd',        
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.382.vhd',        
+
         ## 2.3 starts here
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.146.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.167.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.170.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.184.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.188.vhd',
-        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.194.vhd'
-
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.194.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.212.vhd',        
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.224.vhd',        
+        ## 2.4 starts here
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.117.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.131.vhd'
     )]
-    $opsmanager_uri = 'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.194.vhd',
+    $opsmanager_uri = 'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.131.vhd',
     # The name of the Ressource Group we want to Deploy to.
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
