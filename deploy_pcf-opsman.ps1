@@ -274,6 +274,8 @@ else {
 }
 
 ## next section will be templated soon
+Write-Host "==>Creating Custom Image $opsmanVersion in ResourceGroup $resourceGroup" -nonewline   
+
 $imageConfig = New-AzureRmImageConfig `
 -Location $location
 $imageConfig = Set-AzureRmImageOsDisk `
@@ -283,10 +285,11 @@ $imageConfig = Set-AzureRmImageOsDisk `
 -BlobUri $urlOfUploadedImageVhd `
 -DiskSizeGB 127 `
 -Caching ReadWrite
-New-AzureRmImage `
+$newImage = New-AzureRmImage `
 -ImageName $opsmanVersion `
 -ResourceGroupName $resourceGroup `
 -Image $imageConfig
+Write-Host -ForegroundColor green "[done]"
 ## end template soon 
 
 $StopWatch_prepare.Stop()
@@ -294,7 +297,6 @@ if ($RegisterProviders.isPresent) {
     foreach ($provider in
         ('Microsoft.Compute',
             'Microsoft.Network',
-            #'Microsoft.KeyVault',
             'Microsoft.Storage')
     ) {
         Get-AzureRmResourceProvider -ProviderNamespace $provider | Register-AzureRmResourceProvider
