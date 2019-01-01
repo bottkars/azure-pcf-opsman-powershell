@@ -942,9 +942,6 @@
             "image": {
               "uri": "[parameters('OpsManImageURI')]"
             },
-            "vhd": {
-              "uri": "[concat('http://',parameters('storageAccountName'),'.',parameters('storageEndpoint'),'/',variables('vmStorageAccountContainerName'),'/',variables('opsManVMName'),'-osdisk.vhd')]"
-            },
             "caching": "ReadWrite",
             "diskSizeGB": 127
           }
