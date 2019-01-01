@@ -931,7 +931,7 @@
       },
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]",
-        "[concat('Microsoft.Compute/images', variables('OpsManVersion'))]"
+        "[concat('Microsoft.Compute/images/', variables('OpsManVersion'))]"
       ],
       "properties": {
         "hardwareProfile": {
