@@ -266,26 +266,28 @@ else {
             Start-AzureStorageBlobCopy -DestContainer $image_containername -DestContext $dst_context
         $complete = $copy | Get-AzureStorageBlobCopyState -WaitForComplete
         Write-Host -ForegroundColor green "[done copying]"
-## next section will be templated soon
-        $imageConfig = New-AzureRmImageConfig `
-        -Location $location
-        $imageConfig = Set-AzureRmImageOsDisk `
-        -Image $imageConfig `
-        -OsType Linux `
-        -OsState Generalized `
-        -BlobUri $urlOfUploadedImageVhd `
-        -DiskSizeGB 127 `
-        -Caching ReadWrite
-     New-AzureRmImage `
-        -ImageName $opsmanVersion `
-        -ResourceGroupName $resourceGroup `
-        -Image $imageConfig
-## end template soon        
+       
     }
     else {
         Write-Host -ForegroundColor Blue "[blob already exixts]"
     }
 }
+
+## next section will be templated soon
+$imageConfig = New-AzureRmImageConfig `
+-Location $location
+$imageConfig = Set-AzureRmImageOsDisk `
+-Image $imageConfig `
+-OsType Linux `
+-OsState Generalized `
+-BlobUri $urlOfUploadedImageVhd `
+-DiskSizeGB 127 `
+-Caching ReadWrite
+New-AzureRmImage `
+-ImageName $opsmanVersion `
+-ResourceGroupName $resourceGroup `
+-Image $imageConfig
+## end template soon 
 
 $StopWatch_prepare.Stop()
 if ($RegisterProviders.isPresent) {
