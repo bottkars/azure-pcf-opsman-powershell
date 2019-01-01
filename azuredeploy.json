@@ -939,6 +939,9 @@
             "osType": "Linux",
             "name": "osdisk",
             "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS"
+            },
             "image": {
               "uri": "[parameters('OpsManImageURI')]"
             },
