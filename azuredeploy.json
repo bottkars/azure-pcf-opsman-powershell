@@ -930,7 +930,7 @@
         "opsmanversion": "[variables('OpsManVersion')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]".
+        "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]",
         "[concat('Microsoft.Compute/images', variables('OpsManVersion'))]"
       ],
       "properties": {
