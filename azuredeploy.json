@@ -935,15 +935,8 @@
             }
         },
         "storageProfile": {
-          "osDisk": {
-            "osType": "Linux",
-            "name": "osdisk",
-            "createOption": "FromImage",
-            "image": {
-              "uri": "[parameters('OpsManImageURI')]"
-            },
-            "caching": "ReadWrite",
-            "diskSizeGB": 127
+          "imageReference": {
+            "id": "[resourceId('Microsoft.Compute/images', variables('OpsManVersion'))]"
           }
         },
         "networkProfile": {
