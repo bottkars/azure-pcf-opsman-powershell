@@ -273,7 +273,7 @@ else {
     }
 }
 
-## next section will be templated soon
+<## next section will be templated soon
 Write-Host "==>Creating Custom Image $opsmanVersion in ResourceGroup $resourceGroup" -nonewline   
 
 $imageConfig = New-AzureRmImageConfig `
@@ -290,7 +290,7 @@ $newImage = New-AzureRmImage `
 -ResourceGroupName $resourceGroup `
 -Image $imageConfig
 Write-Host -ForegroundColor green "[done]"
-## end template soon 
+## end template soon #>
 
 $StopWatch_prepare.Stop()
 if ($RegisterProviders.isPresent) {

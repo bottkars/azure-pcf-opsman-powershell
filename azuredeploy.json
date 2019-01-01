@@ -155,6 +155,23 @@
   },
   "resources": [
     {
+      "type": "Microsoft.Compute/images",
+      "apiVersion": "2017-03-30",
+      "name": "[variables('OpsManVersion')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "storageProfile": {
+          "osDisk": {
+            "osType": "Linux",
+            "osState": "Generalized",
+            "blobUri": "[parameters('OpsManImageURI')]",
+            "storageAccountType": "Standard_LRS",
+            "caching": "ReadWrite"
+          }
+        }
+      }
+    },
+    {
       "type": "Microsoft.Storage/storageAccounts",
       "condition": "[equals(parameters('usemanageddisks'),'no')]",
       "name": "[concat(variables('boshExtraStorageAccountName'), '1')]",
@@ -913,7 +930,8 @@
         "opsmanversion": "[variables('OpsManVersion')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]"
+        "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]".
+        "[concat('Microsoft.Compute/images', variables('OpsManVersion'))]"
       ],
       "properties": {
         "hardwareProfile": {
