@@ -166,7 +166,8 @@
             "osState": "Generalized",
             "blobUri": "[parameters('OpsManImageURI')]",
             "storageAccountType": "Standard_LRS",
-            "caching": "ReadWrite"
+            "caching": "ReadWrite",
+            "diskSizeGB": 127
           }
         }
       }
