@@ -157,7 +157,24 @@
     "OpsManVersion": "[replace(parameters('opsManVHD'),'.vhd', '')]"
   },
   "resources": [
-
+    {
+      "type": "Microsoft.Compute/images",
+      "apiVersion": "2017-03-30",
+      "name": "[variables('OpsManVersion')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "storageProfile": {
+          "osDisk": {
+            "osType": "Linux",
+            "osState": "Generalized",
+            "blobUri": "[parameters('OpsManImageURI')]",
+            "storageAccountType": "Standard_LRS",
+            "caching": "ReadWrite",
+            "diskSizeGB": 127
+          }
+        }
+      }
+    },
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/publicIPAddresses",
@@ -203,7 +220,7 @@
       }
     },
     {
-      "apiVersion": "2016-03-30",
+      "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('opsManVMName')]",
       "location": "[variables('location')]",
@@ -212,7 +229,8 @@
         "opsmanversion": "[variables('OpsManVersion')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]"
+        "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]",
+        "[concat('Microsoft.Compute/images/', variables('OpsManVersion'))]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -222,7 +240,7 @@
           "computerName": "[variables('opsManVMName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "linuxConfiguration": {
-            "disablePasswordAuthentication": "True",
+            "disablePasswordAuthentication": true,
             "ssh": {
               "publicKeys": [
                 {
@@ -231,21 +249,11 @@
                 }
               ]
             }            
-          }
+            }
         },
         "storageProfile": {
-          "osDisk": {
-            "osType": "Linux",
-            "name": "osdisk",
-            "createOption": "FromImage",
-            "image": {
-              "uri": "[parameters('OpsManImageURI')]"
-            },
-            "vhd": {
-              "uri": "[concat('http://',parameters('storageAccountName'),'.',parameters('storageEndpoint'),'/',variables('vmStorageAccountContainerName'),'/',variables('opsManVMName'),'-osdisk.vhd')]"
-            },
-            "caching": "ReadWrite",
-            "diskSizeGB": 127
+          "imageReference": {
+            "id": "[resourceId('Microsoft.Compute/images', variables('OpsManVersion'))]"
           }
         },
         "networkProfile": {
@@ -257,7 +265,7 @@
         },
         "diagnosticsProfile": {
           "bootDiagnostics": {
-            "enabled": "true",
+            "enabled": true,
             "storageUri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName')),providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob)]"
           }
         }
