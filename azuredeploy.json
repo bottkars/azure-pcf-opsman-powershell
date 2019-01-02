@@ -940,7 +940,8 @@
           "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
-          "computerName": "[concat('Microsoft.Compute/virtualMachines/', variables('opsManVMName'))]"
+          "computerName": "[concat('Microsoft.Compute/virtualMachines/', variables('opsManVMName'))]",
+          "adminUsername": "[parameters('adminUsername')]"
           },
         "storageProfile": {
           "imageReference": {
