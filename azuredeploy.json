@@ -932,8 +932,9 @@
       },
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]",
-        "[concat('Microsoft.Compute/images/', variables('OpsManVersion'))]"
-      ],
+        "[concat('Microsoft.Compute/images/', variables('OpsManVersion'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]"
+       ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
