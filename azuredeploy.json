@@ -176,7 +176,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "condition": "[equals(parameters('usemanageddisks'),'no')]",
       "name": "[concat(variables('boshExtraStorageAccountName'), '1')]",
-      "apiVersion": "2016-01-01",
+      "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
@@ -189,7 +189,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "condition": "[equals(parameters('usemanageddisks'),'no')]",
       "name": "[concat(variables('boshExtraStorageAccountName'), '2')]",
-      "apiVersion": "2016-01-01",
+      "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
@@ -202,7 +202,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "condition": "[equals(parameters('usemanageddisks'),'no')]",
       "name": "[concat(variables('boshExtraStorageAccountName'), '3')]",
-      "apiVersion": "2016-01-01",
+      "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
@@ -215,7 +215,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "condition": "[equals(parameters('usemanageddisks'),'no')]",
       "name": "[concat(variables('boshExtraStorageAccountName'), '4')]",
-      "apiVersion": "2016-01-01",
+      "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
@@ -228,7 +228,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "condition": "[equals(parameters('usemanageddisks'),'no')]",
       "name": "[concat(variables('boshExtraStorageAccountName'), '5')]",
-      "apiVersion": "2016-01-01",
+      "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
@@ -240,7 +240,7 @@
     {
       "name": "[variables('diagnosticsStorageAccountName')]",
       "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2016-01-01",
+      "apiVersion": "2017-10-01",
       "location": "[resourceGroup().location]",
       "sku": {
         "name": "[variables('diagnosticsStorageAccountType')]"
@@ -250,7 +250,7 @@
         }      
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('OpsManPublicIPName')]",
       "location": "[variables('location')]",
@@ -268,7 +268,7 @@
         "type": "Microsoft.Network/dnszones",
         "condition": "[equals(parameters('Environment'),'AzureStack')]",
         "name": "[parameters('dnsZoneName')]",
-        "apiVersion": "2016-04-01",
+        "apiVersion": "2016--04-01",
         "location": "global",
         "properties": {}
     },
@@ -311,7 +311,7 @@
       }
     },    
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "pcf-lb-ip",
       "location": "[variables('location')]",
@@ -320,7 +320,7 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "mysql-lb-ip",
       "location": "[variables('location')]",
@@ -329,7 +329,7 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "diegossh-lb-ip",
       "location": "[variables('location')]",
@@ -340,7 +340,7 @@
     {
       "name": "AllowWeb",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "location": "[parameters('location')]",
       "properties": {
         "securityRules": [
@@ -376,7 +376,7 @@
       }
     },        
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "AllowWebAndSSH",
       "location": "[variables('location')]",
@@ -575,7 +575,7 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[variables('location')]",
@@ -620,7 +620,7 @@
       }
     },
     {
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2017-10-01",
       "name": "[variables('pcflbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
@@ -716,7 +716,7 @@
       }
     },
     {
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2017-10-01",
       "name": "[variables('diegosshlbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
@@ -890,7 +890,7 @@
     },
     
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('opsManNicName')]",
       "location": "[variables('location')]",
@@ -968,7 +968,7 @@
         "diagnosticsProfile": {
           "bootDiagnostics": {
             "enabled": true,
-            "storageUri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName')),providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob)]"
+            "storageUri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName')),providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob)]"
           }
         }
       }
