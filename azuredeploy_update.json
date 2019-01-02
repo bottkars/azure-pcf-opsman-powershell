@@ -259,7 +259,27 @@
           }
         }
       }
-    }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2017-03-30",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('opsManVMName'))]"
+      ],
+      "location": "[resourceGroup().location]",
+      "name": "[concat(variables('opsManVMName'), '/resetpassword')]",
+      "properties": {
+        "publisher": "Microsoft.OSTCExtensions",
+        "type": "VMAccessForLinux",
+        "typeHandlerVersion": "1.4",
+        "autoUpgradeMinorVersion": true,
+        "settings": {},
+        "protectedSettings": {
+          "username": "[parameters('adminUsername')]",
+          "sshkey": "[parameters('sshkeydata')]"
+        }
+      }
+    }    
   ],
   "outputs": {
     "fqdn": {
