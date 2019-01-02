@@ -942,17 +942,7 @@
         "osProfile": {
           "computerName": "[variables('opsManVMName')]",
           "adminUsername": "[parameters('adminUsername')]",
-          "linuxConfiguration": {
-            "disablePasswordAuthentication": true,
-            "ssh": {
-              "publicKeys": [
-                {
-                  "path": "[variables('sshKeyPath')]",
-                  "keyData": "[parameters('sshKeyData')]"
-                }
-              ]
-            }            
-            }
+          "adminPassword": "W1llbechanged!"
         },
         "storageProfile": {
           "imageReference": {
@@ -973,7 +963,28 @@
           }
         }
       }
-    }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2017-03-30",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('opsManVMName'))]"
+      ],
+      "location": "[resourceGroup().location]",
+      "name": "[concat(variables('opsManVMName'), '/resetpassword')]",
+      "properties": {
+        "publisher": "Microsoft.OSTCExtensions",
+        "type": "VMAccessForLinux",
+        "typeHandlerVersion": "1.4",
+        "autoUpgradeMinorVersion": true,
+        "settings": {},
+        "protectedSettings": {
+          "username": "[parameters('adminUsername')]",
+          "sshkey": "[parameters('sshkeydata')]",
+          "reset_ssh": true
+        }
+      }
+    }   
   ],
   "outputs": {
     "Opsman URL": {
