@@ -268,7 +268,7 @@
         "type": "Microsoft.Network/dnszones",
         "condition": "[equals(parameters('Environment'),'AzureStack')]",
         "name": "[parameters('dnsZoneName')]",
-        "apiVersion": "2016--04-01",
+        "apiVersion": "2016-04-01",
         "location": "global",
         "properties": {}
     },
