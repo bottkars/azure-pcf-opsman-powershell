@@ -238,19 +238,7 @@
           "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
-          "computerName": "[variables('opsManVMName')]",
-          "adminUsername": "[parameters('adminUsername')]",
-          "linuxConfiguration": {
-            "disablePasswordAuthentication": true,
-            "ssh": {
-              "publicKeys": [
-                {
-                  "path": "[variables('sshKeyPath')]",
-                  "keyData": "[parameters('sshKeyData')]"
-                }
-              ]
-            }            
-            }
+          "computerName": "[variables('opsManVMName')]"
         },
         "storageProfile": {
           "imageReference": {
