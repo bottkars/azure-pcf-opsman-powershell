@@ -940,7 +940,7 @@
           "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
-          "computerName": "[concat('Microsoft.Compute/virtualMachines/', variables('opsManVMName'))]",
+          "computerName": "[variables('opsManVMName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "W1llbechanged!"
           },
