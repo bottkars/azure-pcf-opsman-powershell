@@ -978,7 +978,8 @@
         "settings": {},
         "protectedSettings": {
           "username": "[parameters('adminUsername')]",
-          "sshkey": "[parameters('sshkeydata')]"
+          "sshkey": "[parameters('sshKeyData')]",
+          "reset_ssh": true
         }
       }
     }   
