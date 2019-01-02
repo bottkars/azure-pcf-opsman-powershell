@@ -230,8 +230,9 @@
       },
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]",
-        "[concat('Microsoft.Compute/images/', variables('OpsManVersion'))]"
-      ],
+        "[concat('Microsoft.Compute/images/', variables('OpsManVersion'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]"
+       ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
@@ -265,8 +266,8 @@
         },
         "diagnosticsProfile": {
           "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName')),providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob)]"
+            "enabled": false,
+            "storageUri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName')),providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob)]"
           }
         }
       }
