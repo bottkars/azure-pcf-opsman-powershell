@@ -941,7 +941,8 @@
         },
         "osProfile": {
           "computerName": "[concat('Microsoft.Compute/virtualMachines/', variables('opsManVMName'))]",
-          "adminUsername": "[parameters('adminUsername')]"
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "W1llbechanged!"
           },
         "storageProfile": {
           "imageReference": {

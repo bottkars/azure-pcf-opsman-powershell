@@ -238,7 +238,9 @@
           "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
-          "computerName": "[variables('opsManVMName')]"
+          "computerName": "[variables('opsManVMName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "W1llbechanged!"
         },
         "storageProfile": {
           "imageReference": {
