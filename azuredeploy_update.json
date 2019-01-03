@@ -15,7 +15,7 @@
       "metadata": {
         "description": "Uri of the Operations Manager VHD"
       }
-    },    
+    },
     "useManagedDisks": {
       "type": "string",
       "defaultValue": "yes",
@@ -37,7 +37,7 @@
       "metadata": {
         "description": "Use managed disks, otherwise, storageaccounts will be created"
       }
-    },        
+    },
     "storageEndpoint": {
       "type": "string",
       "defaultValue": "blob.local.azurestack.external",
@@ -64,14 +64,14 @@
       "metadata": {
         "description": "Opsman VHD Name"
       }
-    },        
+    },
     "deploymentcolor": {
       "type": "string",
       "defaultValue": "green",
       "metadata": {
         "description": "select the opsman deployment color"
       }
-    },    
+    },
     "vmSize": {
       "type": "string",
       "defaultValue": "Standard_DS2_v2",
@@ -232,7 +232,7 @@
         "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]",
         "[concat('Microsoft.Compute/images/', variables('OpsManVersion'))]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]"
-       ],
+      ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
@@ -240,7 +240,17 @@
         "osProfile": {
           "computerName": "[variables('opsManVMName')]",
           "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "W1llbechanged!"
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[variables('sshKeyPath')]",
+                  "keyData": "[parameters('sshKeyData')]"
+                }
+              ]
+            }
+          }
         },
         "storageProfile": {
           "imageReference": {
@@ -261,34 +271,13 @@
           }
         }
       }
-    },
-    {
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "apiVersion": "2017-03-30",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('opsManVMName'))]"
-      ],
-      "location": "[resourceGroup().location]",
-      "name": "[concat(variables('opsManVMName'), '/resetpassword')]",
-      "properties": {
-        "publisher": "Microsoft.OSTCExtensions",
-        "type": "VMAccessForLinux",
-        "typeHandlerVersion": "1.4",
-        "autoUpgradeMinorVersion": true,
-        "settings": {},
-        "protectedSettings": {
-          "username": "[parameters('adminUsername')]",
-          "sshkey": "[parameters('sshKeyData')]",
-          "reset_ssh": true
-        }
-      }
-    }    
+    }
   ],
   "outputs": {
     "fqdn": {
       "value": "[reference(variables('OpsManPublicIPName')).dnsSettings.fqdn]",
       "type": "string"
-  },
+    },
     "Extra Storage Account Prefix": {
       "type": "string",
       "value": "[variables('boshExtraStorageAccountName')]"
