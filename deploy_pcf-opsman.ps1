@@ -76,7 +76,7 @@
     [Parameter(ParameterSetName = "1", Mandatory = $false)][ValidateSet('green', 'blue')]$deploymentcolor = "green",
     [ipaddress]$subnet = "10.0.0.0",
     $downloadpath = "$($HOME)/Downloads",
-    [switch]$useManagedDisks=$true,
+    [switch]$useManagedDisks,
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet('AzureCloud', 'AzureStack')]$Environment = "AzureStack"
