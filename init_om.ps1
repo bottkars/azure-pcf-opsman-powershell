@@ -16,7 +16,7 @@ $ssh_private_key = Get-Content $HOME/opsman
 $ssh_private_key = $ssh_private_key -join "\r\n"
 $ca_cert = Get-Content $HOME/root.pem
 $ca_cert = $ca_cert -join "\r\n"
-$content=get-content ./director_vars.yaml
+$content=get-content "$PSScriptRoot/director_vars.yaml"
 
 $content += "subscription_id: $((Get-AzureRmSubscription).SubscriptionId)"
 $content += "tenant_id: $((Get-AzureRmSubscription).TenantId)"
