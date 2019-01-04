@@ -15,15 +15,16 @@ $PCF_PAS_VERSION = "2.3.5"
 $downloaddir = "E:\"
 $product_kind = "cf"
 
-
+Write-Host "Getting Release for $product_kind $PCF_PAS_VERSION"
 $piv_release = Get-PIVRelease -id elastic-runtime | where version -Match $PCF_PAS_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
-$piv_release | Confirm-PIVEula -access_token $access_token
-$piv_object = $piv_release_id | where aws_object_key -Like *$product_kind*.pivotal*
+Write-Host "Accepting EULA for $slug_id $product_kind $PCF_PAS_VERSION"
+$eula = $piv_release | Confirm-PIVEula -access_token $access_token
+$piv_object = $piv_release_id | Where-Object aws_object_key -Like *$product_kind*.pivotal*
+$output_directory = New-Item -ItemType Directory "$($downloaddir)/$($product_kind)_$($PCF_PAS_VERSION)" -Force
 
 if (!($no_product_download.ispresent)) {
-    $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($product_kind)_$($PCF_PAS_VERSION)" -Force
     om --skip-ssl-validation `
         download-product `
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
@@ -35,5 +36,7 @@ if (!($no_product_download.ispresent)) {
         --output-directory  "$($output_directory.FullName)"
 
 }
+
+
 
 
