@@ -54,7 +54,7 @@ if (!($no_product_download.ispresent)) {
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME=$download_file.product_path
 $STEMCELL_FILENAME=$download_file.stemcell_path
-<#
+
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
@@ -66,7 +66,7 @@ Write-Host "importing $STEMCELL_FILENAME into OpsManager"
 om --skip-ssl-validation `
   upload-stemcell `
   --stemcell $STEMCELL_FILENAME
-
+<#
 $PRODUCTS=$(om --skip-ssl-validation `
   available-products `
     --format json) | ConvertFrom-Json
