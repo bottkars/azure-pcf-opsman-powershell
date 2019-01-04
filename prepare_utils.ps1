@@ -1,4 +1,5 @@
 ### prepare utils
+$global:vmxtoolkit_type="win_x86_64"
 Write-Host "installing module pivposh"
 Install-Module pivposh -scope CurrentUser -Force
 $omdir = New-Item -ItemType Directory "$HOME/om" -Force
@@ -7,7 +8,11 @@ Write-Host "installing omcli to $($omdir.fullname)/om.exe"
 Invoke-WebRequest -UseBasicParsing -Uri https://github.com/pivotal-cf/om/releases/download/0.48.0/om-windows.exe -OutFile "$($omdir.fullname)/om.exe"
 unblock-file "$($omdir.fullname)/om.exe"
 
-Receive-LABOpenSSL -Destination $HOME/Downloads -OpenSSL_Ver 1_1_0 
+$OpenSSL=Receive-LABOpenSSL -Destination "$($HOME)/Downloads" -OpenSSL_Ver 1_1_0 
+$OpenSSLArgs = '/silent'
+$Setuppath = "$($HOME)/Downloads/$($OpenSSL.Filename)"
+unblock-file $Setuppath
+Start-Process -FilePath $Setuppath -ArgumentList $OpenSSLArgs -PassThru -Wait
 
 <#
 .Synopsis
@@ -78,10 +83,7 @@ Write-Verbose " ==>got $URL"
     if (!(test-path  "$Destination\$FileName"))
         {
         Write-Host -ForegroundColor Gray " ==>$FileName not found, trying to download $Filename"
-        if (!(Receive-LABBitsFile -DownLoadUrl $URL -destination "$Destination\$FileName"))
-            { write-warning "Error Downloading file $Url, Please check connectivity"
-            exit
-            }
+        Start-BitsTransfer  $URL -destination "$Destination\$FileName"
         }
     else
         {
@@ -94,3 +96,4 @@ $object | Add-Member -MemberType NoteProperty -Name Filename -Value $FileName
 $object | Add-Member -MemberType NoteProperty -Name Version -Value $Version
 Write-Output $object 
 }
+
