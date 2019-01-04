@@ -1,5 +1,9 @@
 #requires -module pivposh
-
+param(
+# set to true if downloading 
+[Parameter(Mandatory=$false)]
+[switch]$no_product_download
+)
 $env:OM_Password = "Password123!"
 $env:OM_Target = "pcfopsmangreen.local.cloudapp.azurestack.external"
 $env:OM_Username = "opsman"
@@ -7,10 +11,10 @@ $env:Path = "$($env:Path);$HOME/OM"
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $slug_id = "elastic_runtime"
-$PCF_PAS_VERSION = "2.4.1"
+$PCF_PAS_VERSION = "2.3.5"
 $downloaddir = "E:\"
 $product_kind = "cf"
-[switch]$download_product = $true
+
 
 $piv_release = Get-PIVRelease -id elastic-runtime | where version -Match $PCF_PAS_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
@@ -18,8 +22,8 @@ $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 $piv_release | Confirm-PIVEula -access_token $access_token
 $piv_object = $piv_release_id | where aws_object_key -Like *$product_kind*.pivotal*
 
-if ($download_product.ispresent) {
-    $output_directory = New-Item -ItemType Directory $downloaddir/$PCF_PAS_VERSION -Force
+if (!($no_product_download.ispresent)) {
+    $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($product_kind)_$($PCF_PAS_VERSION)" -Force
     om --skip-ssl-validation `
         download-product `
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
