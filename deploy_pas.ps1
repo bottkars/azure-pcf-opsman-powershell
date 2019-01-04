@@ -94,4 +94,4 @@ pcf_web_lb: pcf-lb
 
 om --skip-ssl-validation `
   configure-product `
-  -c pas.yaml -l $HOME/vars.yaml
+  -c ./pas.yaml -l $HOME/vars.yaml
