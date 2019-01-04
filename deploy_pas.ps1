@@ -1,8 +1,15 @@
 #requires -module pivposh
 param(
+# PAS Version
+[Parameter(Mandatory=$false)][ValidateSet('2.4.0','2.4.1','2.3.5')]
+$PCF_PAS_VERSION = "2.3.5",
+# PAS Type ( srt for small runtime, cf for full pas)
+[Parameter(Mandatory=$false)][ValidateSet('srt','cf')]
+$product_kind = "cf",
 # set to true if downloading 
 [Parameter(Mandatory=$false)]
-[switch]$no_product_download
+[switch]$no_product_download,
+$downloaddir = "E:\"
 )
 $env:OM_Password = "Password123!"
 $env:OM_Target = "pcfopsmangreen.local.cloudapp.azurestack.external"
@@ -11,9 +18,9 @@ $env:Path = "$($env:Path);$HOME/OM"
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $slug_id = "elastic_runtime"
-$PCF_PAS_VERSION = "2.3.5"
-$downloaddir = "E:\"
-$product_kind = "cf"
+
+
+
 
 Write-Host "Getting Release for $product_kind $PCF_PAS_VERSION"
 $piv_release = Get-PIVRelease -id elastic-runtime | where version -Match $PCF_PAS_VERSION | Select-Object -First 1
