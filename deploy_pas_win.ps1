@@ -21,19 +21,19 @@ $env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
-$slug_id = "elastic_runtime"
+$slug_id = "pas-windows"
 
 
 
 
 Write-Host "Getting Release for $PRODUCT_NAME $PCF_PAS_VERSION"
-$piv_release = Get-PIVRelease -id elastic-runtime | where version -Match $PCF_PAS_VERSION | Select-Object -First 1
+$piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_PAS_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
-Write-Host "Accepting EULA for $slug_id $PRODUCT_NAME $PCF_PAS_VERSION"
+Write-Host "Accepting EULA for $slug_id $PCF_PAS_VERSION"
 $eula = $piv_release | Confirm-PIVEula -access_token $access_token
-$piv_object = $piv_release_id | Where-Object aws_object_key -Like *$PRODUCT_NAME*.pivotal*
-$output_directory = New-Item -ItemType Directory "$($downloaddir)/$($PRODUCT_NAME)_$($PCF_PAS_VERSION)" -Force
+$piv_object = $piv_release_id | Where-Object aws_object_key -Like *$slug_id*.pivotal*
+$output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_PAS_VERSION)" -Force
 
 if (!($no_product_download.ispresent)) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
@@ -43,7 +43,7 @@ if (!($no_product_download.ispresent)) {
         download-product `
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
         --pivnet-file-glob $(Split-Path -Leaf $piv_object.aws_object_key) `
-        --pivnet-product-slug elastic-runtime `
+        --pivnet-product-slug $slug_id `
         --product-version $PCF_PAS_VERSION `
         --stemcell-iaas azure `
         --download-stemcell `
@@ -54,7 +54,7 @@ if (!($no_product_download.ispresent)) {
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME=$download_file.product_path
 $STEMCELL_FILENAME=$download_file.stemcell_path
-
+<#
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
@@ -107,3 +107,4 @@ om --skip-ssl-validation `
 
 om --skip-ssl-validation `
   apply-changes
+#>
