@@ -25,6 +25,8 @@ $piv_object = $piv_release_id | Where-Object aws_object_key -Like *$product_kind
 $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($product_kind)_$($PCF_PAS_VERSION)" -Force
 
 if (!($no_product_download.ispresent)) {
+    Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
+
     om --skip-ssl-validation `
         download-product `
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
