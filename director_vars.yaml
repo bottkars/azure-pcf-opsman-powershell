@@ -1,0 +1,12 @@
+cloud_storage_type: storage_accounts
+deployments_storage_account_name: "*xtrastrgl5mtmcwe4ongg*"
+bosh_storage_account_name: pcfrgopsmanstorage
+default_security_group: AllowWebAndSSH
+ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC+y9e+UPeWBp8tBvkIn//DLxe876UmqxMUo6Q9hzSK0kGvPQP3BKzrY/+Ee2ILz0F68g4BlU/1wK1LSKnaU/NOhW1RWcBvXmHdYWr53ah0YeK/W8OACwRZZ+/kIXNYGmDNeYzb1yHAej3w5Cck408ZKXgn22ZidYHyH5/8mpStvUDKhWolqhvEScri8ghz341oOQRCeBnLd4YqrDtocMW/D78GfdmvAiBWQQoFrnJ0FpUdT+Wt7Y/R1edRx12xFaADAbBCXPeSxctaKuIOx1WG6QRki2xfnMLFZEkJepkt6nSkt2mfrlq8Vop2wKlY1n1/Cy72RqZvsBF4b3DFBfZR ubuntu"
+ntp_servers_string: '192.168.1.1'
+infrastructure-subnet: "PCF/infrastructure"
+pas-subnet: "PCF/pas"
+services-subnet: "PCF/services"
+domain: "local.azurestack.external"
+authentication: "AzureAD"
+endpoint_prefix: "management"
