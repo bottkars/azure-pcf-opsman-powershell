@@ -31,16 +31,25 @@
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.334.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.352.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.359.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.372.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.376.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.380.vhd',        
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.382.vhd',        
+
         ## 2.3 starts here
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.146.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.167.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.170.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.184.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.188.vhd',
-        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.194.vhd'
-
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.194.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.212.vhd',        
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.224.vhd',        
+        ## 2.4 starts here
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.117.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.131.vhd'
     )]
-    $opsmanager_uri = 'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.194.vhd',
+    $opsmanager_uri = 'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.131.vhd',
     # The name of the Ressource Group we want to Deploy to.
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
@@ -150,11 +159,11 @@ $blobbaseuri = (Get-AzureRmContext).Environment.StorageEndpointSuffix
 $BaseNetworkVersion = [version]$subnet.IPAddressToString
 $mask = "$($BaseNetworkVersion.Major).$($BaseNetworkVersion.Minor)"
 Write-Host "Using the following Network Assignments:" -ForegroundColor Magenta
-Write-Host "infrastructure: $Mask.4.0/26"
-Write-Host "services: $Mask.8.0/22"
-Write-Host "pas: $Mask.12.0/22"
-Write-Host "$($opsManFQDNPrefix)green $Mask.4.4/32"
-Write-Host "$($opsManFQDNPrefix)blue $Mask.4.5/32"
+Write-Host "PCF/infrastructure: $Mask.8.0/26"
+Write-Host "PCF/services: $Mask.4.0/22"
+Write-Host "PCF/pas: $Mask.0.0/22"
+Write-Host "$($opsManFQDNPrefix)green $Mask.8.4/32"
+Write-Host "$($opsManFQDNPrefix)blue $Mask.8.5/32"
 Write-Host
 $opsManFQDNPrefix = "$opsManFQDNPrefix$deploymentcolor"
 if (!$storageaccount) {
@@ -257,18 +266,37 @@ else {
             Start-AzureStorageBlobCopy -DestContainer $image_containername -DestContext $dst_context
         $complete = $copy | Get-AzureStorageBlobCopyState -WaitForComplete
         Write-Host -ForegroundColor green "[done copying]"
+       
     }
     else {
         Write-Host -ForegroundColor Blue "[blob already exixts]"
     }
 }
 
+<## next section will be templated soon
+Write-Host "==>Creating Custom Image $opsmanVersion in ResourceGroup $resourceGroup" -nonewline   
+
+$imageConfig = New-AzureRmImageConfig `
+-Location $location
+$imageConfig = Set-AzureRmImageOsDisk `
+-Image $imageConfig `
+-OsType Linux `
+-OsState Generalized `
+-BlobUri $urlOfUploadedImageVhd `
+-DiskSizeGB 127 `
+-Caching ReadWrite
+$newImage = New-AzureRmImage `
+-ImageName $opsmanVersion `
+-ResourceGroupName $resourceGroup `
+-Image $imageConfig
+Write-Host -ForegroundColor green "[done]"
+## end template soon #>
+
 $StopWatch_prepare.Stop()
 if ($RegisterProviders.isPresent) {
     foreach ($provider in
         ('Microsoft.Compute',
             'Microsoft.Network',
-            #'Microsoft.KeyVault',
             'Microsoft.Storage')
     ) {
         Get-AzureRmResourceProvider -ProviderNamespace $provider | Register-AzureRmResourceProvider

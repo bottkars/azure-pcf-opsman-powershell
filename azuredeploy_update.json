@@ -15,7 +15,7 @@
       "metadata": {
         "description": "Uri of the Operations Manager VHD"
       }
-    },    
+    },
     "useManagedDisks": {
       "type": "string",
       "defaultValue": "yes",
@@ -37,7 +37,7 @@
       "metadata": {
         "description": "Use managed disks, otherwise, storageaccounts will be created"
       }
-    },        
+    },
     "storageEndpoint": {
       "type": "string",
       "defaultValue": "blob.local.azurestack.external",
@@ -64,14 +64,14 @@
       "metadata": {
         "description": "Opsman VHD Name"
       }
-    },        
+    },
     "deploymentcolor": {
       "type": "string",
       "defaultValue": "green",
       "metadata": {
         "description": "select the opsman deployment color"
       }
-    },    
+    },
     "vmSize": {
       "type": "string",
       "defaultValue": "Standard_DS2_v2",
@@ -157,9 +157,26 @@
     "OpsManVersion": "[replace(parameters('opsManVHD'),'.vhd', '')]"
   },
   "resources": [
-
     {
-      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/images",
+      "apiVersion": "2017-03-30",
+      "name": "[variables('OpsManVersion')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "storageProfile": {
+          "osDisk": {
+            "osType": "Linux",
+            "osState": "Generalized",
+            "blobUri": "[parameters('OpsManImageURI')]",
+            "storageAccountType": "Standard_LRS",
+            "caching": "ReadWrite",
+            "diskSizeGB": 127
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('OpsManPublicIPName')]",
       "location": "[variables('location')]",
@@ -174,7 +191,7 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('opsManNicName')]",
       "location": "[variables('location')]",
@@ -203,7 +220,7 @@
       }
     },
     {
-      "apiVersion": "2016-03-30",
+      "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('opsManVMName')]",
       "location": "[variables('location')]",
@@ -212,7 +229,9 @@
         "opsmanversion": "[variables('OpsManVersion')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]"
+        "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]",
+        "[concat('Microsoft.Compute/images/', variables('OpsManVersion'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -222,7 +241,7 @@
           "computerName": "[variables('opsManVMName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "linuxConfiguration": {
-            "disablePasswordAuthentication": "True",
+            "disablePasswordAuthentication": true,
             "ssh": {
               "publicKeys": [
                 {
@@ -230,22 +249,12 @@
                   "keyData": "[parameters('sshKeyData')]"
                 }
               ]
-            }            
+            }
           }
         },
         "storageProfile": {
-          "osDisk": {
-            "osType": "Linux",
-            "name": "osdisk",
-            "createOption": "FromImage",
-            "image": {
-              "uri": "[parameters('OpsManImageURI')]"
-            },
-            "vhd": {
-              "uri": "[concat('http://',parameters('storageAccountName'),'.',parameters('storageEndpoint'),'/',variables('vmStorageAccountContainerName'),'/',variables('opsManVMName'),'-osdisk.vhd')]"
-            },
-            "caching": "ReadWrite",
-            "diskSizeGB": 127
+          "imageReference": {
+            "id": "[resourceId('Microsoft.Compute/images', variables('OpsManVersion'))]"
           }
         },
         "networkProfile": {
@@ -257,8 +266,8 @@
         },
         "diagnosticsProfile": {
           "bootDiagnostics": {
-            "enabled": "true",
-            "storageUri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName')),providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob)]"
+            "enabled": true,
+            "storageUri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName')),providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob)]"
           }
         }
       }
@@ -268,7 +277,7 @@
     "fqdn": {
       "value": "[reference(variables('OpsManPublicIPName')).dnsSettings.fqdn]",
       "type": "string"
-  },
+    },
     "Extra Storage Account Prefix": {
       "type": "string",
       "value": "[variables('boshExtraStorageAccountName')]"

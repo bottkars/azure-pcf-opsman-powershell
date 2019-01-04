@@ -124,11 +124,11 @@
     "pcfVNetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
     "opsManNicName": "[concat('OPSMANNIC_',parameters('deploymentcolor'))]",
     "addressSpace": "[concat(parameters('mask'),'.0.0/16')]",
-    "infrastructureaddressPrefix": "[concat(parameters('mask'),'.4.0/26')]",
-    "servicesaddressPrefix": "[concat(parameters('mask'),'.8.0/22')]",
-    "pasaddressPrefix": "[concat(parameters('mask'),'.12.0/22')]",
-    "OpsManGreenIP": "[concat(parameters('mask'),'.4.4')]",
-    "OpsManBlueIP": "[concat(parameters('mask'),'.4.5')]",
+    "infrastructureaddressPrefix": "[concat(parameters('mask'),'.8.0/26')]",
+    "servicesaddressPrefix": "[concat(parameters('mask'),'.4.0/22')]",
+    "pasaddressPrefix": "[concat(parameters('mask'),'.0.0/22')]",
+    "OpsManGreenIP": "[concat(parameters('mask'),'.8.4')]",
+    "OpsManBlueIP": "[concat(parameters('mask'),'.8.5')]",
     "opsManPrivateIPAddress": "[if(equals(parameters('deploymentcolor'),'green'), variables('OpsManGreenIP'), variables('OpsManBlueIP'))]",
     "pcflbName": "pcf-lb",
     "pcflbID": "[resourceId('Microsoft.Network/loadBalancers',variables('pcflbName'))]",
@@ -155,10 +155,28 @@
   },
   "resources": [
     {
+      "type": "Microsoft.Compute/images",
+      "apiVersion": "2017-03-30",
+      "name": "[variables('OpsManVersion')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "storageProfile": {
+          "osDisk": {
+            "osType": "Linux",
+            "osState": "Generalized",
+            "blobUri": "[parameters('OpsManImageURI')]",
+            "storageAccountType": "Standard_LRS",
+            "caching": "ReadWrite",
+            "diskSizeGB": 127
+          }
+        }
+      }
+    },
+    {
       "type": "Microsoft.Storage/storageAccounts",
       "condition": "[equals(parameters('usemanageddisks'),'no')]",
       "name": "[concat(variables('boshExtraStorageAccountName'), '1')]",
-      "apiVersion": "2016-01-01",
+      "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
@@ -171,7 +189,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "condition": "[equals(parameters('usemanageddisks'),'no')]",
       "name": "[concat(variables('boshExtraStorageAccountName'), '2')]",
-      "apiVersion": "2016-01-01",
+      "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
@@ -184,7 +202,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "condition": "[equals(parameters('usemanageddisks'),'no')]",
       "name": "[concat(variables('boshExtraStorageAccountName'), '3')]",
-      "apiVersion": "2016-01-01",
+      "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
@@ -197,7 +215,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "condition": "[equals(parameters('usemanageddisks'),'no')]",
       "name": "[concat(variables('boshExtraStorageAccountName'), '4')]",
-      "apiVersion": "2016-01-01",
+      "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
@@ -210,7 +228,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "condition": "[equals(parameters('usemanageddisks'),'no')]",
       "name": "[concat(variables('boshExtraStorageAccountName'), '5')]",
-      "apiVersion": "2016-01-01",
+      "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
@@ -222,7 +240,7 @@
     {
       "name": "[variables('diagnosticsStorageAccountName')]",
       "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2016-01-01",
+      "apiVersion": "2017-10-01",
       "location": "[resourceGroup().location]",
       "sku": {
         "name": "[variables('diagnosticsStorageAccountType')]"
@@ -232,7 +250,7 @@
         }      
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('OpsManPublicIPName')]",
       "location": "[variables('location')]",
@@ -293,7 +311,7 @@
       }
     },    
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "pcf-lb-ip",
       "location": "[variables('location')]",
@@ -302,7 +320,7 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "mysql-lb-ip",
       "location": "[variables('location')]",
@@ -311,7 +329,7 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "diegossh-lb-ip",
       "location": "[variables('location')]",
@@ -322,7 +340,7 @@
     {
       "name": "AllowWeb",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "location": "[parameters('location')]",
       "properties": {
         "securityRules": [
@@ -358,7 +376,7 @@
       }
     },        
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "AllowWebAndSSH",
       "location": "[variables('location')]",
@@ -557,7 +575,7 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[variables('location')]",
@@ -602,7 +620,7 @@
       }
     },
     {
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2017-10-01",
       "name": "[variables('pcflbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
@@ -698,7 +716,7 @@
       }
     },
     {
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2017-10-01",
       "name": "[variables('diegosshlbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
@@ -872,7 +890,7 @@
     },
     
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('opsManNicName')]",
       "location": "[variables('location')]",
@@ -904,7 +922,7 @@
       }
     },
     {
-      "apiVersion": "2016-03-30",
+      "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('opsManVMName')]",
       "location": "[variables('location')]",
@@ -913,8 +931,10 @@
         "opsmanversion": "[variables('OpsManVersion')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]"
-      ],
+        "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]",
+        "[concat('Microsoft.Compute/images/', variables('OpsManVersion'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]"
+       ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
@@ -933,20 +953,10 @@
               ]
             }            
             }
-        },
+          },
         "storageProfile": {
-          "osDisk": {
-            "osType": "Linux",
-            "name": "osdisk",
-            "createOption": "FromImage",
-            "image": {
-              "uri": "[parameters('OpsManImageURI')]"
-            },
-            "vhd": {
-              "uri": "[concat('http://',parameters('storageAccountName'),'.',parameters('storageEndpoint'),'/',variables('vmStorageAccountContainerName'),'/',variables('opsManVMName'),'-osdisk.vhd')]"
-            },
-            "caching": "ReadWrite",
-            "diskSizeGB": 127
+          "imageReference": {
+            "id": "[resourceId('Microsoft.Compute/images', variables('OpsManVersion'))]"
           }
         },
         "networkProfile": {
@@ -959,11 +969,11 @@
         "diagnosticsProfile": {
           "bootDiagnostics": {
             "enabled": true,
-            "storageUri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName')),providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob)]"
+            "storageUri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName')),providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob)]"
           }
         }
       }
-    }
+    }   
   ],
   "outputs": {
     "Opsman URL": {
