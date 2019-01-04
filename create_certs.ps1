@@ -29,5 +29,5 @@ C:\OpenSSL-Win64\bin\openssl.exe req -x509 `
   -newkey rsa:2048 `
   -nodes `
   -keyout ./pcfdemo.local.azurestack.external.key `
-  -out ./pcfdemo.local.azurestack.external..cert `
+  -out ./pcfdemo.local.azurestack.external.cert `
   -config ./pcfdemo.local.azurestack.external.cnf 
