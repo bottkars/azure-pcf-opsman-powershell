@@ -18,6 +18,14 @@ $env:OM_Username = $env_vars.OM_Username
 $env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
+$smtp_address=$env_vars.SMTP_ADDRESS
+$smtp_identity=$env_vars.SMTP_IDENTITY
+$smtp_password=$env_vars.SMTP_PASSWORD
+$smtp_from=$env_vars.SMTP_FROM
+$smtp_port=$env_vars.SMTP_PORT
+$pcf_notifications_email=$env_vars.PCF_NOTIFICATIONS_EMAIL
+
+
 $slug_id = "elastic_runtime"
 
 Write-Host "Getting Release for $PRODUCT_NAME $PCF_PAS_VERSION"
@@ -86,13 +94,18 @@ product_name: $PRODUCT_NAME
 pcf_pas_network: pcf-pas-subnet `
 pcf_system_domain: system.pcfdemo.local.azurestack.external `
 pcf_apps_domain: system.pcfdemo.local.azurestack.external `
-pcf_notifications_email: email@examle.com `
 pcf_cert_pem: `"$PCF_CERT_PEM`"
 pcf_key_pem: `"$PCF_KEY_PEM`"
 pcf_credhub_key: `"012345678901234567890`"
 pcf_diego_ssh_lb: diegossh-lb
 pcf_mysql_lb: mysql-lb
 pcf_web_lb: pcf-lb
+smtp_address: $smtp_address
+smtp_identity: $smtp_identity
+smtp_password: `"$smtp_password`"
+smtp_from: $smtp_from
+smtp_port: $smtp_port
+pcf_notifications_email: $pcf_notifications_email
 " | Set-Content $HOME/vars.yaml
 
 om --skip-ssl-validation `
