@@ -6,26 +6,19 @@ $PCF_PAS_VERSION = "2.3.5",
 # PAS Type ( srt for small runtime, cf for full pas)
 [Parameter(Mandatory=$false)][ValidateSet('srt','cf')]
 $PRODUCT_NAME = "cf",
-$OM_Pass = "Password123!",
-$OM_Username = "opsman",
 $OM_Target = "pcfopsmangreen.local.cloudapp.azurestack.external",
 # set to true if downloading 
 [Parameter(Mandatory=$false)]
 [switch]$no_product_download,
 $downloaddir = "$HOME/downloads"
 )
-$env:OM_Password = $OM_Pass
-$env:OM_Username = $OM_Username
-$env:OM_Target = $OM_Target
-
-$env:Path = "$($env:Path);$HOME/OM"
-
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
+$env:OM_Password = $env_vars.OM_Password
+$env:OM_Username = $env_vars.OM_Username
+$env:OM_Target = $OM_Target
+$env:Path = "$($env:Path);$HOME/OM"
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $slug_id = "elastic_runtime"
-
-
-
 
 Write-Host "Getting Release for $PRODUCT_NAME $PCF_PAS_VERSION"
 $piv_release = Get-PIVRelease -id elastic-runtime | where version -Match $PCF_PAS_VERSION | Select-Object -First 1
