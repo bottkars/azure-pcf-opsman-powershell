@@ -367,13 +367,39 @@ if (!$OpsmanUpdate) {
     }
     write host "now we are going to try and configure OpsManager"
 
-    # will create director.json in future
+    # will create director.json for future
+    $JSon = @{  
+        OM_TARGET                = "$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)"
+        domain                   = "$($location).$($dnsdomain)"
+        boshstorageaccountname   = $storageaccount 
+        RG                       = $resourceGroup
+        deploymentstorageaccount = $deployment_storage_account
+        pas_cidr                 = $pas_cidr
+        pas_range                = $pas_range
+        pas_gateway              = $pas_gateway 
+        infrastructure_range     = $infrastructure_range
+        infrastructure_cidr      = $infrastructure_cidr 
+        infrastructure_gateway   = $infrastructure_gateway
+        services_cidr            = $services_cidr
+        services_gateway         = $services_gateway
+        services_range           = = $services_range
+    } | ConvertTo-Json
+    $JSon | Set-Content $HOME/director.json
+    # this is future
     $command = "$PSScriptRoot/init_om.ps1 -OM_Target '$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)' -domain '$($location).$($dnsdomain)' -boshstorageaccountname $storageaccount -RG $resourceGroup -deploymentstorageaccount $deployment_storage_account -pas_cidr $pas_cidr -pas_range $pas_range -pas_gateway $pas_gateway -infrastructure_range $infrastructure_range -infrastructure_cidr $infrastructure_cidr -infrastructure_gateway $infrastructure_gateway -services_cidr $services_cidr -services_gateway $services_gateway -services_range $services_range"
     Write-Host "Calling $command" 
     Invoke-Expression -Command $Command
     if ($PAS_AUTOPILOT.IsPresent) {
         # will create a json for future release
         # pas.json
+        $JSon = @{  
+            OM_TARGET       = "$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)"
+            PCF_PAS_VERSION = $PCF_PAS_VERSION 
+            PRODUCT_NAME    = $PRODUCT_NAME 
+            downloaddir     = $downloadpath
+        } | ConvertTo-Json
+        $JSon | Set-Content $HOME/pas.json
+        #
         $command = "$PSScriptRoot/deploy_pas.ps1 -OM_Target '$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)' -PCF_PAS_VERSION $PCF_PAS_VERSION -PRODUCT_NAME $PRODUCT_NAME -downloaddir $downloadpath"
         if ($no_product_download.IsPresent) {
             $command = "$command -no_product_download"
