@@ -26,7 +26,7 @@ DNS.1 = *.sys.$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME
 DNS.2 = *.login.$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME
 DNS.3 = *.uaa.sys.$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME
 DNS.4 = *.apps.$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME
-" | set-content "$HOME/pcfdemo.$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME"
+" | set-content "$HOME/$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME.cnf"
 
 C:\OpenSSL-Win64\bin\openssl.exe req -x509 `
   -newkey rsa:2048 `
