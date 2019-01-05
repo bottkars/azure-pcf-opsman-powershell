@@ -1,7 +1,8 @@
 param(
-  $PCF_SUBDOMAIN_NAME="pcfdemo",
-  $PCF_DOMAIN_NAME="local.azurestack.external"
+$PCF_SUBDOMAIN_NAME = "pcfdemo",
+$PCF_DOMAIN_NAME = "local.azurestack.external"
 )
+
 "
 [req]
 default_bits = 2048
@@ -16,7 +17,7 @@ ST=Hessen
 L=Taunusstein
 O=Karsten Bott
 OU=DEMO
-CN = "$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME"
+CN = $PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME
 
 [ req_ext ]
 subjectAltName = @alt_names
