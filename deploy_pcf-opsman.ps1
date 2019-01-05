@@ -367,11 +367,13 @@ if (!$OpsmanUpdate) {
     }
     write host "now we are going to try and configure OpsManager"
 
-
+    # will create director.json in future
     $command = "$PSScriptRoot/init_om.ps1 -OM_Target '$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)' -domain '$($location).$($dnsdomain)' -boshstorageaccountname $storageaccount -RG $resourceGroup -deploymentstorageaccount $deployment_storage_account -pas_cidr $pas_cidr -pas_range $pas_range -pas_gateway $pas_gateway -infrastructure_range $infrastructure_range -infrastructure_cidr $infrastructure_cidr -infrastructure_gateway $infrastructure_gateway -services_cidr $services_cidr -services_gateway $services_gateway -services_range $services_range"
     Write-Host "Calling $command" 
     Invoke-Expression -Command $Command
     if ($PAS_AUTOPILOT.IsPresent) {
+        # will create a json for future release
+        # pas.json
         $command = "$PSScriptRoot/deploy_pas.ps1 -OM_Target '$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)' -PCF_PAS_VERSION $PCF_PAS_VERSION -PRODUCT_NAME $PRODUCT_NAME -downloaddir $downloadpath"
         if ($no_product_download.IsPresent) {
             $command = "$command -no_product_download"
@@ -391,9 +393,6 @@ $StopWatch_deploy.Stop()
 Write-Host "Preparation and BLOB copy job took $($StopWatch_prepare.Elapsed.Hours) hours, $($StopWatch_prepare.Elapsed.Minutes) minutes and $($StopWatch_prepare.Elapsed.Seconds) seconds" -ForegroundColor Magenta
 Write-Host "Deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds" -ForegroundColor Magenta
 Pop-Location
-##// create storage containers
-
-    
 <#
 create a key
 ssh-keygen -t rsa -f opsman -C ubuntu
@@ -425,25 +424,6 @@ curl "https://pcf-opsman.local.cloudapp.azurestack.external/api/v0/vm_types" \
     --insecure
 
 
-
-
-curl -k https://pcf-opsman.local.cloudapp.azurestack.external/api/v0/vm_types -X \
-PUT -H "Authorization: bearer $token" -H \
-"Content-Type: application/json" -d '{"vm_types":[
-{"name":"Standard_DS1_v2","ram":3584,"cpu":1,"ephemeral_disk":51200},
-{"name":"Standard_DS2_v2","ram":7168,"cpu":2,"ephemeral_disk":102400},
-{"name":"Standard_DS3_v2","ram":14336,"cpu":4,"ephemeral_disk":204800},
-{"name":"Standard_DS4_v2","ram":28672,"cpu":8,"ephemeral_disk":409600},
-{"name":"Standard_DS5_v2","ram":57344,"cpu":8,"ephemeral_disk":819200},
-{"name":"Standard_DS11_v2","ram":14336,"cpu":2,"ephemeral_disk":102400},
-{"name":"Standard_DS12_v2","ram":28672,"cpu":4,"ephemeral_disk":204800},
-{"name":"Standard_DS13_v2","ram":57344,"cpu":8,"ephemeral_disk":409600},
-{"name":"Standard_DS14_v2","ram":114688,"cpu":16,"ephemeral_disk":819200}]}' --insecure
-
-
-
-###
-
 $URI = "https://vmimage.blob.local.azurestack.external/vmimage/aliases.json"
 
 az cloud register `
@@ -454,4 +434,4 @@ az cloud register `
   --endpoint-active-directory-graph-resource-id "https://graph.windows.net/" `
   --endpoint-vm-image-alias-doc $uri
 
-  #>
+#>
