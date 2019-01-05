@@ -176,7 +176,7 @@ $services_range = "$mask.4.1-$mask.4.10"
 $services_gateway = "$mask.4.1"
 
 Write-Host "Using the following Network Assignments:" -ForegroundColor Magenta
-Write-Host "PCF/infrastructure  : cidr $infrastructure_cidr,range $infrastructure_range,gateway$infrastructure_gateway"
+Write-Host "PCF/infrastructure  : cidr $infrastructure_cidr,range $infrastructure_range,gateway $infrastructure_gateway"
 Write-Host "PCF/services        : cidr $services_cidr,range $services_range,gateway $services_gateway"
 Write-Host "PCF/pas             : cidr $pas_cidr,range $pas_range,gateway $pas_gateway"
 Write-Host "$($opsManFQDNPrefix)green $Mask.8.4/32"
