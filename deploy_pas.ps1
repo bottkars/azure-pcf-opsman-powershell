@@ -12,6 +12,9 @@ $OM_Target = "pcfopsmangreen.local.cloudapp.azurestack.external",
 [switch]$no_product_download,
 $downloaddir = "$HOME/downloads"
 )
+# from json
+$PCF_SUBDOMAIN_NAME = "pcfdemo"
+$domain = "local.azurestack.external"
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $env:OM_Password = $env_vars.OM_Password
 $env:OM_Username = $env_vars.OM_Username
@@ -24,6 +27,7 @@ $smtp_password=$env_vars.SMTP_PASSWORD
 $smtp_from=$env_vars.SMTP_FROM
 $smtp_port=$env_vars.SMTP_PORT
 $pcf_notifications_email=$env_vars.PCF_NOTIFICATIONS_EMAIL
+
 
 
 $slug_id = "elastic_runtime"
@@ -92,8 +96,8 @@ $PCF_CERT_PEM=$PCF_CERT_PEM  -join "\r\n"
 "
 product_name: $PRODUCT_NAME
 pcf_pas_network: pcf-pas-subnet `
-pcf_system_domain: system.pcfdemo.local.azurestack.external `
-pcf_apps_domain: system.pcfdemo.local.azurestack.external `
+pcf_system_domain: system.$PCF_SUBDOMAIN_NAME.$domain `
+pcf_apps_domain: apps.$PCF_SUBDOMAIN_NAME.$domain `
 pcf_cert_pem: `"$PCF_CERT_PEM`"
 pcf_key_pem: `"$PCF_KEY_PEM`"
 pcf_credhub_key: `"012345678901234567890`"

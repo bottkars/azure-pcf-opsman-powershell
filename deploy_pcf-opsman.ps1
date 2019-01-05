@@ -70,7 +70,7 @@
     # The SSH Key for OpsManager
     [Parameter(ParameterSetName = "1", Mandatory = $true)]$OPSMAN_SSHKEY,
     $opsManFQDNPrefix = "pcfopsman",
-    $dnsZoneName = "pcfdemo.local.azurestack.external",
+    $PCF_SUBDOMAIN_NAME = "pcfdemo",
     [switch]$RegisterProviders,
     [switch]$OpsmanUpdate,
     [Parameter(ParameterSetName = "1", Mandatory = $false)][ValidateSet('green', 'blue')]$deploymentcolor = "green",
@@ -161,6 +161,7 @@ if (!$location) {
 if (!$dnsdomain) {
     $dnsdomain = Read-Host "Please enter your DNS Domain [azurestack.external for asdk]"
 }
+$dnsZoneName = "$PCF_SUBDOMAIN_NAME.$Location.$dnsdomain"
 $blobbaseuri = (Get-AzureRmContext).Environment.StorageEndpointSuffix
 $BaseNetworkVersion = [version]$subnet.IPAddressToString
 $mask = "$($BaseNetworkVersion.Major).$($BaseNetworkVersion.Minor)"
@@ -368,9 +369,10 @@ if (!$OpsmanUpdate) {
     write host "now we are going to try and configure OpsManager"
 
     # will create director.json for future
-    $JSon = @{  
+    $JSon = [ordered]@{  
         OM_TARGET                = "$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)"
         domain                   = "$($location).$($dnsdomain)"
+        PCF_SUBDOMAIN_NAME       = $PCF_SUBDOMAIN_NAME
         boshstorageaccountname   = $storageaccount 
         RG                       = $resourceGroup
         deploymentstorageaccount = $deployment_storage_account
@@ -382,7 +384,7 @@ if (!$OpsmanUpdate) {
         infrastructure_gateway   = $infrastructure_gateway
         services_cidr            = $services_cidr
         services_gateway         = $services_gateway
-        services_range           = = $services_range
+        services_range           = $services_range
     } | ConvertTo-Json
     $JSon | Set-Content $HOME/director.json
     # this is future
@@ -392,7 +394,7 @@ if (!$OpsmanUpdate) {
     if ($PAS_AUTOPILOT.IsPresent) {
         # will create a json for future release
         # pas.json
-        $JSon = @{  
+        $JSon = [ordered]@{  
             OM_TARGET       = "$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)"
             PCF_PAS_VERSION = $PCF_PAS_VERSION 
             PRODUCT_NAME    = $PRODUCT_NAME 
