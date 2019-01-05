@@ -49,7 +49,7 @@
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.117.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.131.vhd'
     )]
-    $opsmanager_uri = 'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.131.vhd',
+    $opsmanager_uri = 'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.224.vhd',
     # The name of the Ressource Group we want to Deploy to.
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
@@ -76,12 +76,12 @@
     [Parameter(ParameterSetName = "1", Mandatory = $false)][ValidateSet('green', 'blue')]$deploymentcolor = "green",
     [ipaddress]$subnet = "10.0.0.0",
     $downloadpath = "$($HOME)/Downloads",
-    [switch]$useManagedDisks,
+    # [switch]$useManagedDisks, wait´s for new cpi...
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet('AzureCloud', 'AzureStack')]$Environment = "AzureStack",
     # PAS Version
-    [Parameter(Mandatory = $false)][ValidateSet('2.4.0', '2.4.1', '2.3.5')]
+    [Parameter(Mandatory = $false)][ValidateSet('2.4.0', '2.4.1', '2.3.5', '2.3.4', '2.3.3')]
     $PCF_PAS_VERSION = "2.3.5",
     # PAS Type ( srt for small runtime, cf for full pas)
     [Parameter(Mandatory = $false)][ValidateSet('srt', 'cf')]
