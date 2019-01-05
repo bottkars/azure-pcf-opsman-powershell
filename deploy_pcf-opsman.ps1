@@ -58,9 +58,9 @@
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     $location = $GLOBAL:AZS_Location,
-    # [Parameter(ParameterSetName = "1", Mandatory = $false)]
-    # [ValidateNotNullOrEmpty()]
-    # $dnsdomain = $Global:dnsdomain,
+    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    $dnsdomain = $Global:dnsdomain,
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     $storageaccount,
     # The Containername we will host the Images for Opsmanager in
@@ -140,28 +140,38 @@ function get-runningos {
     $Object | Add-Member -MemberType NoteProperty -Name Webrequestor -Value $webrequestor
     Write-Output $Object
 }
-if ($Environment -eq "AzureStack" -and (get-runningos).OSType -ne "win_x86_64")
-{
- Write-Warning "can only deploy to stack from Windows with full AzureRM modules"
- Write-Host "Current Environment: $Environment"
- Write-Host "Current OSType $((get-runningos).OSType)"
- Break
+if ($Environment -eq "AzureStack" -and (get-runningos).OSType -ne "win_x86_64") {
+    Write-Warning "can only deploy to stack from Windows with full AzureRM modules"
+    Write-Host "Current Environment: $Environment"
+    Write-Host "Current OSType $((get-runningos).OSType)"
+    Break
 }
 Push-Location
 Set-Location $PSScriptRoot
 if (!$location) {
     $Location = Read-Host "Please enter your Region Name [local for asdk]"
 }
-#if (!$dnsdomain) {
-#    $dnsdomain = Read-Host "Please enter your DNS Domain [azurestack.external for asdk]"
-#}
+if (!$dnsdomain) {
+    $dnsdomain = Read-Host "Please enter your DNS Domain [azurestack.external for asdk]"
+}
 $blobbaseuri = (Get-AzureRmContext).Environment.StorageEndpointSuffix
 $BaseNetworkVersion = [version]$subnet.IPAddressToString
 $mask = "$($BaseNetworkVersion.Major).$($BaseNetworkVersion.Minor)"
+
+$infratructure_cidr = "$mask.8.0/26"
+$infrastructure_range = "$mask.8.1-$mask.8.10"
+$infrastructure_gateway ="$mask.8.1"
+$pas_cidr = "$Mask.0.0/22"
+$pas_range = "$mask.0.1-$mask.0.10"
+$pas_gateway = "$mask.0.1"
+$services_cidr = "$Mask.4.0/22"
+$services_range = "$mask.4.1-$mask.4.10"
+$services_gateway = "$mask.4.1"
+
 Write-Host "Using the following Network Assignments:" -ForegroundColor Magenta
-Write-Host "PCF/infrastructure: $Mask.8.0/26"
-Write-Host "PCF/services: $Mask.4.0/22"
-Write-Host "PCF/pas: $Mask.0.0/22"
+Write-Host "PCF/infrastructure  : cidr $infratructure_cidr,range $infrastructure_range,gateway$infrastructure_gateway"
+Write-Host "PCF/services        : cidr $services_cidr,range $services_range,gateway $services_gateway"
+Write-Host "PCF/pas             : cidr $pas_cidr,range $pas_range,gateway $pas_gateway"
 Write-Host "$($opsManFQDNPrefix)green $Mask.8.4/32"
 Write-Host "$($opsManFQDNPrefix)blue $Mask.8.5/32"
 Write-Host
@@ -336,6 +346,7 @@ if (!$OpsmanUpdate) {
     $Table = New-AzureStorageTable -Name stemcells
     if (!$useManagedDisks.IsPresent) {
         $Storageaccounts = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup | Where-Object StorageAccountName -match Xtra
+        
         foreach ($Mystorageaccount in $Storageaccounts) {
             $MyStorageaccount | Set-AzureRmCurrentStorageAccount
             Write-Host "Creating Container Stemcell in $($MyStorageaccount.StorageAccountName)"
@@ -343,7 +354,30 @@ if (!$OpsmanUpdate) {
             Write-Host "Creating Container bosh in $($MyStorageaccount.StorageAccountName)"
             $Container = New-AzureStorageContainer -Name bosh
         }
+    $deployment_storage_account = $MyStorageaccount.StorageAccountName
+    $deployment_storage_account = $deployment_storage_account -replace ".$"
+    $deployment_storage_account = "*$($deployment_storage_account)*"    
     }
+    write host "now we are going to try and configure OpsManager"
+
+
+    $Command = "$PSScriptRoot/init_om.ps1 `
+    -OM_Target '$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)'`
+    -domain '$($location).$($dnsdomain)' `
+    -boshstorageaccountname $storageAccountName `
+    -RG $resourceGroup`
+    -deploymentstorageaccount $deployment_storage_account`
+    -pas_cidr $pas_cidr`
+    -pas_range $pas_range`
+    -pas_gateway $pas_gateway`
+    -infrastructure_range $infrastructure_range`
+    -infrastructure_cidr $infrastructure_cidr`
+    -infrastructure_gateway $infrastructure_gateway`
+    -services_cidr $services_cidr`
+    -services_gateway $services_gateway`
+    -services_range $services_range"
+    Write-Host "Calling $command" 
+    Invoke-Expression -Command $Command
 }
 else {
     New-AzureRmResourceGroupDeployment -Name OpsManager `

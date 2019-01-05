@@ -19,6 +19,7 @@ $env:OM_Username = $OM_Username
 $env:OM_Target = $OM_Target
 
 $env:Path = "$($env:Path);$HOME/OM"
+
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $slug_id = "elastic_runtime"
