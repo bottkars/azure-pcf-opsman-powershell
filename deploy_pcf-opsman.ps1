@@ -67,8 +67,6 @@
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     $image_containername = 'opsman-image',
-    # The SSH Key for OpsManager
-    [Parameter(ParameterSetName = "1", Mandatory = $true)]$OPSMAN_SSHKEY,
     $opsManFQDNPrefix = "pcfopsman",
     $PCF_SUBDOMAIN_NAME = "pcfdemo",
     [switch]$RegisterProviders,
@@ -161,6 +159,9 @@ if (!$location) {
 if (!$dnsdomain) {
     $dnsdomain = Read-Host "Please enter your DNS Domain [azurestack.external for asdk]"
 }
+    # The SSH Key for OpsManager
+$OPSMAN_SSHKEY = Get-Content "$HOME/opsman.pub"
+
 $dnsZoneName = "$PCF_SUBDOMAIN_NAME.$Location.$dnsdomain"
 $blobbaseuri = (Get-AzureRmContext).Environment.StorageEndpointSuffix
 $BaseNetworkVersion = [version]$subnet.IPAddressToString
