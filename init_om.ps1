@@ -1,21 +1,22 @@
 # about
-param(
-$OM_Target = "pcfopsmangreen.local.cloudapp.azurestack.external",
-# set to true if downloading 
-$domain = "local.azurestack.external",
-$boshstorageaccountname ="pcfrgopsmanstorage",
-$RG = "PCF_RG",
-$deploymentstorageaccount = "*xtrastrgl5mtmcwe4ongg*",
-$pas_cidr,
-$pas_range,
-$pas_gateway,
-$infrastructure_range,
-$infrastructure_cidr,
-$infrastructure_gateway,
-$services_cidr,
-$services_gateway,
-$services_range
-)
+# we no use params :-)
+$director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
+
+$OM_Target = $director_conf.OM_TARGET
+$domain = $director_conf.domain  
+$boshstorageaccountname = $director_conf.boshstorageaccountname
+$RG = $director_conf.RG
+$deploymentstorageaccount = $director_conf.deploymentstorageaccount
+$pas_cidr = $director_conf.pas_cidr
+$pas_range = $director_conf.pas_range
+$pas_gateway = $director_conf.pas_gateway
+$infrastructure_range = $director_conf.infrastructure_range
+$infrastructure_cidr = $director_conf.infrastructure_cidr
+$infrastructure_gateway = $director_conf.infrastructure_gateway
+$services_cidr = $director_conf.services_cidr
+$services_gateway = $director_conf.services_gateway
+$services_range = $director_conf.services_range
+#some env´s
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $env:OM_Password = $env_vars.OM_Password
 $env:OM_Username = $env_vars.OM_Username
