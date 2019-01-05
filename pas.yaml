@@ -68,3 +68,5 @@ resource-config:
   router:
     elb_names:
     - ((pcf_web_lb))
+  ha_proxy:
+    instances: 0
