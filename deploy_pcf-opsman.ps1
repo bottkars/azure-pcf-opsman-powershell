@@ -158,7 +158,7 @@ $blobbaseuri = (Get-AzureRmContext).Environment.StorageEndpointSuffix
 $BaseNetworkVersion = [version]$subnet.IPAddressToString
 $mask = "$($BaseNetworkVersion.Major).$($BaseNetworkVersion.Minor)"
 
-$infratructure_cidr = "$mask.8.0/26"
+$infrastructure_cidr = "$mask.8.0/26"
 $infrastructure_range = "$mask.8.1-$mask.8.10"
 $infrastructure_gateway ="$mask.8.1"
 $pas_cidr = "$Mask.0.0/22"
@@ -169,7 +169,7 @@ $services_range = "$mask.4.1-$mask.4.10"
 $services_gateway = "$mask.4.1"
 
 Write-Host "Using the following Network Assignments:" -ForegroundColor Magenta
-Write-Host "PCF/infrastructure  : cidr $infratructure_cidr,range $infrastructure_range,gateway$infrastructure_gateway"
+Write-Host "PCF/infrastructure  : cidr $infrastructure_cidr,range $infrastructure_range,gateway$infrastructure_gateway"
 Write-Host "PCF/services        : cidr $services_cidr,range $services_range,gateway $services_gateway"
 Write-Host "PCF/pas             : cidr $pas_cidr,range $pas_range,gateway $pas_gateway"
 Write-Host "$($opsManFQDNPrefix)green $Mask.8.4/32"
@@ -361,21 +361,7 @@ if (!$OpsmanUpdate) {
     write host "now we are going to try and configure OpsManager"
 
 
-    $Command = "$PSScriptRoot/init_om.ps1 `
-    -OM_Target '$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)'`
-    -domain '$($location).$($dnsdomain)' `
-    -boshstorageaccountname $storageAccountName `
-    -RG $resourceGroup`
-    -deploymentstorageaccount $deployment_storage_account`
-    -pas_cidr $pas_cidr`
-    -pas_range $pas_range`
-    -pas_gateway $pas_gateway`
-    -infrastructure_range $infrastructure_range`
-    -infrastructure_cidr $infrastructure_cidr`
-    -infrastructure_gateway $infrastructure_gateway`
-    -services_cidr $services_cidr`
-    -services_gateway $services_gateway`
-    -services_range $services_range"
+    $command = "$PSScriptRoot/init_om.ps1 -OM_Target '$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)' -domain '$($location).$($dnsdomain)' -boshstorageaccountname $storageaccount -RG $resourceGroup -deploymentstorageaccount $deployment_storage_account -pas_cidr $pas_cidr -pas_range $pas_range -pas_gateway $pas_gateway -infrastructure_range $infrastructure_range -infrastructure_cidr $infrastructure_cidr -infrastructure_gateway $infrastructure_gateway -services_cidr $services_cidr -services_gateway $services_gateway -services_range $services_range"
     Write-Host "Calling $command" 
     Invoke-Expression -Command $Command
 }

@@ -41,7 +41,7 @@ $content += "tenant_id: $((Get-AzureRmSubscription).TenantId)"
 $content += "client_id: $($env_vars.client_id)"
 $content += "client_secret: $($env_vars.client_secret)"
 $content += "domain: $domain"
-$content += "deployments_storage_account_name: $deploymentstorageaccount"
+$content += "deployments_storage_account_name: `"$deploymentstorageaccount`""
 $content += "ressource_group: $RG"
 $content += "bosh_storage_account_name: $boshstorageaccountname"
 $content += "ntp_servers_string: $ntp_servers_string"
@@ -58,7 +58,6 @@ $content += "infrastructure_gateway: $infrastructure_gateway"
 $content += "services_cidr: $services_cidr"
 $content += "services_range: $services_range"
 $content += "services_gateway: $services_gateway"
-
 $content | Set-Content $HOME/director_vars.yaml
 
 
