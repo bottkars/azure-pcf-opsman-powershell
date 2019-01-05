@@ -1,5 +1,5 @@
 param(
-  $PCF_SUBDOMAIN_NAME="pcfdemo"
+  $PCF_SUBDOMAIN_NAME="pcfdemo",
   $PCF_DOMAIN_NAME="local.azurestack.external"
 )
 "
