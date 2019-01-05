@@ -81,10 +81,10 @@
     [ValidateNotNullOrEmpty()]
     [ValidateSet('AzureCloud', 'AzureStack')]$Environment = "AzureStack",
     # PAS Version
-    [Parameter(Mandatory=$false)][ValidateSet('2.4.0','2.4.1','2.3.5')]
+    [Parameter(Mandatory = $false)][ValidateSet('2.4.0', '2.4.1', '2.3.5')]
     $PCF_PAS_VERSION = "2.3.5",
     # PAS Type ( srt for small runtime, cf for full pas)
-    [Parameter(Mandatory=$false)][ValidateSet('srt','cf')]
+    [Parameter(Mandatory = $false)][ValidateSet('srt', 'cf')]
     $PRODUCT_NAME = "cf",
     [switch]$PAS_AUOPILOT,
     [switch]$no_product_download
@@ -167,7 +167,7 @@ $mask = "$($BaseNetworkVersion.Major).$($BaseNetworkVersion.Minor)"
 
 $infrastructure_cidr = "$mask.8.0/26"
 $infrastructure_range = "$mask.8.1-$mask.8.10"
-$infrastructure_gateway ="$mask.8.1"
+$infrastructure_gateway = "$mask.8.1"
 $pas_cidr = "$Mask.0.0/22"
 $pas_range = "$mask.0.1-$mask.0.10"
 $pas_gateway = "$mask.0.1"
@@ -361,9 +361,9 @@ if (!$OpsmanUpdate) {
             Write-Host "Creating Container bosh in $($MyStorageaccount.StorageAccountName)"
             $Container = New-AzureStorageContainer -Name bosh
         }
-    $deployment_storage_account = $MyStorageaccount.StorageAccountName
-    $deployment_storage_account = $deployment_storage_account -replace ".$"
-    $deployment_storage_account = "*$($deployment_storage_account)*"    
+        $deployment_storage_account = $MyStorageaccount.StorageAccountName
+        $deployment_storage_account = $deployment_storage_account -replace ".$"
+        $deployment_storage_account = "*$($deployment_storage_account)*"    
     }
     write host "now we are going to try and configure OpsManager"
 
@@ -371,13 +371,13 @@ if (!$OpsmanUpdate) {
     $command = "$PSScriptRoot/init_om.ps1 -OM_Target '$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)' -domain '$($location).$($dnsdomain)' -boshstorageaccountname $storageaccount -RG $resourceGroup -deploymentstorageaccount $deployment_storage_account -pas_cidr $pas_cidr -pas_range $pas_range -pas_gateway $pas_gateway -infrastructure_range $infrastructure_range -infrastructure_cidr $infrastructure_cidr -infrastructure_gateway $infrastructure_gateway -services_cidr $services_cidr -services_gateway $services_gateway -services_range $services_range"
     Write-Host "Calling $command" 
     Invoke-Expression -Command $Command
-    if ($PAS_AUOPILOT.IsPresent)
-    {
+    if ($PAS_AUOPILOT.IsPresent) {
         $command = "$PSScriptRoot/deploy_pas.ps1 -OM_Target '$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)' -PCF_PAS_VERSION $PCF_PAS_VERSION -PRODUCT_NAME $PRODUCT_NAME -downloaddir $downloadpath"
-        if ($no_product_download.IsPresent)
-        {
+        if ($no_product_download.IsPresent) {
             $command = "$command -no_product_download"
         }
+        Write-Host "Calling $command" 
+        Invoke-Expression -Command $Command
     }
 }
 else {
