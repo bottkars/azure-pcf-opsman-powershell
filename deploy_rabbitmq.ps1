@@ -1,16 +1,16 @@
 #requires -module pivposh
 
-$mysql_conf = Get-Content "$($HOME)/mysql.json" | ConvertFrom-Json
+$rabbitmq_conf = Get-Content "$($HOME)/rabbitmq.json" | ConvertFrom-Json
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
-$PCF_MYSQL_VERSION = $mysql_conf.PCF_MYSQL_VERSION
-$PRODUCT_NAME = $mysql_conf.PRODUCT_NAME
-$MYSQL_STORAGE_KEY = $director_conf.mysql_storage_key
-$MYSQL_STORAGEACCOUNTNAME = $director_conf.mysqlstorageaccountname
+$PCF_RABBITMQ_VERSION = $rabbitmq_conf.PCF_RABBITMQ_VERSION
+$PRODUCT_NAME = $rabbitmq_conf.PRODUCT_NAME
+#$RABBITMQ_STORAGE_KEY = $director_conf.rabbitmq_storage_key
+#$RABBITMQ_STORAGEACCOUNTNAME = $director_conf.rabbitmqstorageaccountname
 
-$OM_Target = $mysql_conf.OM_TARGET
+$OM_Target = $rabbitmq_conf.OM_TARGET
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
 $downloaddir = $director_conf.downloaddir
-$PCF_SUBDOMAIN_NAME = $mysql_conf.PCF_SUBDOMAIN_NAME
+$PCF_SUBDOMAIN_NAME = $rabbitmq_conf.PCF_SUBDOMAIN_NAME
 $domain = $director_conf.domain
 # getting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
@@ -21,19 +21,19 @@ $env:Path = "$($env:Path);$HOME/OM"
 $GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
-$slug_id = "pivotal-mysql"
+$slug_id = "pivotal-rabbitmq"
 
 
 
 
-Write-Host "Getting Release for $slug_id $PCF_MYSQL_VERSION"
-$piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_MYSQL_VERSION | Select-Object -First 1
+Write-Host "Getting Release for $slug_id $PCF_RABBITMQ_VERSION"
+$piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_RABBITMQ_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
-Write-Host "Accepting EULA for $slug_id $PCF_MYSQL_VERSION"
+Write-Host "Accepting EULA for $slug_id $PCF_RABBITMQ_VERSION"
 $eula = $piv_release | Confirm-PIVEula -access_token $access_token
 $piv_object = $piv_release_id | Where-Object aws_object_key -Like *$slug_id*.pivotal*
-$output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_MYSQL_VERSION)" -Force
+$output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_RABBITMQ_VERSION)" -Force
 
 if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
@@ -44,7 +44,7 @@ if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.Fu
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
         --pivnet-file-glob $(Split-Path -Leaf $piv_object.aws_object_key) `
         --pivnet-product-slug $slug_id `
-        --product-version $PCF_MYSQL_VERSION `
+        --product-version $PCF_RABBITMQ_VERSION `
         --stemcell-iaas azure `
         --download-stemcell `
         --output-directory  "$($output_directory.FullName)"
@@ -89,15 +89,17 @@ om --skip-ssl-validation `
 product_name: $PRODUCT_NAME
 pcf_pas_network: pcf-pas-subnet `
 pcf_service_network: pcf-services-subnet `
-azure_storage_access_key: $MYSQL_STORAGE_KEY `
-azure_account: $MYSQL_STORAGEACCOUNTNAME `
+azure_storage_access_key: $RABBITMQ_STORAGE_KEY `
+azure_account: $RABBITMQ_STORAGEACCOUNTNAME `
+pcf_system_domain: system.pcfdemo.local.azurestack.external `
+pcf_apps_domain: system.pcfdemo.local.azurestack.external `
 global_recipient_email: $GLOBAL_RECIPIENT_EMAIL `
 blob_store_base_url: $domain
-" | Set-Content $HOME/mysql_vars.yaml
+" | Set-Content $HOME/rabbitmq_vars.yaml
 
 om --skip-ssl-validation `
   configure-product `
-  -c $PSScriptRoot/templates/mysql.yaml -l "$HOME/mysql_vars.yaml"
+  -c $PSScriptRoot/templates/rabbitmq.yaml -l "$HOME/rabbitmq_vars.yaml"
 
 om --skip-ssl-validation `
   apply-changes

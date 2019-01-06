@@ -1,5 +1,3 @@
 {
-    "PCF_MYSQL_VERSION":  "2.5.2",
-    "downloaddir":  "C:\\Users\\AzurestackGuy/Downloads",
-    "no_product_download":  "True"
+    "PCF_MYSQL_VERSION":  "2.5.2"
 }

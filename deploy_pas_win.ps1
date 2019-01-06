@@ -30,11 +30,23 @@ $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 Write-Host "Accepting EULA for $slug_id $PCF_PASW_VERSION"
 $eula = $piv_release | Confirm-PIVEula -access_token $access_token
 $piv_object = $piv_release_id | Where-Object aws_object_key -Like *$slug_id*.pivotal*
+$piv_winfs_object = $piv_release_id | Where-Object aws_object_key -Like *winfs*.zip*
+
 $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_PASW_VERSION)" -Force
+$injector_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_PASW_VERSION)_injector" -Force
+
+om --skip-ssl-validation `
+    --request-timeout 7200 `
+    download-product `
+    --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
+    --pivnet-file-glob $(Split-Path -Leaf $piv_winfs_object.aws_object_key) `
+    --pivnet-product-slug $slug_id `
+    --product-version $PCF_PASW_VERSION `
+    --output-directory  "$($injector_directory.FullName)"
+
 
 if (!($no_product_download.ispresent)) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
-
     om --skip-ssl-validation `
         --request-timeout 7200 `
         download-product `
@@ -51,7 +63,14 @@ if (!($no_product_download.ispresent)) {
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME=$download_file.product_path
 $STEMCELL_FILENAME=$download_file.stemcell_path
+$env:Path= "$($env:path);$($output_directory.FullName)"
+Expand-Archive "$($injector_directory.FullName)/*.zip" -DestinationPath $injector_directory.FullName -Force
+$winfs_injector = (Get-ChildItem $injector_directory.FullName -Filter "winfs*.exe").FullName
 
+$output_tile = $TARGET_FILENAME -replace ".pivotal"
+$output_tile = "$($output_tile)-injected.pivotal"
+
+Start-Process $winfs_injector -Wait -ArgumentList "--input-tile $TARGET_FILENAME --output-tile $output_tile"
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
