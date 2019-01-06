@@ -1,7 +1,7 @@
 #requires -module pivposh
 
 $mysql_conf = Get-Content "$($HOME)/pivotal-mysql.json" | ConvertFrom-Json
-$PCF_MYSQL_VERSION = $mysql_conf.PCF_PAS_VERSION
+$PCF_MYSQL_VERSION = $mysql_conf.PCF_MYQL_VERSION
 $PRODUCT_NAME = $mysql_conf.PRODUCT_NAME
 $OM_Target = $mysql_conf.OM_TARGET
 [switch]$no_product_download = [System.Convert]::ToBoolean($mysql_conf.no_product_download)
