@@ -19,10 +19,7 @@ $env:Path = "$($env:Path);$HOME/OM"
 $GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
-$slug_id = "pivotal-rabbitmq"
-
-
-
+$slug_id = "p-rabbitmq"
 
 Write-Host "Getting Release for $slug_id $PCF_RABBITMQ_VERSION"
 $piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_RABBITMQ_VERSION | Select-Object -First 1
