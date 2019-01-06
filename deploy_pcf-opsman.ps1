@@ -402,12 +402,13 @@ if (!$OpsmanUpdate) {
         $command = "$PSScriptRoot/deploy_pas.ps1"
         Write-Host "Calling $command" 
         Invoke-Expression -Command $Command
+        if ($MYSQL_AUTOPILOT.IsPresent) {
+            $command = "$PSScriptRoot/deploy_mysql.ps1"
+            Write-Host "Calling $command" 
+            Invoke-Expression -Command $Command
+        }
     }
-    if ($MYSQL_AUTOPILOT.IsPresent) {
-        $command = "$PSScriptRoot/deploy_mysql.ps1"
-        Write-Host "Calling $command" 
-        Invoke-Expression -Command $Command
-    }
+
 }
 else {
     New-AzureRmResourceGroupDeployment -Name OpsManager `
