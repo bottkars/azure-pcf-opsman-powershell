@@ -11,7 +11,7 @@ $OM_Target = $mysql_conf.OM_TARGET
 [switch]$no_product_download = [System.Convert]::ToBoolean($mysql_conf.no_product_download)
 $downloaddir = $mysql_conf.downloaddir
 $PCF_SUBDOMAIN_NAME = $mysql_conf.PCF_SUBDOMAIN_NAME
-$domain = $mysql_conf.domain
+$domain = $director_conf.domain
 # getting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $env:OM_Password = $env_vars.OM_Password
@@ -87,11 +87,12 @@ $VERSION=$PRODUCT.version
 product_name: $PRODUCT_NAME
 pcf_pas_network: pcf-pas-subnet `
 pcf_service_network: pcf-services-subnet `
-azure.storage_access_key: $MYSQL_STORAGE_KEY
-azure.account: $MYSQL_STORAGEACCOUNTNAME
+azure_storage_access_key: $MYSQL_STORAGE_KEY `
+azure_account: $MYSQL_STORAGEACCOUNTNAME `
 pcf_system_domain: system.pcfdemo.local.azurestack.external `
 pcf_apps_domain: system.pcfdemo.local.azurestack.external `
 global_recipient_email: $GLOBAL_RECIPIENT_EMAIL `
+blob_store_base_url: $domain
 " | Set-Content $HOME/mysql_vars.yaml
 
 om --skip-ssl-validation `

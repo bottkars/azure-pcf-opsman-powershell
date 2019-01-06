@@ -26,11 +26,11 @@ product-properties:
   .properties.global_recipient_email:
     value: ((global_recipient_email))
   .properties.backups_selector.azure.account:
-    value: ((azure.account))
+    value: ((azure_account))
   .properties.backups_selector.azure.storage_access_key:
     credential: true
     value:
-      secret: ((azure.storage_access_key))
+      secret: ((azure_storage_access_key))
   .properties.backups_selector.azure.path:
     value: dump
   .properties.backups_selector.azure.cron_schedule:
