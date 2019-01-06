@@ -4,6 +4,5 @@
     "PCF_SUBDOMAIN_NAME":  "pcfdemo",
     "PCF_PAS_VERSION":  "2.5.2",
     "downloaddir":  "C:\\Users\\AzurestackGuy/Downloads",
-    "no_product_download":  "True",
-    "global_recipient_email": "email@example.com"
+    "no_product_download":  "True"
 }

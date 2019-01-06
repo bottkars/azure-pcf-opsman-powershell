@@ -159,7 +159,7 @@ if (!$location) {
 if (!$dnsdomain) {
     $dnsdomain = Read-Host "Please enter your DNS Domain [azurestack.external for asdk]"
 }
-    # The SSH Key for OpsManager
+# The SSH Key for OpsManager
 $OPSMAN_SSHKEY = Get-Content "$HOME/opsman.pub"
 
 $dnsZoneName = "$PCF_SUBDOMAIN_NAME.$Location.$dnsdomain"
@@ -367,15 +367,26 @@ if (!$OpsmanUpdate) {
         $deployment_storage_account = $deployment_storage_account -replace ".$"
         $deployment_storage_account = "*$($deployment_storage_account)*"    
     }
+    $MYSQLStorageaccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup | Where-Object StorageAccountName -match mysqlstrg
+    $MYSQLStorageaccount | Set-AzureRmCurrentStorageAccount
+    Write-Host "Creating Container backups in $($MYSQLStorageaccount.StorageAccountName)"
+    $Container = New-AzureStorageContainer -Name backups -Permission Blob
+    $MYSQL_KEY= $MYSQLStorageaccount | Get-AzureRmStorageAccountKey
+    $mysql_storage_account = $MYSQLStorageaccount.StorageAccountName
+    $mysql_storage_key = $MYSQL_KEY[0].Value
+
     write host "now we are going to try and configure OpsManager"
 
     # will create director.json for future
-    $JSon = [ordered]@{  
+    $JSon = [ordered]@{
+
         OM_TARGET                = "$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)"
         domain                   = "$($location).$($dnsdomain)"
         PCF_SUBDOMAIN_NAME       = $PCF_SUBDOMAIN_NAME
         boshstorageaccountname   = $storageaccount 
         RG                       = $resourceGroup
+        mysqlstorageaccountname  = $mysql_storage_account
+        mysql_storage_key        = $mysql_storage_key
         deploymentstorageaccount = $deployment_storage_account
         pas_cidr                 = $pas_cidr
         pas_range                = $pas_range
@@ -397,12 +408,12 @@ if (!$OpsmanUpdate) {
         # will create a json for future release
         # pas.json
         $JSon = [ordered]@{  
-            OM_TARGET       = "$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)"
-            domain                   = "$($location).$($dnsdomain)"
-            PCF_SUBDOMAIN_NAME       = $PCF_SUBDOMAIN_NAME
-            PCF_PAS_VERSION = $PCF_PAS_VERSION 
-            PRODUCT_NAME    = $PRODUCT_NAME 
-            downloaddir     = $downloadpath
+            OM_TARGET           = "$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)"
+            domain              = "$($location).$($dnsdomain)"
+            PCF_SUBDOMAIN_NAME  = $PCF_SUBDOMAIN_NAME
+            PCF_PAS_VERSION     = $PCF_PAS_VERSION 
+            PRODUCT_NAME        = $PRODUCT_NAME 
+            downloaddir         = $downloadpath
             no_product_download = $no_product_download.IsPresent.ToString()
         } | ConvertTo-Json
         $JSon | Set-Content $HOME/pas.json

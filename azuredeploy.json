@@ -109,6 +109,7 @@
 
   },
   "variables": {
+    "mysqlStorageAccountName": "[concat('mysqlstrg',uniquestring(resourceGroup().id, deployment().name))]",
     "boshExtraStorageAccountName": "[concat('xtrastrg',uniquestring(resourceGroup().id, deployment().name))]",
     "opsManVMName": "[parameters('opsManFQDNPrefix')]",
     "location": "[parameters('location')]",
@@ -171,6 +172,18 @@
           }
         }
       }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('mysqlStorageAccountName')]",
+      "apiVersion": "2017-10-01",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+        },
+        "kind": "Storage",
+        "properties": {
+        }
     },
     {
       "type": "Microsoft.Storage/storageAccounts",

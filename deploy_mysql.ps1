@@ -1,9 +1,12 @@
 #requires -module pivposh
 
 $mysql_conf = Get-Content "$($HOME)/mysql.json" | ConvertFrom-Json
+$director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
 $PCF_MYSQL_VERSION = $mysql_conf.PCF_MYQL_VERSION
 $PRODUCT_NAME = $mysql_conf.PRODUCT_NAME
-$GLOBAL_RECIPIENT_EMAIL = $mysql_conf.global_recipient_email
+$MYSQL_STORAGE_KEY = $director_conf.mysql_storage_key
+$MYSQL_STORAGEACCOUNTNAME = $director_conf.mysqlstorageaccountname
+
 $OM_Target = $mysql_conf.OM_TARGET
 [switch]$no_product_download = [System.Convert]::ToBoolean($mysql_conf.no_product_download)
 $downloaddir = $mysql_conf.downloaddir
@@ -15,6 +18,7 @@ $env:OM_Password = $env_vars.OM_Password
 $env:OM_Username = $env_vars.OM_Username
 $env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
+$GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $slug_id = "pivotal-mysql"
@@ -88,16 +92,11 @@ $PCF_CERT_PEM=$PCF_CERT_PEM  -join "\r\n"
 product_name: $PRODUCT_NAME
 pcf_pas_network: pcf-pas-subnet `
 pcf_service_network: pcf-services-subnet `
-
+azure.storage_access_key: $MYSQL_STORAGE_KEY
+azure.account: $MYSQL_STORAGEACCOUNTNAME
 pcf_system_domain: system.pcfdemo.local.azurestack.external `
 pcf_apps_domain: system.pcfdemo.local.azurestack.external `
-global_recipient_email:  `
-pcf_cert_pem: `"$PCF_CERT_PEM`"
-pcf_key_pem: `"$PCF_KEY_PEM`"
-pcf_credhub_key: `"012345678901234567890`"
-pcf_diego_ssh_lb: diegossh-lb
-pcf_mysql_lb: mysql-lb
-pcf_web_lb: pcf-lb
+global_recipient_email: $GLOBAL_RECIPIENT_EMAIL `
 " | Set-Content $HOME/mysql_vars.yaml
 
 om --skip-ssl-validation `
