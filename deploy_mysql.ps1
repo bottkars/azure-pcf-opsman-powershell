@@ -96,7 +96,7 @@ global_recipient_email: $GLOBAL_RECIPIENT_EMAIL `
 
 om --skip-ssl-validation `
   configure-product `
-  -c ./templates/mysql.yaml -l "$HOME/mysql_vars.yaml"
+  -c $PSScriptRoot/templates/mysql.yaml -l "$HOME/mysql_vars.yaml"
 
 om --skip-ssl-validation `
   apply-changes
