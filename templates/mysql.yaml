@@ -20,7 +20,7 @@ product-properties:
   .properties.plan2_selector:
     value: Inactive
     selected_option: inactive
-  .properties.plan2_selector:
+  .properties.plan3_selector:
     value: Inactive
     selected_option: inactive
   
