@@ -392,7 +392,7 @@ if (!$OpsmanUpdate) {
         services_gateway         = $services_gateway
         services_range           = $services_range
         downloaddir              = $downloadpath
-        force_product_download   = $no_product_download.IsPresent.ToString()
+        force_product_download   = $force_product_download.IsPresent.ToString()
     } | ConvertTo-Json
     $JSon | Set-Content $HOME/director.json
     $command = "$PSScriptRoot/init_om.ps1"

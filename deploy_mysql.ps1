@@ -35,7 +35,7 @@ $eula = $piv_release | Confirm-PIVEula -access_token $access_token
 $piv_object = $piv_release_id | Where-Object aws_object_key -Like *$slug_id*.pivotal*
 $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_MYSQL_VERSION)" -Force
 
-if (($force_product_download.ispresent)-or (!(test-path "$($output_directory.FullName)/download-file.json"))) {
+if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
 
     om --skip-ssl-validation `
