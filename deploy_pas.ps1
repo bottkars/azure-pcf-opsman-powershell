@@ -5,7 +5,7 @@ $PCF_PAS_VERSION = $pas_conf.PCF_PAS_VERSION
 $PRODUCT_NAME = $pas_conf.PRODUCT_NAME
 $OM_Target = $director_conf.OM_TARGET
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
-$downloaddir = $pas_conf.downloaddir
+$downloaddir = $director_conf.downloaddir
 $PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME
 $domain = $director_conf.domain
 # getting the env
