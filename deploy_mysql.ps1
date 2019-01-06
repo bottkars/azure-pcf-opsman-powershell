@@ -61,13 +61,14 @@ Write-Host "importing $STEMCELL_FILENAME into OpsManager"
 om --skip-ssl-validation `
   upload-stemcell `
   --stemcell $STEMCELL_FILENAME
-<#
+
 $PRODUCTS=$(om --skip-ssl-validation `
   available-products `
     --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
-$VERSION= $PRODUCTS.version
-$PRODUCT_NAME=$PRODUCTS.name
+$PRODUCT=$PRODUCTS| where name -Match $slug_id
+$PRODUCT_NAME=$PRODUCT.name
+$VERSION=$PRODUCT.version
   # 2.  Stage using om cli
 
   om --skip-ssl-validation `
@@ -85,6 +86,8 @@ $PCF_CERT_PEM=$PCF_CERT_PEM  -join "\r\n"
 "
 product_name: $PRODUCT_NAME
 pcf_pas_network: pcf-pas-subnet `
+pcf_service_network: pcf-services-subnet `
+
 pcf_system_domain: system.pcfdemo.local.azurestack.external `
 pcf_apps_domain: system.pcfdemo.local.azurestack.external `
 pcf_notifications_email: email@examle.com `
@@ -98,7 +101,7 @@ pcf_web_lb: pcf-lb
 
 om --skip-ssl-validation `
   configure-product `
-  -c ./pas.yaml -l $HOME/vars.yaml
+  -c ./templates/mysql.yaml -l $HOME/vars.yaml
 
 om --skip-ssl-validation `
   apply-changes
