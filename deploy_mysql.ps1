@@ -99,7 +99,8 @@ om --skip-ssl-validation `
   -c $PSScriptRoot/templates/mysql.yaml -l "$HOME/mysql_vars.yaml"
 
 om --skip-ssl-validation `
-  apply-changes
+  apply-changes `
+  --product-name $PRODUCT_NAME
 
 om --skip-ssl-validation `
   deployed-products  
