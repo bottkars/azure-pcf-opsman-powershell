@@ -1,20 +1,6 @@
 #requires -module pivposh
-param(
-# PAS Version
-[Parameter(Mandatory=$false)][ValidateSet('2.4.0','2.4.1','2.3.5')]
-$PCF_PAS_VERSION = "2.3.5",
-# PAS Type ( srt for small runtime, cf for full pas)
-[Parameter(Mandatory=$false)][ValidateSet('srt','cf')]
-$PRODUCT_NAME = "cf",
-$OM_Target = "pcfopsmangreen.local.cloudapp.azurestack.external",
-# set to true if downloading 
-[Parameter(Mandatory=$false)]
-[switch]$no_product_download,
-$downloaddir = "$HOME/downloads"
-)
 
 $pas_conf = Get-Content "$($HOME)/pas.json" | ConvertFrom-Json
-
 $PCF_PAS_VERSION = $pas_conf.PCF_PAS_VERSION
 $PRODUCT_NAME = $pas_conf.PRODUCT_NAME
 $OM_Target = $pas_conf.OM_TARGET

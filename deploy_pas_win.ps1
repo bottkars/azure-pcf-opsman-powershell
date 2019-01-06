@@ -1,19 +1,23 @@
 #requires -module pivposh
-param(
-# PAS Version
-[Parameter(Mandatory=$false)][ValidateSet('2.4.0','2.4.1','2.3.5')]
-$PCF_PAS_VERSION = "2.3.5",
-# PAS Type ( srt for small runtime, cf for full pas)
-[Parameter(Mandatory=$false)][ValidateSet('srt','cf')]
-$PRODUCT_NAME = "cf",
-$OM_Pass = "Password123!",
-$OM_Username = "opsman",
-$OM_Target = "pcfopsmangreen.local.cloudapp.azurestack.external",
-# set to true if downloading 
-[Parameter(Mandatory=$false)]
-[switch]$no_product_download,
-$downloaddir = "$HOME/downloads"
-)
+
+$pasw_conf = Get-Content "$($HOME)/pasw.json" | ConvertFrom-Json
+$PCF_PASW_VERSION = $pasw_conf.PCF_PAS_VERSION
+$PRODUCT_NAME = $pasw_conf.PRODUCT_NAME
+$OM_Target = $pasw_conf.OM_TARGET
+[switch]$no_product_download = [System.Convert]::ToBoolean($pasw_conf.no_product_download)
+$downloaddir = $pasw_conf.downloaddir
+$PCF_SUBDOMAIN_NAME = $pasw_conf.PCF_SUBDOMAIN_NAME
+$domain = $pasw_conf.domain
+# getting the env
+$env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
+$env:OM_Password = $env_vars.OM_Password
+$env:OM_Username = $env_vars.OM_Username
+$env:OM_Target = $OM_Target
+$env:Path = "$($env:Path);$HOME/OM"
+
+
+
+
 $env:OM_Password = $OM_Pass
 $env:OM_Username = $OM_Username
 $env:OM_Target = $OM_Target
@@ -26,14 +30,14 @@ $slug_id = "pas-windows"
 
 
 
-Write-Host "Getting Release for $PRODUCT_NAME $PCF_PAS_VERSION"
-$piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_PAS_VERSION | Select-Object -First 1
+Write-Host "Getting Release for $PRODUCT_NAME $PCF_PASW_VERSION"
+$piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_PASW_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
-Write-Host "Accepting EULA for $slug_id $PCF_PAS_VERSION"
+Write-Host "Accepting EULA for $slug_id $PCF_PASW_VERSION"
 $eula = $piv_release | Confirm-PIVEula -access_token $access_token
 $piv_object = $piv_release_id | Where-Object aws_object_key -Like *$slug_id*.pivotal*
-$output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_PAS_VERSION)" -Force
+$output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_PASW_VERSION)" -Force
 
 if (!($no_product_download.ispresent)) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
@@ -44,7 +48,7 @@ if (!($no_product_download.ispresent)) {
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
         --pivnet-file-glob $(Split-Path -Leaf $piv_object.aws_object_key) `
         --pivnet-product-slug $slug_id `
-        --product-version $PCF_PAS_VERSION `
+        --product-version $PCF_PASW_VERSION `
         --stemcell-iaas azure `
         --download-stemcell `
         --output-directory  "$($output_directory.FullName)"
