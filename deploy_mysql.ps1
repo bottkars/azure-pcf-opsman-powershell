@@ -97,11 +97,11 @@ pcf_credhub_key: `"012345678901234567890`"
 pcf_diego_ssh_lb: diegossh-lb
 pcf_mysql_lb: mysql-lb
 pcf_web_lb: pcf-lb
-" | Set-Content $HOME/vars.yaml
+" | Set-Content $HOME/mysql_vars.yaml
 
 om --skip-ssl-validation `
   configure-product `
-  -c ./templates/mysql.yaml -l $HOME/vars.yaml
+  -c ./templates/mysql.yaml -l "$HOME/mysql_vars.yaml"
 
 om --skip-ssl-validation `
   apply-changes

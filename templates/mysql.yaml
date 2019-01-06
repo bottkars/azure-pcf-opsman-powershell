@@ -8,3 +8,19 @@ network-properties:
   - name: "null"
   singleton_availability_zone:
     name: "null"
+product-properties:
+  .properties.plan1_selector.leader_follower.instance_limit:
+    value: 5
+  .properties.plan1_selector:
+    value: leader_follower
+    selected_option: leader_follower  
+  .properties.plan1_selector.leader_follower.az_multi_select:
+    value:
+    - 'null'
+  .properties.plan2_selector:
+    value: Inactive
+    selected_option: inactive
+  .properties.plan2_selector:
+    value: Inactive
+    selected_option: inactive
+  
