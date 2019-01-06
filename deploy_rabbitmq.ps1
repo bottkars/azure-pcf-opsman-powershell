@@ -3,11 +3,9 @@
 $rabbitmq_conf = Get-Content "$($HOME)/rabbitmq.json" | ConvertFrom-Json
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
 $PCF_RABBITMQ_VERSION = $rabbitmq_conf.PCF_RABBITMQ_VERSION
-$PRODUCT_NAME = $rabbitmq_conf.PRODUCT_NAME
 #$RABBITMQ_STORAGE_KEY = $director_conf.rabbitmq_storage_key
 #$RABBITMQ_STORAGEACCOUNTNAME = $director_conf.rabbitmqstorageaccountname
 
-$OM_Target = $rabbitmq_conf.OM_TARGET
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
 $downloaddir = $director_conf.downloaddir
 $PCF_SUBDOMAIN_NAME = $rabbitmq_conf.PCF_SUBDOMAIN_NAME

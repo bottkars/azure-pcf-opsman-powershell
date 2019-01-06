@@ -3,14 +3,13 @@
 $mysql_conf = Get-Content "$($HOME)/mysql.json" | ConvertFrom-Json
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
 $PCF_MYSQL_VERSION = $mysql_conf.PCF_MYSQL_VERSION
-$PRODUCT_NAME = $mysql_conf.PRODUCT_NAME
 $MYSQL_STORAGE_KEY = $director_conf.mysql_storage_key
 $MYSQL_STORAGEACCOUNTNAME = $director_conf.mysqlstorageaccountname
 
-$OM_Target = $mysql_conf.OM_TARGET
+$OM_Target = $director_conf.OM_TARGET
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
 $downloaddir = $director_conf.downloaddir
-$PCF_SUBDOMAIN_NAME = $mysql_conf.PCF_SUBDOMAIN_NAME
+$PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME
 $domain = $director_conf.domain
 # getting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
