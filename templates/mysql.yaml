@@ -43,4 +43,6 @@ product-properties:
     value: true
   .properties.deprecated_bindings_string:
     value: X
-  
+  .properties.backups_selector:
+    value: Azure Backups
+    selected_option: azure
