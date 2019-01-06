@@ -8,7 +8,7 @@ $PCF_RABBITMQ_VERSION = $rabbitmq_conf.PCF_RABBITMQ_VERSION
 
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
 $downloaddir = $director_conf.downloaddir
-$PCF_SUBDOMAIN_NAME = $rabbitmq_conf.PCF_SUBDOMAIN_NAME
+$PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME
 $domain = $director_conf.domain
 # getting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
