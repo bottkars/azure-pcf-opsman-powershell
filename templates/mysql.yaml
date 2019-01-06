@@ -23,4 +23,6 @@ product-properties:
   .properties.plan3_selector:
     value: Inactive
     selected_option: inactive
+  .properties.global_recipient_email:
+    value: ((global_recipient_email))
   

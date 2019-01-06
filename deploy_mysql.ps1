@@ -1,8 +1,9 @@
 #requires -module pivposh
 
-$mysql_conf = Get-Content "$($HOME)/pivotal-mysql.json" | ConvertFrom-Json
+$mysql_conf = Get-Content "$($HOME)/mysql.json" | ConvertFrom-Json
 $PCF_MYSQL_VERSION = $mysql_conf.PCF_MYQL_VERSION
 $PRODUCT_NAME = $mysql_conf.PRODUCT_NAME
+$GLOBAL_RECIPIENT_EMAIL = $mysql_conf.global_recipient_email
 $OM_Target = $mysql_conf.OM_TARGET
 [switch]$no_product_download = [System.Convert]::ToBoolean($mysql_conf.no_product_download)
 $downloaddir = $mysql_conf.downloaddir
@@ -90,7 +91,7 @@ pcf_service_network: pcf-services-subnet `
 
 pcf_system_domain: system.pcfdemo.local.azurestack.external `
 pcf_apps_domain: system.pcfdemo.local.azurestack.external `
-pcf_notifications_email: email@examle.com `
+global_recipient_email:  `
 pcf_cert_pem: `"$PCF_CERT_PEM`"
 pcf_key_pem: `"$PCF_KEY_PEM`"
 pcf_credhub_key: `"012345678901234567890`"
