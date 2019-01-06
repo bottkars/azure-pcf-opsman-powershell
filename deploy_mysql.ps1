@@ -73,6 +73,9 @@ $PRODUCTS=$(om --skip-ssl-validation `
 $PRODUCT=$PRODUCTS| where name -Match $slug_id
 $PRODUCT_NAME=$PRODUCT.name
 $VERSION=$PRODUCT.version
+
+om --skip-ssl-validation `
+  deployed-products
   # 2.  Stage using om cli
 
   om --skip-ssl-validation `
@@ -100,4 +103,6 @@ om --skip-ssl-validation `
 
 om --skip-ssl-validation `
   apply-changes
-#>
+
+om --skip-ssl-validation `
+  deployed-products  

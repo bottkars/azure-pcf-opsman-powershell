@@ -55,6 +55,8 @@ $download_file = get-content "$($output_directory.FullName)/download-file.json" 
 $TARGET_FILENAME=$download_file.product_path
 $STEMCELL_FILENAME=$download_file.stemcell_path
 
+om --skip-ssl-validation `
+deployed-products
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
@@ -112,3 +114,6 @@ om --skip-ssl-validation `
 
 om --skip-ssl-validation `
   apply-changes
+
+om --skip-ssl-validation `
+  deployed-products
