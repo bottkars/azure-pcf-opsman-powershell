@@ -1,13 +1,13 @@
 #requires -module pivposh
-
 $pas_conf = Get-Content "$($HOME)/pas.json" | ConvertFrom-Json
+$director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
 $PCF_PAS_VERSION = $pas_conf.PCF_PAS_VERSION
 $PRODUCT_NAME = $pas_conf.PRODUCT_NAME
-$OM_Target = $pas_conf.OM_TARGET
+$OM_Target = $director_conf.OM_TARGET
 [switch]$no_product_download = [System.Convert]::ToBoolean($pas_conf.no_product_download)
 $downloaddir = $pas_conf.downloaddir
 $PCF_SUBDOMAIN_NAME = $pas_conf.PCF_SUBDOMAIN_NAME
-$domain = $pas_conf.domain
+$domain = $director_conf.domain
 # getting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $env:OM_Password = $env_vars.OM_Password
@@ -108,7 +108,7 @@ pcf_notifications_email: $pcf_notifications_email
 
 om --skip-ssl-validation `
   configure-product `
-  -c ./pas.yaml -l $HOME/vars.yaml
+  -c $PSScriptRoot/pas.yaml -l $HOME/vars.yaml
 
 om --skip-ssl-validation `
   apply-changes

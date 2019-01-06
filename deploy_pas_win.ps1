@@ -1,13 +1,15 @@
 #requires -module pivposh
 
 $pasw_conf = Get-Content "$($HOME)/pasw.json" | ConvertFrom-Json
+$director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
+
 $PCF_PASW_VERSION = $pasw_conf.PCF_PAS_VERSION
 $PRODUCT_NAME = $pasw_conf.PRODUCT_NAME
-$OM_Target = $pasw_conf.OM_TARGET
+$OM_Target = $director_conf.OM_TARGET
 [switch]$no_product_download = [System.Convert]::ToBoolean($pasw_conf.no_product_download)
 $downloaddir = $pasw_conf.downloaddir
 $PCF_SUBDOMAIN_NAME = $pasw_conf.PCF_SUBDOMAIN_NAME
-$domain = $pasw_conf.domain
+$domain = $director_conf.domain
 # getting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $env:OM_Password = $env_vars.OM_Password
@@ -98,7 +100,7 @@ pcf_web_lb: pcf-lb
 
 om --skip-ssl-validation `
   configure-product `
-  -c ./pas.yaml -l $HOME/vars.yaml
+  -c $PSScriptRoot/pas.yaml -l $HOME/vars.yaml
 
 om --skip-ssl-validation `
   apply-changes

@@ -225,7 +225,7 @@ if (!$OpsmanUpdate) {
                 -Type $storageType
         }
         else {
-            New-AzureRmResourceGroupDeployment -TemplateFile ./createstorageaacount.json -ResourceGroupName $resourceGroup -storageAccountName $storageaccount
+            New-AzureRmResourceGroupDeployment -TemplateFile $PSScriptRoot/createstorageaacount.json -ResourceGroupName $resourceGroup -storageAccountName $storageaccount
         }
 
         Write-Host -ForegroundColor green "[done]"
@@ -344,7 +344,7 @@ $StopWatch_deploy.Start()
 Write-host "Starting $deploymentcolor Deployment of $opsManFQDNPrefix $opsmanVersion" -ForegroundColor $deploymentcolor
 if (!$OpsmanUpdate) {
     $parameters.Add("dnsZoneName", $dnsZoneName) 
-    New-AzureRmResourceGroupDeployment -Name $resourceGroup -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile ./azuredeploy.json -TemplateParameterObject $parameters
+    New-AzureRmResourceGroupDeployment -Name $resourceGroup -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile $PSScriptRoot/azuredeploy.json -TemplateParameterObject $parameters
     $MyStorageaccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup | Where-Object StorageAccountName -match $storageaccount
     $MyStorageaccount | Set-AzureRmCurrentStorageAccount
     Write-Host "Creating Container Stemcell in $($MyStorageaccount.StorageAccountName)"
