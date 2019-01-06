@@ -78,14 +78,9 @@
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet('AzureCloud', 'AzureStack')]$Environment = "AzureStack",
-    # PAS Version
-    [Parameter(Mandatory = $false)][ValidateSet('2.4.0', '2.4.1', '2.3.5', '2.3.4', '2.3.3')]
-    $PCF_PAS_VERSION = "2.3.5",
-    # PAS Type ( srt for small runtime, cf for full pas)
-    [Parameter(Mandatory = $false)][ValidateSet('srt', 'cf')]
-    $PRODUCT_NAME = "cf",
-    [switch]$PAS_AUTOPILOT, 
-    [switch]$no_product_download
+    [switch]$PAS_AUTOPILOT,
+    [switch]$MYSQL_AUTOPILOT, 
+    [switch]$force_product_download
 )
 
 
@@ -379,7 +374,6 @@ if (!$OpsmanUpdate) {
 
     # will create director.json for future
     $JSon = [ordered]@{
-
         OM_TARGET                = "$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)"
         domain                   = "$($location).$($dnsdomain)"
         PCF_SUBDOMAIN_NAME       = $PCF_SUBDOMAIN_NAME
@@ -397,32 +391,20 @@ if (!$OpsmanUpdate) {
         services_cidr            = $services_cidr
         services_gateway         = $services_gateway
         services_range           = $services_range
+        downloaddir              = $downloadpath
+        force_product_download   = $no_product_download.IsPresent.ToString()
     } | ConvertTo-Json
     $JSon | Set-Content $HOME/director.json
-    # this is future
     $command = "$PSScriptRoot/init_om.ps1"
-    # -OM_Target '$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)' -domain '$($location).$($dnsdomain)' -boshstorageaccountname $storageaccount -RG $resourceGroup -deploymentstorageaccount $deployment_storage_account -pas_cidr $pas_cidr -pas_range $pas_range -pas_gateway $pas_gateway -infrastructure_range $infrastructure_range -infrastructure_cidr $infrastructure_cidr -infrastructure_gateway $infrastructure_gateway -services_cidr $services_cidr -services_gateway $services_gateway -services_range $services_range"
     Write-Host "Calling $command" 
     Invoke-Expression -Command $Command
     if ($PAS_AUTOPILOT.IsPresent) {
-        # will create a json for future release
-        # pas.json
-        $JSon = [ordered]@{  
-            OM_TARGET           = "$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)"
-            domain              = "$($location).$($dnsdomain)"
-            PCF_SUBDOMAIN_NAME  = $PCF_SUBDOMAIN_NAME
-            PCF_PAS_VERSION     = $PCF_PAS_VERSION 
-            PRODUCT_NAME        = $PRODUCT_NAME 
-            downloaddir         = $downloadpath
-            no_product_download = $no_product_download.IsPresent.ToString()
-        } | ConvertTo-Json
-        $JSon | Set-Content $HOME/pas.json
-        #
         $command = "$PSScriptRoot/deploy_pas.ps1"
-        # -OM_Target '$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)' -PCF_PAS_VERSION $PCF_PAS_VERSION -PRODUCT_NAME $PRODUCT_NAME -downloaddir $downloadpath"
-        #if ($no_product_download.IsPresent) {
-        #    $command = "$command -no_product_download"
-        #}
+        Write-Host "Calling $command" 
+        Invoke-Expression -Command $Command
+    }
+    if ($MYSQL_AUTOPILOT.IsPresent) {
+        $command = "$PSScriptRoot/deploy_mysql.ps1"
         Write-Host "Calling $command" 
         Invoke-Expression -Command $Command
     }

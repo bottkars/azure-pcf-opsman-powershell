@@ -8,8 +8,8 @@ $MYSQL_STORAGE_KEY = $director_conf.mysql_storage_key
 $MYSQL_STORAGEACCOUNTNAME = $director_conf.mysqlstorageaccountname
 
 $OM_Target = $mysql_conf.OM_TARGET
-[switch]$no_product_download = [System.Convert]::ToBoolean($mysql_conf.no_product_download)
-$downloaddir = $mysql_conf.downloaddir
+[switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
+$downloaddir = $director_conf.downloaddir
 $PCF_SUBDOMAIN_NAME = $mysql_conf.PCF_SUBDOMAIN_NAME
 $domain = $director_conf.domain
 # getting the env
@@ -35,7 +35,7 @@ $eula = $piv_release | Confirm-PIVEula -access_token $access_token
 $piv_object = $piv_release_id | Where-Object aws_object_key -Like *$slug_id*.pivotal*
 $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_MYSQL_VERSION)" -Force
 
-if (!($no_product_download.ispresent)) {
+if (($force_product_download.ispresent)-or (!(test-path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
 
     om --skip-ssl-validation `
@@ -48,7 +48,6 @@ if (!($no_product_download.ispresent)) {
         --stemcell-iaas azure `
         --download-stemcell `
         --output-directory  "$($output_directory.FullName)"
-
 }
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json

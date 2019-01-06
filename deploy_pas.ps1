@@ -4,9 +4,9 @@ $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
 $PCF_PAS_VERSION = $pas_conf.PCF_PAS_VERSION
 $PRODUCT_NAME = $pas_conf.PRODUCT_NAME
 $OM_Target = $director_conf.OM_TARGET
-[switch]$no_product_download = [System.Convert]::ToBoolean($pas_conf.no_product_download)
+[switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
 $downloaddir = $pas_conf.downloaddir
-$PCF_SUBDOMAIN_NAME = $pas_conf.PCF_SUBDOMAIN_NAME
+$PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME
 $domain = $director_conf.domain
 # getting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
@@ -35,7 +35,7 @@ $eula = $piv_release | Confirm-PIVEula -access_token $access_token
 $piv_object = $piv_release_id | Where-Object aws_object_key -Like *$PRODUCT_NAME*.pivotal*
 $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($PRODUCT_NAME)_$($PCF_PAS_VERSION)" -Force
 
-if (!($no_product_download.ispresent)) {
+if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
 
     om --skip-ssl-validation `
