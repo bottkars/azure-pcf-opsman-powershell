@@ -83,7 +83,7 @@
     [switch]$force_product_download
 )
 
-
+$DeployTimes = @()
 function get-runningos {
     # backward copatibility for peeps runnin powershell 5
     write-verbose "trying to get os type ... "
@@ -371,7 +371,8 @@ if (!$OpsmanUpdate) {
     $mysql_storage_key = $MYSQL_KEY[0].Value
 
     write host "now we are going to try and configure OpsManager"
-
+    $StopWatch_deploy_opsman = New-Object System.Diagnostics.Stopwatch
+    $StopWatch_deploy_opsman.Start()
     # will create director.json for future
     $JSon = [ordered]@{
         OM_TARGET                = "$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)"
@@ -398,14 +399,27 @@ if (!$OpsmanUpdate) {
     $command = "$PSScriptRoot/init_om.ps1"
     Write-Host "Calling $command" 
     Invoke-Expression -Command $Command
+    $StopWatch_deploy_opsman.Stop()
+    $DeployTimes += "opsman deployment took $($StopWatch_deploy_opsman.Elapsed.Hours) hours, $($StopWatch_deploy_opsman.Elapsed.Minutes) minutes and  $($StopWatch_deploy_opsman.Elapsed.Seconds) seconds"
     if ($PAS_AUTOPILOT.IsPresent) {
+        $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
+        $StopWatch_deploy_pas.Start()
         $command = "$PSScriptRoot/deploy_pas.ps1"
         Write-Host "Calling $command" 
         Invoke-Expression -Command $Command
+        $StopWatch_deploy_pas.Stop()
+        $DeployTimes += "PAS deployment took $($StopWatch_deploy_pas.Elapsed.Hours) hours, $($StopWatch_deploy_pas.Elapsed.Minutes) minutes and  $($StopWatch_deploy_pas.Elapsed.Seconds) seconds"
+    
         if ($MYSQL_AUTOPILOT.IsPresent) {
+            $StopWatch_deploy_mysql = New-Object System.Diagnostics.Stopwatch
+            $StopWatch_deploy_mysql.Start()
+    
             $command = "$PSScriptRoot/deploy_mysql.ps1"
             Write-Host "Calling $command" 
             Invoke-Expression -Command $Command
+            $StopWatch_deploy_mysql.Stop()
+            $DeployTimes += "mysql deployment took $($StopWatch_deploy_mysql.Elapsed.Hours) hours, $($StopWatch_deploy_mysql.Elapsed.Minutes) minutes and  $($StopWatch_deploy_mysql.Elapsed.Seconds) seconds"
+    
         }
     }
 
@@ -420,6 +434,7 @@ $StopWatch_deploy.Stop()
 
 Write-Host "Preparation and BLOB copy job took $($StopWatch_prepare.Elapsed.Hours) hours, $($StopWatch_prepare.Elapsed.Minutes) minutes and $($StopWatch_prepare.Elapsed.Seconds) seconds" -ForegroundColor Magenta
 Write-Host "Deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds" -ForegroundColor Magenta
+$DeployTimes
 Pop-Location
 <#
 create a key
