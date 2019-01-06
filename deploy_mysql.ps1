@@ -2,7 +2,7 @@
 
 $mysql_conf = Get-Content "$($HOME)/mysql.json" | ConvertFrom-Json
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
-$PCF_MYSQL_VERSION = $mysql_conf.PCF_MYQL_VERSION
+$PCF_MYSQL_VERSION = $mysql_conf.PCF_MYSQL_VERSION
 $PRODUCT_NAME = $mysql_conf.PRODUCT_NAME
 $MYSQL_STORAGE_KEY = $director_conf.mysql_storage_key
 $MYSQL_STORAGEACCOUNTNAME = $director_conf.mysqlstorageaccountname
@@ -82,11 +82,6 @@ $VERSION=$PRODUCT.version
     --product-version $VERSION
 
 
-$PCF_KEY_PEM=get-content ./pcfdemo.local.azurestack.external.key
-$PCF_KEY_PEM=$PCF_KEY_PEM  -join "\r\n"
-$PCF_CERT_PEM=get-content ./pcfdemo.local.azurestack.external.cert
-$PCF_CERT_PEM=$PCF_CERT_PEM  -join "\r\n"
-    
 
 "
 product_name: $PRODUCT_NAME
