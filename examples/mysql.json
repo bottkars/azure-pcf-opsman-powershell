@@ -2,7 +2,7 @@
     "OM_TARGET":  "pcfopsmangreen.local.cloudapp.azurestack.external",
     "domain":  "local.azurestack.external",
     "PCF_SUBDOMAIN_NAME":  "pcfdemo",
-    "PCF_PAS_VERSION":  "2.5.2",
+    "PCF_MYSQL_VERSION":  "2.5.2",
     "downloaddir":  "C:\\Users\\AzurestackGuy/Downloads",
     "no_product_download":  "True"
 }
