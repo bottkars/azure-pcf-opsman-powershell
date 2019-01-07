@@ -70,7 +70,7 @@ om --skip-ssl-validation `
  deployed-products
 
 om --skip-ssl-validation `
- configure-director --config "$PSScriptRoot/templates/director_conf.yaml" --vars-file "$HOME/director_vars.yaml"
+ configure-director --config "$PSScriptRoot/../templates/director_conf.yaml" --vars-file "$HOME/director_vars.yaml"
 
 om --skip-ssl-validation apply-changes
 
