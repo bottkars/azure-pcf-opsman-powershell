@@ -54,12 +54,13 @@ if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.Fu
         --output-directory  "$($output_directory.FullName)"
 
 }
-$LASTEXITCODE
 
 if ($LASTEXITCODE -ne 0)
   {
+    write-Host  "Error running om, please fix"
     $LASTEXITCODE
-    break}
+    break
+  }
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME=$download_file.product_path
@@ -74,11 +75,22 @@ om --skip-ssl-validation `
   --request-timeout 3600 `
   upload-product `
   --product $TARGET_FILENAME
+if ($LASTEXITCODE -ne 0)
+  {
+    write-Host  "Error running om, please fix"
+    $LASTEXITCODE
+    break
+  }
 Write-Host "importing $STEMCELL_FILENAME into OpsManager"  
 om --skip-ssl-validation `
   upload-stemcell `
   --stemcell $STEMCELL_FILENAME
-
+if ($LASTEXITCODE -ne 0)
+  {
+    write-Host  "Error running om, please fix"
+    $LASTEXITCODE
+    break
+  }
 $PRODUCTS=$(om --skip-ssl-validation `
   available-products `
     --format json) | ConvertFrom-Json
