@@ -1,4 +1,5 @@
 #requires -module pivposh
+Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/pas.json"
 if (!(Test-Path $PRODUCT_FILE))
   {$PRODUCT_FILE = "$PSScriptRoot/../examples/pas.json"}
@@ -141,3 +142,4 @@ om --skip-ssl-validation `
 
 om --skip-ssl-validation `
   deployed-products
+Pop-Location
