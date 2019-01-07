@@ -59,7 +59,7 @@ if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.Fu
 if ($LASTEXITCODE -ne 0)
   {
     write-Host  "Error running om, please fix"
-    $LASTEXITCODE
+    Pop-Location
     break
   }
 
@@ -79,6 +79,7 @@ om --skip-ssl-validation `
 if ($LASTEXITCODE -ne 0)
   {
     write-Host  "Error running om, please fix and retry"
+    Pop-Location
     break
   }
 Write-Host "importing $STEMCELL_FILENAME into OpsManager"  
@@ -88,6 +89,7 @@ om --skip-ssl-validation `
 if ($LASTEXITCODE -ne 0)
   {
     write-Host  "Error running om, please fix and retry"
+    Pop-Location
     break
   }
 $PRODUCTS=$(om --skip-ssl-validation `
@@ -135,6 +137,7 @@ om --skip-ssl-validation `
 if ($LASTEXITCODE -ne 0)
   {
     write-Host  "Error running om, please fix and retry"
+    Pop-Location
     break
   }
 om --skip-ssl-validation `
