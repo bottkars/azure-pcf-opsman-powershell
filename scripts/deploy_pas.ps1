@@ -77,8 +77,7 @@ om --skip-ssl-validation `
   --product $TARGET_FILENAME
 if ($LASTEXITCODE -ne 0)
   {
-    write-Host  "Error running om, please fix"
-    $LASTEXITCODE
+    write-Host  "Error running om, please fix and retry"
     break
   }
 Write-Host "importing $STEMCELL_FILENAME into OpsManager"  
@@ -87,8 +86,7 @@ om --skip-ssl-validation `
   --stemcell $STEMCELL_FILENAME
 if ($LASTEXITCODE -ne 0)
   {
-    write-Host  "Error running om, please fix"
-    $LASTEXITCODE
+    write-Host  "Error running om, please fix and retry"
     break
   }
 $PRODUCTS=$(om --skip-ssl-validation `
@@ -99,10 +97,10 @@ $VERSION= $PRODUCTS.version
 $PRODUCT_NAME=$PRODUCTS.name
   # 2.  Stage using om cli
 
-  om --skip-ssl-validation `
-    stage-product `
-    --product-name $PRODUCT_NAME `
-    --product-version $VERSION
+om --skip-ssl-validation `
+  stage-product `
+  --product-name $PRODUCT_NAME `
+  --product-version $VERSION
 
 
 $PCF_KEY_PEM=get-content "$HOME/pcfdemo.local.azurestack.external.key"
@@ -133,7 +131,11 @@ pcf_notifications_email: $pcf_notifications_email
 om --skip-ssl-validation `
   configure-product `
   -c $config_file -l $HOME/vars.yaml
-
+if ($LASTEXITCODE -ne 0)
+  {
+    write-Host  "Error running om, please fix and retry"
+    break
+  }
 om --skip-ssl-validation `
   apply-changes
 
