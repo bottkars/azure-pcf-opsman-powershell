@@ -11,7 +11,7 @@ It also feature a Powershell Script to automate beyond what the template can do:
 
 The Powershell script makes use of:
 
-    - <[omcli](https://github.com/pivotal-cf/om)>    
+    - <[omcli](https://github.com/pivotal-cf/om)>  
     - [PIVPOSH](https://github.com/bottkars/PIVPosh)  
     - openssl for certificate creation
 
