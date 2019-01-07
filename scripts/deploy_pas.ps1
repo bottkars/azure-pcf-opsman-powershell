@@ -2,7 +2,7 @@
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/pas.json"
 if (!(Test-Path $PRODUCT_FILE))
-  {$PRODUCT_FILE = "$PSScriptRoot/../examples/pas.json"}
+  {$PRODUCT_FILE = "../examples/pas.json"}
 $pas_conf = Get-Content "$($HOME)/pas.json" | ConvertFrom-Json
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
 $PCF_PAS_VERSION = $pas_conf.PCF_PAS_VERSION
