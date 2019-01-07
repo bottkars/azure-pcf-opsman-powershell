@@ -15,30 +15,52 @@ The Powershell script makes use of:
     - [PIVPOSH](https://github.com/bottkars/PIVPosh)  
     - openssl for certificate creation
 
-## requirements
+### requirements
 
     - Windows 10 or Server 2016 Machine with at least 20GB Disk Space (SSD recommended) 
     - Pre Configured  Certificates OR openssl ( can be installed with prepare_utils.ps1)
     - omcli and PIVPOSH ( can be installed with prepare_utils.ps1)
     - a customized env.json file in the users $HOME ( see example-env.json in examples)
 
-## usage
+### usage
 
 there is one central PS1 Script to deploy OPS Manager.  
 just enter deploy_pcf-opsman.ps1  
 
-## product customizations  
+### product customizations  
 
 the deployment tool uses product specifif .json files that degtermine thge Product version, and, in some cases ( e.g. srt or cf for pas) Product Names.
-If you want to use your own product version, simply copy and customize the corresponding Json File to $HOME. _DO NOT EDIT THE EXAMPLE FILES_ (as they are managed by git)
+If you want to use your own product version, simply copy and customize the corresponding Json File to $HOME. _DO NOT EDIT THE EXAMPLE FILES_ (as they are managed by git). the shipped product files always contain the **latest and tested running on azurestack**
 
-## product download
+### product download
 
 procucts required will be townloaded to $HOME/downloads.  
 to specify a different download directory, use  *-downloadpath yourpath*  when calling *deploy_pcf-opsman.ps1*
 required products will be downloaded automatically using OMCLI when:
     - *deploy_pcf-opsman.ps1* is stated with -force_procuct_download
 
+## EXAMPLES
+
+below are some examples for running and customizing
+
+### deploy PCF opsman and Pivotal Application Service (PAS CF)
+
+```powershell
+.\pcf\deploy_pcf-opsman.ps1 -PAS_AUTOPILOT
+```
+
+### deploy PCF opsman and Pivotal Application Service SMALL Runtime (PAS SRT)
+- copy pas.json to $HOME
+- replace the Value of PROTUCT_NAME from cf to srt in pas.json  
+`{
+    "PCF_PAS_VERSION":  "2.3.5",
+    "PRODUCT_NAME":  "cf",
+    "CONFIG_FILE": "$PSScriptRoot/templates/pas.yaml"
+}`
+
+```powershell
+.\pcf\deploy_pcf-opsman.ps1 -PAS_AUTOPILOT
+```
 
 ## Deploying Opsman only
 
