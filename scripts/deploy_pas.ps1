@@ -130,7 +130,7 @@ pcf_notifications_email: $pcf_notifications_email
 
 om --skip-ssl-validation `
   configure-product `
-  -c $config_file -l $HOME/vars.yaml
+  -c "$config_file" -l $HOME/vars.yaml
 if ($LASTEXITCODE -ne 0)
   {
     write-Host  "Error running om, please fix and retry"
