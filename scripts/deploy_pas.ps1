@@ -54,6 +54,12 @@ if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.Fu
         --output-directory  "$($output_directory.FullName)"
 
 }
+$LASTEXITCODE
+
+if ($LASTEXITCODE -ne 0)
+  {
+    $LASTEXITCODE
+    break}
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME=$download_file.product_path
