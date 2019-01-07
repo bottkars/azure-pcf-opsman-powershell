@@ -370,7 +370,7 @@ if (!$OpsmanUpdate) {
     $mysql_storage_account = $MYSQLStorageaccount.StorageAccountName
     $mysql_storage_key = $MYSQL_KEY[0].Value
 
-    write host "now we are going to try and configure OpsManager"
+    Write-Host "now we are going to try and configure OpsManager"
     $StopWatch_deploy_opsman = New-Object System.Diagnostics.Stopwatch
     $StopWatch_deploy_opsman.Start()
     # will create director.json for future
@@ -396,7 +396,7 @@ if (!$OpsmanUpdate) {
         force_product_download   = $force_product_download.IsPresent.ToString()
     } | ConvertTo-Json
     $JSon | Set-Content $HOME/director.json
-    $command = "$PSScriptRoot/init_om.ps1"
+    $command = "$PSScriptRoot/scripts/init_om.ps1"
     Write-Host "Calling $command" 
     Invoke-Expression -Command $Command
     $StopWatch_deploy_opsman.Stop()
@@ -404,7 +404,7 @@ if (!$OpsmanUpdate) {
     if ($PAS_AUTOPILOT.IsPresent) {
         $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
         $StopWatch_deploy_pas.Start()
-        $command = "$PSScriptRoot/deploy_pas.ps1"
+        $command = "$PSScriptRoot/scripts/deploy_pas.ps1"
         Write-Host "Calling $command" 
         Invoke-Expression -Command $Command
         $StopWatch_deploy_pas.Stop()
@@ -414,7 +414,7 @@ if (!$OpsmanUpdate) {
             $StopWatch_deploy_mysql = New-Object System.Diagnostics.Stopwatch
             $StopWatch_deploy_mysql.Start()
     
-            $command = "$PSScriptRoot/deploy_mysql.ps1"
+            $command = "$PSScriptRoot/scripts/deploy_mysql.ps1"
             Write-Host "Calling $command" 
             Invoke-Expression -Command $Command
             $StopWatch_deploy_mysql.Stop()
