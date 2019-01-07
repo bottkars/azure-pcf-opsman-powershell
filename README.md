@@ -11,16 +11,16 @@ It also feature a Powershell Script to automate beyond what the template can do:
 
 The Powershell script makes use of:
 
-    - <[omcli](https://github.com/pivotal-cf/om)>  
-    - [PIVPOSH](https://github.com/bottkars/PIVPosh)  
-    - openssl for certificate creation
+- [omcli](https://github.com/pivotal-cf/om)  
+- [PIVPOSH](https://github.com/bottkars/PIVPosh)  
+- openssl for certificate creation
 
 ### requirements
 
-    - Windows 10 or Server 2016 Machine with at least 20GB Disk Space (SSD recommended) 
-    - Pre Configured  Certificates OR openssl ( can be installed with prepare_utils.ps1)
-    - omcli and PIVPOSH ( can be installed with prepare_utils.ps1)
-    - a customized env.json file in the users $HOME ( see example-env.json in examples)
+   - Windows 10 or Server 2016 Machine with at least 20GB Disk Space (SSD recommended) 
+   - Pre Configured  Certificates OR openssl ( can be installed with prepare_utils.ps1)
+   - omcli and PIVPOSH ( can be installed with prepare_utils.ps1)
+   - a customized env.json file in the users $HOME ( see example-env.json in examples)
 
 ### usage
 
@@ -53,8 +53,8 @@ below are some examples for running and customizing
 - copy pas.json to $HOME
 - replace the Value of PROTUCT_NAME from cf to srt in pas.json  
 `{
-    "PCF_PAS_VERSION":  "2.3.5",
-    "PRODUCT_NAME":  "cf",
+    "PCF_PAS_VERSION":  "2.3.5",  
+    "PRODUCT_NAME":  "srt",  
     "CONFIG_FILE": "$PSScriptRoot/templates/pas.yaml"
 }`
 
