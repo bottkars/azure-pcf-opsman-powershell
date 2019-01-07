@@ -1,5 +1,7 @@
 #requires -module pivposh
-
+$PRODUCT_FILE = "$($HOME)/mysql.json"
+if (!(Test-Path $PRODUCT_FILE))
+{$PRODUCT_FILE = "$PSScriptRoot/examples/mysql.json"}
 $mysql_conf = Get-Content "$($HOME)/mysql.json" | ConvertFrom-Json
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
 $PCF_MYSQL_VERSION = $mysql_conf.PCF_MYSQL_VERSION
@@ -50,34 +52,34 @@ if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.Fu
 }
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
-$TARGET_FILENAME=$download_file.product_path
-$STEMCELL_FILENAME=$download_file.stemcell_path
+$TARGET_FILENAME = $download_file.product_path
+$STEMCELL_FILENAME = $download_file.stemcell_path
 
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
 om --skip-ssl-validation `
-  --request-timeout 3600 `
-  upload-product `
-  --product $TARGET_FILENAME
+    --request-timeout 3600 `
+    upload-product `
+    --product $TARGET_FILENAME
 Write-Host "importing $STEMCELL_FILENAME into OpsManager"  
 om --skip-ssl-validation `
-  upload-stemcell `
-  --stemcell $STEMCELL_FILENAME
+    upload-stemcell `
+    --stemcell $STEMCELL_FILENAME
 
-$PRODUCTS=$(om --skip-ssl-validation `
-  available-products `
-    --format json) | ConvertFrom-Json
+$PRODUCTS = $(om --skip-ssl-validation `
+        available-products `
+        --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
-$PRODUCT=$PRODUCTS| where name -Match $slug_id
-$PRODUCT_NAME=$PRODUCT.name
-$VERSION=$PRODUCT.version
+$PRODUCT = $PRODUCTS| where name -Match $slug_id
+$PRODUCT_NAME = $PRODUCT.name
+$VERSION = $PRODUCT.version
 
 om --skip-ssl-validation `
-  deployed-products
-  # 2.  Stage using om cli
+    deployed-products
+# 2.  Stage using om cli
 
-  om --skip-ssl-validation `
+om --skip-ssl-validation `
     stage-product `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
@@ -95,12 +97,12 @@ blob_store_base_url: $domain
 " | Set-Content $HOME/mysql_vars.yaml
 
 om --skip-ssl-validation `
-  configure-product `
-  -c $PSScriptRoot/templates/mysql.yaml -l "$HOME/mysql_vars.yaml"
+    configure-product `
+    -c $PSScriptRoot/templates/mysql.yaml -l "$HOME/mysql_vars.yaml"
 
 om --skip-ssl-validation `
-  apply-changes `
-  --product-name $PRODUCT_NAME
+    apply-changes `
+    --product-name $PRODUCT_NAME
 
 om --skip-ssl-validation `
-  deployed-products  
+    deployed-products  

@@ -35,7 +35,7 @@ $ssh_private_key = Get-Content $HOME/opsman
 $ssh_private_key = $ssh_private_key -join "\r\n"
 $ca_cert = Get-Content $HOME/root.pem
 $ca_cert = $ca_cert -join "\r\n"
-$content=get-content "$PSScriptRoot/director_vars.yaml"
+$content=get-content "$PSScriptRoot/templates/director_vars.yaml"
 
 $content += "subscription_id: $((Get-AzureRmSubscription).SubscriptionId)"
 $content += "tenant_id: $((Get-AzureRmSubscription).TenantId)"
@@ -67,10 +67,10 @@ configure-authentication `
 --decryption-passphrase $PCF_PIVNET_UAA_TOKEN
 
 om --skip-ssl-validation `
-deployed-products
+ deployed-products
 
 om --skip-ssl-validation `
- configure-director --config "$PSScriptRoot/director_conf.yaml" --vars-file "$HOME/director_vars.yaml"
+ configure-director --config "$PSScriptRoot/templates/director_conf.yaml" --vars-file "$HOME/director_vars.yaml"
 
 om --skip-ssl-validation apply-changes
 

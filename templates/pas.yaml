@@ -70,3 +70,5 @@ resource-config:
     - ((pcf_web_lb))
   ha_proxy:
     instances: 0
+  credhub:
+    instances: 1

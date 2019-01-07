@@ -1,8 +1,12 @@
 #requires -module pivposh
+$PRODUCT_FILE = "$($HOME)/pas.json"
+if (!(Test-Path $PRODUCT_FILE))
+  {$PRODUCT_FILE = "$PSScriptRoot/examples/pas.json"}
 $pas_conf = Get-Content "$($HOME)/pas.json" | ConvertFrom-Json
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
 $PCF_PAS_VERSION = $pas_conf.PCF_PAS_VERSION
 $PRODUCT_NAME = $pas_conf.PRODUCT_NAME
+$config_file = $pas_conf.CONFIG_FILE
 $OM_Target = $director_conf.OM_TARGET
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
 $downloaddir = $director_conf.downloaddir
@@ -110,7 +114,7 @@ pcf_notifications_email: $pcf_notifications_email
 
 om --skip-ssl-validation `
   configure-product `
-  -c $PSScriptRoot/pas.yaml -l $HOME/vars.yaml
+  -c $config_file -l $HOME/vars.yaml
 
 om --skip-ssl-validation `
   apply-changes
