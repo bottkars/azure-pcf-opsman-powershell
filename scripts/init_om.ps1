@@ -1,7 +1,7 @@
 # about
 # we no use params :-)
+Push-Location $PSScriptRoot
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
-
 $OM_Target = $director_conf.OM_TARGET
 $domain = $director_conf.domain  
 $boshstorageaccountname = $director_conf.boshstorageaccountname
@@ -35,7 +35,7 @@ $ssh_private_key = Get-Content $HOME/opsman
 $ssh_private_key = $ssh_private_key -join "\r\n"
 $ca_cert = Get-Content $HOME/root.pem
 $ca_cert = $ca_cert -join "\r\n"
-$content=get-content "$PSScriptRoot/templates/director_vars.yaml"
+$content=get-content "../templates/director_vars.yaml"
 
 $content += "subscription_id: $((Get-AzureRmSubscription).SubscriptionId)"
 $content += "tenant_id: $((Get-AzureRmSubscription).TenantId)"
@@ -61,7 +61,6 @@ $content += "services_range: $services_range"
 $content += "services_gateway: $services_gateway"
 $content | Set-Content $HOME/director_vars.yaml
 
-
 om --skip-ssl-validation `
 configure-authentication `
 --decryption-passphrase $PCF_PIVNET_UAA_TOKEN
@@ -76,3 +75,4 @@ om --skip-ssl-validation apply-changes
 
 om --skip-ssl-validation `
  deployed-products
+Pop-Location
