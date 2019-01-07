@@ -11,7 +11,7 @@ It also feature a Powershell Script to automate beyond what the template can do:
 
 The Powershell script makes use of:
 
-    - [omcli](https://github.com/pivotal-cf/om)  
+    - <[omcli](https://github.com/pivotal-cf/om)>    
     - [PIVPOSH](https://github.com/bottkars/PIVPosh)  
     - openssl for certificate creation
 
@@ -19,7 +19,7 @@ The Powershell script makes use of:
 
     - Windows 10 or Server 2016 Machine with at least 20GB Disk Space (SSD recommended) 
     - Pre Configured  Certificates OR openssl ( can be installed with prepare_utils.ps1)
-    - omcli and PIVPOS ( can be installed with prepare_utils.ps1)
+    - omcli and PIVPOSH ( can be installed with prepare_utils.ps1)
     - a customized env.json file in the users $HOME ( see example-env.json in examples)
 
 ## usage
@@ -35,7 +35,7 @@ If you want to use your own product version, simply copy and customize the corre
 ## product download
 
 procucts required will be townloaded to $HOME/downloads.  
-to specify a different download directory, use  *-downloadpath <yourpath>*  when calling *deploy_pcf-opsman.ps1*
+to specify a different download directory, use  *-downloadpath yourpath*  when calling *deploy_pcf-opsman.ps1*
 required products will be downloaded automatically using OMCLI when:
     - *deploy_pcf-opsman.ps1* is stated with -force_procuct_download
 
