@@ -3,7 +3,7 @@ Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/mysql.json"
 if (!(Test-Path $PRODUCT_FILE))
 {$PRODUCT_FILE = "../examples/mysql.json"}
-$mysql_conf = Get-Content "$($HOME)/mysql.json" | ConvertFrom-Json
+$mysql_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
 $PCF_MYSQL_VERSION = $mysql_conf.PCF_MYSQL_VERSION
 $MYSQL_STORAGE_KEY = $director_conf.mysql_storage_key
