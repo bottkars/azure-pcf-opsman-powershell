@@ -1,12 +1,15 @@
 #requires -module pivposh
+Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/mysql.json"
 if (!(Test-Path $PRODUCT_FILE))
-{$PRODUCT_FILE = "$PSScriptRoot/../examples/mysql.json"}
+{$PRODUCT_FILE = "../examples/mysql.json"}
 $mysql_conf = Get-Content "$($HOME)/mysql.json" | ConvertFrom-Json
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
 $PCF_MYSQL_VERSION = $mysql_conf.PCF_MYSQL_VERSION
 $MYSQL_STORAGE_KEY = $director_conf.mysql_storage_key
 $MYSQL_STORAGEACCOUNTNAME = $director_conf.mysqlstorageaccountname
+$config_file = $mysql_conf.CONFIG_FILE
+
 
 $OM_Target = $director_conf.OM_TARGET
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
@@ -84,8 +87,6 @@ om --skip-ssl-validation `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
 
-
-
 "
 product_name: $PRODUCT_NAME
 pcf_pas_network: pcf-pas-subnet `
@@ -98,11 +99,13 @@ blob_store_base_url: $domain
 
 om --skip-ssl-validation `
     configure-product `
-    -c $PRODUCT_FILE -l "$HOME/mysql_vars.yaml"
+    -c "$config_file"  -l "$HOME/mysql_vars.yaml"
 
 om --skip-ssl-validation `
     apply-changes `
     --product-name $PRODUCT_NAME
 
 om --skip-ssl-validation `
-    deployed-products  
+    deployed-products 
+
+Pop-Location 
