@@ -616,7 +616,7 @@
             "properties": {
               "addressPrefix": "[variables('servicesaddressPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'AllowWeb')]"
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'AllowWebAndSSH')]"
               }
             }
           },
