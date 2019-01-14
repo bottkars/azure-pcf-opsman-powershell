@@ -15,7 +15,7 @@ product-properties:
     value: disable
   .ha_proxy.skip_cert_verify:
     value: true
-    .properties.routing_tls_termination:
+  .properties.routing_tls_termination:
     value: router
   .router.frontend_idle_timeout:
     value: 240  
