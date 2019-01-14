@@ -17,7 +17,7 @@ ST=Hessen
 L=Taunusstein
 O=Karsten Bott
 OU=DEMO
-CN = $PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME
+CN = *.$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME
 
 [ req_ext ]
 subjectAltName = @alt_names
