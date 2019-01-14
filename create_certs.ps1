@@ -33,6 +33,7 @@ DNS.5 = *.$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME
 C:\OpenSSL-Win64\bin\openssl.exe req -x509 `
   -newkey rsa:2048 `
   -nodes `
+  -days 365 `
   -keyout "$HOME/$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME.key" `
   -out "$HOME/$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME.cert" `
   -config "$HOME/$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME.cnf"
