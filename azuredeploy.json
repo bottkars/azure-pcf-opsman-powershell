@@ -625,7 +625,7 @@
             "properties": {
               "addressPrefix": "[variables('pasaddressPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'AllowWeb')]"
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'AllowWebAndSSH')]"
               }
             }
           }
