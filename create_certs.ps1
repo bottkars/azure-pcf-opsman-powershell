@@ -73,7 +73,7 @@ C:\OpenSSL-Win64\bin\openssl req `
 C:\OpenSSL-Win64\bin\openssl x509 -req -in "$($HOME)/$($DOMAIN).csr" `
 -CA "$($HOME)/$($DOMAIN).ca.crt" `
 -CAkey "$($HOME)/$($DOMAIN).ca.key.pkcs8" `
--CAcreateserial -out "$($DOMAIN).host.crt" -days $DAYS -sha256 -extfile $extfile "$($HOME)/extfile.txt"
+-CAcreateserial -out "$($HOME)/$($DOMAIN).host.crt" -days $DAYS -sha256 -extfile $extfile "$($HOME)/extfile.txt"
 
 
 $content = Get-Content "$($HOME)/$($DOMAIN).host.crt"
