@@ -26,6 +26,7 @@ $smtp_password=$env_vars.SMTP_PASSWORD
 $smtp_from=$env_vars.SMTP_FROM
 $smtp_port=$env_vars.SMTP_PORT
 $pcf_notifications_email=$env_vars.PCF_NOTIFICATIONS_EMAIL
+$PCF_DOMAIN_NAME=$domain
 
 
 
@@ -106,17 +107,17 @@ om --skip-ssl-validation `
   --product-version $VERSION
 
 
-$PCF_KEY_PEM=get-content "$HOME/pcfdemo.local.azurestack.external.key"
+$PCF_KEY_PEM=get-content "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($PCF_DOMAIN_NAME).key"
 $PCF_KEY_PEM=$PCF_KEY_PEM  -join "\r\n"
-$PCF_CERT_PEM=get-content "$HOME/pcfdemo.local.azurestack.external.cert"
+$PCF_CERT_PEM=get-content "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($PCF_DOMAIN_NAME).crt"
 $PCF_CERT_PEM=$PCF_CERT_PEM  -join "\r\n"
     
 
 "
 product_name: $PRODUCT_NAME
 pcf_pas_network: pcf-pas-subnet `
-pcf_system_domain: system.$PCF_SUBDOMAIN_NAME.$domain `
-pcf_apps_domain: apps.$PCF_SUBDOMAIN_NAME.$domain `
+pcf_system_domain: system.$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME `
+pcf_apps_domain: apps.$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME `
 pcf_cert_pem: `"$PCF_CERT_PEM`"
 pcf_key_pem: `"$PCF_KEY_PEM`"
 pcf_credhub_key: `"012345678901234567890`"

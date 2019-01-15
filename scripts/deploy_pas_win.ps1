@@ -99,7 +99,7 @@ $PRODUCT_NAME=$PRODUCTS.name
 
 $PCF_KEY_PEM=get-content ./pcfdemo.local.azurestack.external.key
 $PCF_KEY_PEM=$PCF_KEY_PEM  -join "\r\n"
-$PCF_CERT_PEM=get-content ./pcfdemo.local.azurestack.external.cert
+$PCF_CERT_PEM=get-content ./pcfdemo.local.azurestack.external.crt
 $PCF_CERT_PEM=$PCF_CERT_PEM  -join "\r\n"
     
 

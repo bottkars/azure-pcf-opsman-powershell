@@ -32,5 +32,5 @@ C:\OpenSSL-Win64\bin\openssl.exe req -x509 `
   -nodes `
   -days 365 `
   -keyout "$HOME/$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME.key" `
-  -out "$HOME/$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME.cert" `
+  -out "$HOME/$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME.crt" `
   -config "$HOME/$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME.cnf"
