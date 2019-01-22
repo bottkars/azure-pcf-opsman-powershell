@@ -3,4 +3,4 @@
 
 
 
-cf srevg "{\"CF_TARGET\":\"https://api.system.pcfdemo.local.azurestack.external\"}"
+cf srevg "{\"CF_TARGET\":\"https://api.sys.pcfdemo.local.azurestack.external\"}"

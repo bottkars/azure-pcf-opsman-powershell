@@ -106,8 +106,8 @@ $PCF_CERT_PEM=$PCF_CERT_PEM  -join "\r\n"
 "
 product_name: $PRODUCT_NAME
 pcf_pas_network: pcf-pas-subnet `
-pcf_system_domain: system.pcfdemo.local.azurestack.external `
-pcf_apps_domain: system.pcfdemo.local.azurestack.external `
+pcf_system_domain: sys.pcfdemo.local.azurestack.external `
+pcf_apps_domain: sys.pcfdemo.local.azurestack.external `
 pcf_notifications_email: email@examle.com `
 pcf_cert_pem: `"$PCF_CERT_PEM`"
 pcf_key_pem: `"$PCF_KEY_PEM`"

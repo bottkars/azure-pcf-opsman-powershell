@@ -20,10 +20,10 @@ create an SSL Certificate for the following domains:
 *note, the below domains are for use with an ASDK, on an integrated system replace _pcf.local.azurestack.external_ with your _pcfzone.region.azurestackdomain_*
 ```
 *.pcf.local.azurestack.external,
-*.system.pcf.local.azurestack.external,
+*.sys.pcf.local.azurestack.external,
 *.apps.pcf.local.azurestack.external,
-*.uaa.system.pcf.local.azurestack.external,
-*.login.system.pcf.local.azurestack.external
+*.uaa.sys.pcf.local.azurestack.external,
+*.login.sys.pcf.local.azurestack.external
 ```
 ![image](https://user-images.githubusercontent.com/8255007/43381969-a5846e40-93d6-11e8-9c48-ad4db23e5b69.png)
 
@@ -42,7 +42,7 @@ Confirm with X
 
 create an SSL Certificate for the following domains:  
 ```
-*.login.system.pcf.local.azurestack.external
+*.login.sys.pcf.local.azurestack.external
 ```
 enter Passphrase
 

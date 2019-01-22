@@ -86,8 +86,8 @@ pcf_pas_network: pcf-pas-subnet `
 pcf_service_network: pcf-services-subnet `
 azure_storage_access_key: $SPRING_STORAGE_KEY `
 azure_account: $SPRING_STORAGEACCOUNTNAME `
-pcf_system_domain: system.pcfdemo.local.azurestack.external `
-pcf_apps_domain: system.pcfdemo.local.azurestack.external `
+pcf_system_domain: sys.$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME `
+pcf_apps_domain: apps.$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME `
 global_recipient_email: $GLOBAL_RECIPIENT_EMAIL `
 blob_store_base_url: $domain
 " | Set-Content $HOME/spring_vars.yaml
