@@ -1,3 +1,5 @@
 {
-    "PCF_RABBITMQ_VERSION":  "1.15.3"
+    "PCF_RABBITMQ_VERSION":  "1.15.3",
+    "CONFIG_FILE": "../templates/rabbitmq.yaml"
+
 }
