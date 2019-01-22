@@ -148,8 +148,6 @@
     "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/pcf-fe-ip')]",
     "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/pcf-vms')]",
     "lbProbeID": "[concat(variables('lbID'),'/probes/tcp80')]",
-    "diagnosticsStorageAccountName": "[concat('diag', uniquestring(resourceGroup().id))]",
-    "diagnosticsStorageAccountType": "Standard_LRS",
     "mgmtSubnetRef": "[concat(variables('pcfVNetID'),'/subnets/', 'infrastructure')]",
     "publicIPRef": "[concat('Microsoft.Network/publicIPAddresses/',variables('OpsManPublicIPName'))]",
     "OpsManPublicIPName": "[concat('OpsManPublicIP_', parameters('deploymentcolor'))]",
@@ -230,9 +228,8 @@
       },
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]",
-        "[concat('Microsoft.Compute/images/', variables('OpsManVersion'))]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]"
-      ],
+        "[concat('Microsoft.Compute/images/', variables('OpsManVersion'))]"
+        ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
@@ -263,12 +260,6 @@
               "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('opsManNicName'))]"
             }
           ]
-        },
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName')),providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob)]"
-          }
         }
       }
     }
