@@ -48,7 +48,7 @@
         ## 2.4 starts here
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.117.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.131.vhd',
-        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.142.vhd
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.142.vhd'
     )]
     $opsmanager_uri = 'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.224.vhd',
     # The name of the Ressource Group we want to Deploy to.
