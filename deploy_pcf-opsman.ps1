@@ -81,7 +81,11 @@
     [ValidateSet('AzureCloud', 'AzureStack')]$Environment = "AzureStack",
     [switch]$PAS_AUTOPILOT,
     [switch]$MYSQL_AUTOPILOT, 
-    [switch]$force_product_download
+    [switch]$force_product_download,
+    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('cf','srt')]
+    $PASTYPE="srt"
 )
 
 $DeployTimes = @()
@@ -405,7 +409,7 @@ if (!$OpsmanUpdate) {
     if ($PAS_AUTOPILOT.IsPresent) {
         $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
         $StopWatch_deploy_pas.Start()
-        $command = "$PSScriptRoot/scripts/deploy_pas.ps1"
+        $command = "$PSScriptRoot/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE"
         Write-Host "Calling $command" 
         Invoke-Expression -Command $Command
         $StopWatch_deploy_pas.Stop()

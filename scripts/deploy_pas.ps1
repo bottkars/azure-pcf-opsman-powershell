@@ -1,4 +1,13 @@
 #requires -module pivposh
+param(
+
+  [Parameter(ParameterSetName = "1", Mandatory = $false)]
+  [ValidateNotNullOrEmpty()]
+  [ValidateSet('cf','srt')]
+  $PRODUCT_NAME="srt"
+
+
+)
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/pas.json"
 if (!(Test-Path $PRODUCT_FILE))
@@ -6,7 +15,6 @@ if (!(Test-Path $PRODUCT_FILE))
 $pas_conf = Get-Content $PRODUCT_FILE | ConvertFrom-Json
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
 $PCF_PAS_VERSION = $pas_conf.PCF_PAS_VERSION
-$PRODUCT_NAME = $pas_conf.PRODUCT_NAME
 $config_file = $pas_conf.CONFIG_FILE
 $OM_Target = $director_conf.OM_TARGET
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)

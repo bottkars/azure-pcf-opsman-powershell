@@ -1,5 +1,4 @@
 {
     "PCF_PAS_VERSION":  "2.3.5",
-    "PRODUCT_NAME":  "cf",
     "CONFIG_FILE": "../templates/pas.yaml"
 }
