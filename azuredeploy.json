@@ -148,7 +148,7 @@
     "tcplbID": "[resourceId('Microsoft.Network/loadBalancers',variables('tcplbName'))]",
     "tcpfrontEndIPConfigID": "[concat(variables('tcplbID'),'/frontendIPConfigurations/tcp-fe-ip')]",
     "tcplbPoolID": "[concat(variables('tcplbID'),'/backendAddressPools/tcp-backend-pool')]",
-    "tcplbProbeID": "[concat(variables('tcplbID'),'/probes/tcp80')]",
+    "tcplbProbeID": "[concat(variables('tcplbID'),'/probes/tcp1024')]",
     "mysqllbName": "[concat(resourceGroup().name,'-mysql-lb')]",
     "mysqllbID": "[resourceId('Microsoft.Network/loadBalancers',variables('mysqllbName'))]",
     "mysqlfrontEndIPConfigID": "[concat(variables('mysqllbID'),'/frontendIPConfigurations/mysql-fe-ip')]",
