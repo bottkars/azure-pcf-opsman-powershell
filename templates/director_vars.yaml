@@ -1,5 +1,4 @@
 cloud_storage_type: storage_accounts
-default_security_group: AllowWebAndSSH
 infrastructure-subnet: "PCF/infrastructure"
 pas-subnet: "PCF/pas"
 services-subnet: "PCF/services"

@@ -36,7 +36,7 @@ $ssh_private_key = $ssh_private_key -join "\r\n"
 $ca_cert = Get-Content $HOME/root.pem
 $ca_cert = $ca_cert -join "\r\n"
 $content=get-content "../templates/director_vars.yaml"
-
+$content += "default_security_group: $RG-pcf-bosh-deployed-vms-security-group"
 $content += "subscription_id: $((Get-AzureRmSubscription).SubscriptionId)"
 $content += "tenant_id: $((Get-AzureRmSubscription).TenantId)"
 $content += "client_id: $($env_vars.client_id)"

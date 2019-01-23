@@ -54,7 +54,7 @@
     # The name of the Ressource Group we want to Deploy to.
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    $resourceGroup = 'PCF_RG',
+    $resourceGroup = 'pcf',
     # region of the Deployment., local for ASDK
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
@@ -84,8 +84,10 @@
     [switch]$force_product_download,
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet('cf','srt')]
-    $PASTYPE="srt"
+    [ValidateSet('cf', 'srt')]
+    $PASTYPE = "srt",
+    [switch]$TESTONLY
+
 )
 
 $DeployTimes = @()
@@ -200,7 +202,7 @@ $storageType = 'Standard_LRS'
 $StopWatch_prepare = New-Object System.Diagnostics.Stopwatch
 $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
 $StopWatch_prepare.Start()
-
+    
 if (!$OpsmanUpdate) {
     Write-Host "==>Creating ResourceGroup $resourceGroup" -nonewline   
     $new_rg = New-AzureRmResourceGroup -Name $resourceGroup -Location $location
@@ -341,98 +343,112 @@ $parameters.Add("OpsManImageURI", $urlOfUploadedImageVhd)
 $parameters.Add("Environment", $Environment)
 
 $StopWatch_deploy.Start()
+
 Write-host "Starting $deploymentcolor Deployment of $opsManFQDNPrefix $opsmanVersion" -ForegroundColor $deploymentcolor
 if (!$OpsmanUpdate) {
     $parameters.Add("dnsZoneName", $dnsZoneName) 
-    New-AzureRmResourceGroupDeployment -Name $resourceGroup -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile $PSScriptRoot/azuredeploy.json -TemplateParameterObject $parameters
-    $MyStorageaccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup | Where-Object StorageAccountName -match $storageaccount
-    $MyStorageaccount | Set-AzureRmCurrentStorageAccount
-    Write-Host "Creating Container Stemcell in $($MyStorageaccount.StorageAccountName)"
-    $Container = New-AzureStorageContainer -Name stemcell -Permission Blob
-    Write-Host  "Creating Container bosh in $($MyStorageaccount.StorageAccountName)"
-    $Container = New-AzureStorageContainer -Name bosh
-    Write-Host "Creating Table Stemcells in $($MyStorageaccount.StorageAccountName)"
-    $Table = New-AzureStorageTable -Name stemcells
-    if (!$useManagedDisks.IsPresent) {
-        $Storageaccounts = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup | Where-Object StorageAccountName -match Xtra
-        
-        foreach ($Mystorageaccount in $Storageaccounts) {
-            $MyStorageaccount | Set-AzureRmCurrentStorageAccount
-            Write-Host "Creating Container Stemcell in $($MyStorageaccount.StorageAccountName)"
-            $Container = New-AzureStorageContainer -Name stemcell -Permission Blob
-            Write-Host "Creating Container bosh in $($MyStorageaccount.StorageAccountName)"
-            $Container = New-AzureStorageContainer -Name bosh
-        }
-        $deployment_storage_account = $MyStorageaccount.StorageAccountName
-        $deployment_storage_account = $deployment_storage_account -replace ".$"
-        $deployment_storage_account = "*$($deployment_storage_account)*"    
+    if ($TESTONLY.IsPresent) {
+        Test-AzureRmResourceGroupDeployment -Name $resourceGroup -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile $PSScriptRoot/azuredeploy.json -TemplateParameterObject $parameters
     }
-    $MYSQLStorageaccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup | Where-Object StorageAccountName -match mysqlstrg
-    $MYSQLStorageaccount | Set-AzureRmCurrentStorageAccount
-    Write-Host "Creating Container backups in $($MYSQLStorageaccount.StorageAccountName)"
-    $Container = New-AzureStorageContainer -Name backups -Permission Blob
-    $MYSQL_KEY= $MYSQLStorageaccount | Get-AzureRmStorageAccountKey
-    $mysql_storage_account = $MYSQLStorageaccount.StorageAccountName
-    $mysql_storage_key = $MYSQL_KEY[0].Value
+    else {
+        New-AzureRmResourceGroupDeployment -Name $resourceGroup -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile $PSScriptRoot/azuredeploy.json -TemplateParameterObject $parameters
+        $MyStorageaccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup | Where-Object StorageAccountName -match $storageaccount
+        $MyStorageaccount | Set-AzureRmCurrentStorageAccount
+        Write-Host "Creating Container Stemcell in $($MyStorageaccount.StorageAccountName)"
+        $Container = New-AzureStorageContainer -Name stemcell -Permission Blob
+        Write-Host  "Creating Container bosh in $($MyStorageaccount.StorageAccountName)"
+        $Container = New-AzureStorageContainer -Name bosh
+        Write-Host "Creating Table Stemcells in $($MyStorageaccount.StorageAccountName)"
+        $Table = New-AzureStorageTable -Name stemcells
+        if (!$useManagedDisks.IsPresent) {
+            $Storageaccounts = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup | Where-Object StorageAccountName -match Xtra
+            
+            foreach ($Mystorageaccount in $Storageaccounts) {
+                $MyStorageaccount | Set-AzureRmCurrentStorageAccount
+                Write-Host "Creating Container Stemcell in $($MyStorageaccount.StorageAccountName)"
+                $Container = New-AzureStorageContainer -Name stemcell -Permission Blob
+                Write-Host "Creating Container bosh in $($MyStorageaccount.StorageAccountName)"
+                $Container = New-AzureStorageContainer -Name bosh
+            }
+            $deployment_storage_account = $MyStorageaccount.StorageAccountName
+            $deployment_storage_account = $deployment_storage_account -replace ".$"
+            $deployment_storage_account = "*$($deployment_storage_account)*"    
+        }
+        $MYSQLStorageaccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup | Where-Object StorageAccountName -match mysqlstrg
+        $MYSQLStorageaccount | Set-AzureRmCurrentStorageAccount
+        Write-Host "Creating Container backups in $($MYSQLStorageaccount.StorageAccountName)"
+        $Container = New-AzureStorageContainer -Name backups -Permission Blob
+        $MYSQL_KEY = $MYSQLStorageaccount | Get-AzureRmStorageAccountKey
+        $mysql_storage_account = $MYSQLStorageaccount.StorageAccountName
+        $mysql_storage_key = $MYSQL_KEY[0].Value
 
-    Write-Host "now we are going to try and configure OpsManager"
-    $StopWatch_deploy_opsman = New-Object System.Diagnostics.Stopwatch
-    $StopWatch_deploy_opsman.Start()
-    # will create director.json for future
-    $JSon = [ordered]@{
-        OM_TARGET                = "$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)"
-        domain                   = "$($location).$($dnsdomain)"
-        PCF_SUBDOMAIN_NAME       = $PCF_SUBDOMAIN_NAME
-        boshstorageaccountname   = $storageaccount 
-        RG                       = $resourceGroup
-        mysqlstorageaccountname  = $mysql_storage_account
-        mysql_storage_key        = $mysql_storage_key
-        deploymentstorageaccount = $deployment_storage_account
-        pas_cidr                 = $pas_cidr
-        pas_range                = $pas_range
-        pas_gateway              = $pas_gateway 
-        infrastructure_range     = $infrastructure_range
-        infrastructure_cidr      = $infrastructure_cidr 
-        infrastructure_gateway   = $infrastructure_gateway
-        services_cidr            = $services_cidr
-        services_gateway         = $services_gateway
-        services_range           = $services_range
-        downloaddir              = $downloadpath
-        force_product_download   = $force_product_download.IsPresent.ToString()
-    } | ConvertTo-Json
-    $JSon | Set-Content $HOME/director.json
-    $command = "$PSScriptRoot/scripts/init_om.ps1"
-    Write-Host "Calling $command" 
-    Invoke-Expression -Command $Command
-    $StopWatch_deploy_opsman.Stop()
-    $DeployTimes += "opsman deployment took $($StopWatch_deploy_opsman.Elapsed.Hours) hours, $($StopWatch_deploy_opsman.Elapsed.Minutes) minutes and  $($StopWatch_deploy_opsman.Elapsed.Seconds) seconds"
-    if ($PAS_AUTOPILOT.IsPresent) {
-        $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
-        $StopWatch_deploy_pas.Start()
-        $command = "$PSScriptRoot/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE"
+        Write-Host "now we are going to try and configure OpsManager"
+        $StopWatch_deploy_opsman = New-Object System.Diagnostics.Stopwatch
+        $StopWatch_deploy_opsman.Start()
+        # will create director.json for future
+        $JSon = [ordered]@{
+            OM_TARGET                = "$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)"
+            domain                   = "$($location).$($dnsdomain)"
+            PCF_SUBDOMAIN_NAME       = $PCF_SUBDOMAIN_NAME
+            boshstorageaccountname   = $storageaccount 
+            RG                       = $resourceGroup
+            mysqlstorageaccountname  = $mysql_storage_account
+            mysql_storage_key        = $mysql_storage_key
+            deploymentstorageaccount = $deployment_storage_account
+            pas_cidr                 = $pas_cidr
+            pas_range                = $pas_range
+            pas_gateway              = $pas_gateway 
+            infrastructure_range     = $infrastructure_range
+            infrastructure_cidr      = $infrastructure_cidr 
+            infrastructure_gateway   = $infrastructure_gateway
+            services_cidr            = $services_cidr
+            services_gateway         = $services_gateway
+            services_range           = $services_range
+            downloaddir              = $downloadpath
+            force_product_download   = $force_product_download.IsPresent.ToString()
+        } | ConvertTo-Json
+        $JSon | Set-Content $HOME/director.json
+        $command = "$PSScriptRoot/scripts/init_om.ps1"
         Write-Host "Calling $command" 
         Invoke-Expression -Command $Command
-        $StopWatch_deploy_pas.Stop()
-        $DeployTimes += "PAS deployment took $($StopWatch_deploy_pas.Elapsed.Hours) hours, $($StopWatch_deploy_pas.Elapsed.Minutes) minutes and  $($StopWatch_deploy_pas.Elapsed.Seconds) seconds"
-    
-        if ($MYSQL_AUTOPILOT.IsPresent) {
-            $StopWatch_deploy_mysql = New-Object System.Diagnostics.Stopwatch
-            $StopWatch_deploy_mysql.Start()
-    
-            $command = "$PSScriptRoot/scripts/deploy_mysql.ps1"
+        $StopWatch_deploy_opsman.Stop()
+        $DeployTimes += "opsman deployment took $($StopWatch_deploy_opsman.Elapsed.Hours) hours, $($StopWatch_deploy_opsman.Elapsed.Minutes) minutes and  $($StopWatch_deploy_opsman.Elapsed.Seconds) seconds"
+        if ($PAS_AUTOPILOT.IsPresent) {
+            $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
+            $StopWatch_deploy_pas.Start()
+            $command = "$PSScriptRoot/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE"
             Write-Host "Calling $command" 
             Invoke-Expression -Command $Command
-            $StopWatch_deploy_mysql.Stop()
-            $DeployTimes += "mysql deployment took $($StopWatch_deploy_mysql.Elapsed.Hours) hours, $($StopWatch_deploy_mysql.Elapsed.Minutes) minutes and  $($StopWatch_deploy_mysql.Elapsed.Seconds) seconds"
-    
-        }
+            $StopWatch_deploy_pas.Stop()
+            $DeployTimes += "PAS deployment took $($StopWatch_deploy_pas.Elapsed.Hours) hours, $($StopWatch_deploy_pas.Elapsed.Minutes) minutes and  $($StopWatch_deploy_pas.Elapsed.Seconds) seconds"
+        
+            if ($MYSQL_AUTOPILOT.IsPresent) {
+                $StopWatch_deploy_mysql = New-Object System.Diagnostics.Stopwatch
+                $StopWatch_deploy_mysql.Start()
+        
+                $command = "$PSScriptRoot/scripts/deploy_mysql.ps1"
+                Write-Host "Calling $command" 
+                Invoke-Expression -Command $Command
+                $StopWatch_deploy_mysql.Stop()
+                $DeployTimes += "mysql deployment took $($StopWatch_deploy_mysql.Elapsed.Hours) hours, $($StopWatch_deploy_mysql.Elapsed.Minutes) minutes and  $($StopWatch_deploy_mysql.Elapsed.Seconds) seconds"
+        
+            }
+        }    
     }
+
 
 }
 else {
-    New-AzureRmResourceGroupDeployment -Name OpsManager `
-        -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile .\azuredeploy_update.json `
-        -TemplateParameterObject $parameters
+    if ($TESTONLY.IsPresent) {
+        Test-AzureRmResourceGroupDeployment -Name OpsManager `
+            -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile .\azuredeploy_update.json `
+            -TemplateParameterObject $parameters
+    }
+    else {
+        New-AzureRmResourceGroupDeployment -Name OpsManager `
+            -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile .\azuredeploy_update.json `
+            -TemplateParameterObject $parameters
+    }  
  
 }
 $StopWatch_deploy.Stop()
