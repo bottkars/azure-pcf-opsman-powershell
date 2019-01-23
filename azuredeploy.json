@@ -299,13 +299,13 @@
       "location": "[variables('location')]",
       "dependsOn": [
         "[parameters('dnsZoneName')]",
-        "Microsoft.Network/publicIPAddresses/pcf-lb-ip"
+        "Microsoft.Network/publicIPAddresses/web-lb-public-ip"
       ],
       "properties": {
         "TTL": 3600,
         "ARecords": [
           {
-            "ipv4Address": "[reference('Microsoft.Network/publicIPAddresses/pcf-lb-ip').IpAddress]"
+            "ipv4Address": "[reference('Microsoft.Network/publicIPAddresses/web-lb-public-ip').IpAddress]"
           }
         ]
       }
@@ -318,13 +318,13 @@
       "location": "[variables('location')]",
       "dependsOn": [
         "[parameters('dnsZoneName')]",
-        "Microsoft.Network/publicIPAddresses/pcf-lb-ip"
+        "Microsoft.Network/publicIPAddresses/web-lb-public-ip"
       ],
       "properties": {
         "TTL": 3600,
         "ARecords": [
           {
-            "ipv4Address": "[reference('Microsoft.Network/publicIPAddresses/pcf-lb-ip').IpAddress]"
+            "ipv4Address": "[reference('Microsoft.Network/publicIPAddresses/web-lb-public-ip').IpAddress]"
           }
         ]
       }
@@ -892,7 +892,7 @@
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "Microsoft.Network/publicIPAddresses/pcf-lb-ip"
+        "Microsoft.Network/publicIPAddresses/web-lb-public-ip"
       ],
       "properties": {
         "frontendIPConfigurations": [
@@ -900,7 +900,7 @@
             "name": "pcf-fe-ip",
             "properties": {
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','pcf-lb-ip')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','web-lb-public-ip')]"
               }
             }
           }
@@ -994,7 +994,7 @@
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "Microsoft.Network/publicIPAddresses/tcp-lb-ip"
+        "Microsoft.Network/publicIPAddresses/tcp-lb-public-ip"
       ],
       "properties": {
         "frontendIPConfigurations": [
@@ -1002,7 +1002,7 @@
             "name": "tcp-fe-ip",
             "properties": {
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-ip')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-public-ip')]"
               }
             }
           }
@@ -1017,7 +1017,7 @@
             "name": "tcp-rule-1024",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-ip')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-public-ip')]"
               },
               "frontendPort": 1024,
               "backendPort": 1024,
@@ -1039,7 +1039,7 @@
             "name": "tcp-ntp-rule",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-ip')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-public-ip')]"
               },
               "frontendPort": 123,
               "backendPort": 123,
@@ -1058,7 +1058,7 @@
             "name": "tcp-rule-1027",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-ip')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-public-ip')]"
               },
               "frontendPort": 1027,
               "backendPort": 1027,
@@ -1080,7 +1080,7 @@
             "name": "tcp-rule-1028",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-ip')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-public-ip')]"
               },
               "frontendPort": 1028,
               "backendPort": 1028,
@@ -1102,7 +1102,7 @@
             "name": "tcp-rule-1025",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-ip')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-public-ip')]"
               },
               "frontendPort": 1025,
               "backendPort": 1025,
@@ -1124,7 +1124,7 @@
             "name": "tcp-rule-1026",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-ip')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-public-ip')]"
               },
               "frontendPort": 1026,
               "backendPort": 1026,
@@ -1165,7 +1165,7 @@
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "Microsoft.Network/publicIPAddresses/diegossh-lb-ip"
+        "Microsoft.Network/publicIPAddresses/diego-ssh-lb-public-ip"
       ],
       "properties": {
         "frontendIPConfigurations": [
@@ -1173,7 +1173,7 @@
             "name": "diegossh-fe-ip",
             "properties": {
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','diegossh-lb-ip')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','diego-ssh-lb-public-ip')]"
               }
             }
           }
@@ -1242,9 +1242,6 @@
       "name": "[variables('mysqllbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "Microsoft.Network/publicIPAddresses/mysql-lb-ip"
-      ],
       "properties": {
         "frontendIPConfigurations": [
           {
@@ -1267,7 +1264,7 @@
             "name": "mysql-rule",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[variables('mysqlfrontEndIPConfigID')]"
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('pas_subnet_name'))]"
               },
               "backendAddressPool": {
                 "id": "[variables('mysqllbPoolID')]"
@@ -1286,7 +1283,7 @@
             "name": "mysql-ntp",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[variables('mysqlfrontEndIPConfigID')]"
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('pas_subnet_name'))]"
               },
               "backendAddressPool": {
                 "id": "[variables('mysqllbPoolID')]"
