@@ -129,9 +129,10 @@ pcf_apps_domain: apps.$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME `
 pcf_cert_pem: `"$PCF_CERT_PEM`"
 pcf_key_pem: `"$PCF_KEY_PEM`"
 pcf_credhub_key: `"012345678901234567890`"
-pcf_diego_ssh_lb: diegossh-lb
-pcf_mysql_lb: mysql-lb
-pcf_web_lb: pcf-lb
+pcf_diego_ssh_lb: $RG-diego-ssh-lb
+pcf_mysql_lb: $RG-mysql-lb
+pcf_web_lb: $RG-web-lb
+pcf_tcp_lb: $RG-tcp-lb
 smtp_address: $smtp_address
 smtp_identity: $smtp_identity
 smtp_password: `"$smtp_password`"
