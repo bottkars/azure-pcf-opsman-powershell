@@ -59,9 +59,9 @@ $content += "infrastructure_gateway: $infrastructure_gateway"
 $content += "services_cidr: $services_cidr"
 $content += "services_range: $services_range"
 $content += "services_gateway: $services_gateway"
-$content += "infrastructure-subnet: $RG-infrastructure-subnet"
-$content += "pas-subnet: $RG-pas-subnet"
-$content += "services-subnet: $RG-services-subnet"
+$content += "infrastructure-subnet: $RG-virtual-network/$RG-infrastructure-subnet"
+$content += "pas-subnet: $RG-virtual-network/$RG-pas-subnet"
+$content += "services-subnet: $RG-virtual-network/$RG-services-subnet"
 $content | Set-Content $HOME/director_vars.yaml
 
 om --skip-ssl-validation `
