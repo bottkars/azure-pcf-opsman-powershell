@@ -136,23 +136,23 @@
     "pcflbName": "[concat(resourceGroup().name,'-web-lb')]",
     "pcflbID": "[resourceId('Microsoft.Network/loadBalancers',variables('pcflbName'))]",
     "pcffrontEndIPConfigID": "[concat(variables('pcflbID'),'/frontendIPConfigurations/pcf-fe-ip')]",
-    "pcflbPoolID": "[concat(variables('pcflbID'),'/backendAddressPools/pcf-vms')]",
+    "pcflbPoolID": "[concat(variables('pcflbID'),'/backendAddressPools/pcf-backend-pool')]",
     "pcflbProbeID80": "[concat(variables('pcflbID'),'/probes/tcp80')]",
     "pcflbProbeID443": "[concat(variables('pcflbID'),'/probes/tcp443')]",
     "diegosshlbName": "[concat(resourceGroup().name,'-diego-ssh-lb')]",
     "diegosshlbID": "[resourceId('Microsoft.Network/loadBalancers',variables('diegosshlbName'))]",
     "diegosshfrontEndIPConfigID": "[concat(variables('diegosshlbID'),'/frontendIPConfigurations/diegossh-fe-ip')]",
-    "diegosshlbPoolID": "[concat(variables('diegosshlbID'),'/backendAddressPools/diegossh-vms')]",
+    "diegosshlbPoolID": "[concat(variables('diegosshlbID'),'/backendAddressPools/diegossh-backend-pool')]",
     "diegosshlbProbeID": "[concat(variables('diegosshlbID'),'/probes/tcp2222')]",
     "tcplbName": "[concat(resourceGroup().name,'-tcp-lb')]",
     "tcplbID": "[resourceId('Microsoft.Network/loadBalancers',variables('tcplbName'))]",
     "tcpfrontEndIPConfigID": "[concat(variables('tcplbID'),'/frontendIPConfigurations/tcp-fe-ip')]",
-    "tcplbPoolID": "[concat(variables('tcplbID'),'/backendAddressPools/tcp-vms')]",
+    "tcplbPoolID": "[concat(variables('tcplbID'),'/backendAddressPools/tcp-backend-pool')]",
     "tcplbProbeID": "[concat(variables('tcplbID'),'/probes/tcp80')]",
     "mysqllbName": "[concat(resourceGroup().name,'-mysql-lb')]",
     "mysqllbID": "[resourceId('Microsoft.Network/loadBalancers',variables('mysqllbName'))]",
     "mysqlfrontEndIPConfigID": "[concat(variables('mysqllbID'),'/frontendIPConfigurations/mysql-fe-ip')]",
-    "mysqllbPoolID": "[concat(variables('mysqllbID'),'/backendAddressPools/mysql-vms')]",
+    "mysqllbPoolID": "[concat(variables('mysqllbID'),'/backendAddressPools/mysql-backend-pool')]",
     "mysqllbProbeID": "[concat(variables('mysqllbID'),'/probes/tcp1936')]",
     "diagnosticsStorageAccountName": "[concat('diag', uniquestring(resourceGroup().id))]",
     "diagnosticsStorageAccountType": "Standard_LRS",
@@ -906,7 +906,7 @@
         ],
         "backendAddressPools": [
           {
-            "name": "pcf-vms"
+            "name": "pcf-backend-pool"
           }
         ],
         "loadBalancingRules": [
@@ -1179,7 +1179,7 @@
         ],
         "backendAddressPools": [
           {
-            "name": "diegossh-vms"
+            "name": "diegossh-backend-pool"
           }
         ],
         "loadBalancingRules": [
@@ -1255,7 +1255,7 @@
         ],
         "backendAddressPools": [
           {
-            "name": "mysql-vms"
+            "name": "mysql-backend-pool"
           }
         ],
         "loadBalancingRules": [
