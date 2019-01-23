@@ -180,9 +180,9 @@ $services_range = "$mask.4.1-$mask.4.10"
 $services_gateway = "$mask.4.1"
 
 Write-Host "Using the following Network Assignments:" -ForegroundColor Magenta
-Write-Host "PCF/infrastructure  : cidr $infrastructure_cidr,range $infrastructure_range,gateway $infrastructure_gateway"
-Write-Host "PCF/services        : cidr $services_cidr,range $services_range,gateway $services_gateway"
-Write-Host "PCF/pas             : cidr $pas_cidr,range $pas_range,gateway $pas_gateway"
+Write-Host "$RG-virtual-network/$RG-infrastructure-subnet  : cidr $infrastructure_cidr,range $infrastructure_range,gateway $infrastructure_gateway"
+Write-Host "$RG-virtual-network/$RG-services-subnet        : cidr $services_cidr,range $services_range,gateway $services_gateway"
+Write-Host "$RG-virtual-network/$RG-pas-subnet             : cidr $pas_cidr,range $pas_range,gateway $pas_gateway"
 Write-Host "$($opsManFQDNPrefix)green $Mask.8.4/32"
 Write-Host "$($opsManFQDNPrefix)blue $Mask.8.5/32"
 Write-Host
@@ -348,7 +348,7 @@ Write-host "Starting $deploymentcolor Deployment of $opsManFQDNPrefix $opsmanVer
 if (!$OpsmanUpdate) {
     $parameters.Add("dnsZoneName", $dnsZoneName) 
     if ($TESTONLY.IsPresent) {
-        Test-AzureRmResourceGroupDeployment -Name $resourceGroup -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile $PSScriptRoot/azuredeploy.json -TemplateParameterObject $parameters
+        Test-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile $PSScriptRoot/azuredeploy.json -TemplateParameterObject $parameters
     }
     else {
         New-AzureRmResourceGroupDeployment -Name $resourceGroup -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile $PSScriptRoot/azuredeploy.json -TemplateParameterObject $parameters
@@ -440,7 +440,7 @@ if (!$OpsmanUpdate) {
 }
 else {
     if ($TESTONLY.IsPresent) {
-        Test-AzureRmResourceGroupDeployment -Name OpsManager `
+        Test-AzureRmResourceGroupDeployment `
             -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile .\azuredeploy_update.json `
             -TemplateParameterObject $parameters
     }

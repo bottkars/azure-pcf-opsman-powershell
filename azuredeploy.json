@@ -119,7 +119,10 @@
     "xstorageid3": "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('boshExtraStorageAccountName'),'3'))]",
     "xstorageid4": "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('boshExtraStorageAccountName'),'4'))]",
     "xstorageid5": "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('boshExtraStorageAccountName'),'5'))]",
-    "virtualNetworkName": "PCF",
+    "virtualNetworkName": "[concat(resourceGroup().name,'-virtual-network')]",
+    "pas_subnet": "[concat(resourceGroup().name,'-pas-subnet')]",
+    "services_subnet": "[concat(resourceGroup().name,'-services-subnet')]",
+    "infrastructure_subnet": "[concat(resourceGroup().name,'-infrastructure-subnet')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
     "pcfVNetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
     "opsManNicName": "[concat('OPSMANNIC_',parameters('deploymentcolor'))]",
@@ -857,19 +860,19 @@
         },
         "subnets": [
           {
-            "name": "infrastructure",
+            "name": "[variables('infrastructure_subnet')]",
             "properties": {
               "addressPrefix": "[variables('infrastructureaddressPrefix')]"
             }
           },
           {
-            "name": "services",
+            "name": "[variables('services_subnet')]",
             "properties": {
               "addressPrefix": "[variables('servicesaddressPrefix')]"
             }
           },
           {
-            "name": "pas",
+            "name": "[variables('pas_subnet')]",
             "properties": {
               "addressPrefix": "[variables('pasaddressPrefix')]"
             }

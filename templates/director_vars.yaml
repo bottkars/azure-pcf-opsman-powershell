@@ -1,6 +1,3 @@
 cloud_storage_type: storage_accounts
-infrastructure-subnet: "PCF/infrastructure"
-pas-subnet: "PCF/pas"
-services-subnet: "PCF/services"
 authentication: "AzureAD"
 endpoint_prefix: "management"
