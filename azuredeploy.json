@@ -1174,7 +1174,7 @@
                 "id": "[reference(concat('Microsoft.Network/virtualNetworks/',variables('virtualNetworkName'))).subnets[0].id]"
               },
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('pcf_ops_manager_security_group_name'))]"
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('ops_manager_security_group_name'))]"
               }
             }
           }
