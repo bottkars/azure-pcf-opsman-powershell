@@ -22,7 +22,7 @@
       "metadata": {
         "description": "Uri of the Operations Manager VHD"
       }
-    },    
+    },
     "useManagedDisks": {
       "type": "string",
       "defaultValue": "yes",
@@ -44,7 +44,7 @@
       "metadata": {
         "description": "Use managed disks, otherwise, storageaccounts will be created"
       }
-    },    
+    },
     "opsManFQDNPrefix": {
       "type": "string",
       "defaultValue": "pcfopsman",
@@ -64,14 +64,14 @@
       "metadata": {
         "description": "Opsman VHD Name"
       }
-    }, 
+    },
     "deploymentcolor": {
       "type": "string",
       "defaultValue": "green",
       "metadata": {
         "description": "select the opsman deployment color"
       }
-    },      
+    },
     "vmSize": {
       "type": "string",
       "defaultValue": "Standard_DS2_v2",
@@ -92,7 +92,7 @@
         "description": "Password for admin user."
       }
     },
-"location": {
+    "location": {
       "type": "string",
       "defaultValue": "local",
       "metadata": {
@@ -103,10 +103,9 @@
       "type": "string",
       "defaultValue": "pcfpas.local.azurestack.external",
       "metadata": {
-          "description": "The name of the DNS zone."
+        "description": "The name of the DNS zone."
       }
-    }  
-
+    }
   },
   "variables": {
     "mysqlStorageAccountName": "[concat('mysqlstrg',uniquestring(resourceGroup().id, deployment().name))]",
@@ -152,7 +151,10 @@
     "publicIPRef": "[concat('Microsoft.Network/publicIPAddresses/',variables('OpsManPublicIPName'))]",
     "OpsManPublicIPName": "[concat('OpsManPublicIP_', parameters('deploymentcolor'))]",
     "OpsManIPConfigName": "[concat('OpsManIPConfig_', parameters('deploymentcolor'))]",
-    "OpsManVersion": "[replace(parameters('opsManVHD'),'.vhd', '')]"
+    "OpsManVersion": "[replace(parameters('opsManVHD'),'.vhd', '')]",
+    "ops_manager_security_group_name": "[concat(resourceGroup().name,'-pcf-ops-manager-security-group')]",
+    "bosh_deployed_vms_security_group_name": "[concat(resourceGroup().name,'-pcf-bosh-deployed-vms-security-group')]"
+
   },
   "resources": [
     {
@@ -180,10 +182,9 @@
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
-        },
-        "kind": "Storage",
-        "properties": {
-        }
+      },
+      "kind": "Storage",
+      "properties": {}
     },
     {
       "type": "Microsoft.Storage/storageAccounts",
@@ -193,10 +194,9 @@
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
-        },
-        "kind": "Storage",
-        "properties": {
-        }
+      },
+      "kind": "Storage",
+      "properties": {}
     },
     {
       "type": "Microsoft.Storage/storageAccounts",
@@ -206,10 +206,9 @@
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
-        },
-        "kind": "Storage",
-        "properties": {
-        }
+      },
+      "kind": "Storage",
+      "properties": {}
     },
     {
       "type": "Microsoft.Storage/storageAccounts",
@@ -219,10 +218,9 @@
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
-        },
-        "kind": "Storage",
-        "properties": {
-        }
+      },
+      "kind": "Storage",
+      "properties": {}
     },
     {
       "type": "Microsoft.Storage/storageAccounts",
@@ -232,10 +230,9 @@
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
-        },
-        "kind": "Storage",
-        "properties": {
-        }
+      },
+      "kind": "Storage",
+      "properties": {}
     },
     {
       "type": "Microsoft.Storage/storageAccounts",
@@ -245,10 +242,9 @@
       "location": "[variables('location')]",
       "sku": {
         "name": "Standard_LRS"
-        },
-        "kind": "Storage",
-        "properties": {
-        }
+      },
+      "kind": "Storage",
+      "properties": {}
     },
     {
       "name": "[variables('diagnosticsStorageAccountName')]",
@@ -257,10 +253,9 @@
       "location": "[resourceGroup().location]",
       "sku": {
         "name": "[variables('diagnosticsStorageAccountType')]"
-        },
-        "kind": "Storage",
-        "properties": {
-        }      
+      },
+      "kind": "Storage",
+      "properties": {}
     },
     {
       "apiVersion": "2017-10-01",
@@ -278,12 +273,12 @@
       }
     },
     {
-        "type": "Microsoft.Network/dnszones",
-        "condition": "[equals(parameters('Environment'),'AzureStack')]",
-        "name": "[parameters('dnsZoneName')]",
-        "apiVersion": "2016-04-01",
-        "location": "global",
-        "properties": {}
+      "type": "Microsoft.Network/dnszones",
+      "condition": "[equals(parameters('Environment'),'AzureStack')]",
+      "name": "[parameters('dnsZoneName')]",
+      "apiVersion": "2016-04-01",
+      "location": "global",
+      "properties": {}
     },
     {
       "type": "Microsoft.Network/dnszones/A",
@@ -322,7 +317,7 @@
           }
         ]
       }
-    },    
+    },
     {
       "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
@@ -351,239 +346,498 @@
       }
     },
     {
-      "name": "AllowWeb",
-      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('bosh_deployed_vms_security_group_name')]",
       "apiVersion": "2017-10-01",
       "location": "[parameters('location')]",
-      "properties": {
-        "securityRules": [
-          {
-            "properties": {
-              "description": "Allow Inbound HTTP",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "80",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 1100,
-              "direction": "Inbound"
-            },
-            "name": "Allow-HTTP"
-          },
-          {
-            "properties": {
-              "description": "Allow Inbound HTTPS",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "443",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 1000,
-              "direction": "Inbound"
-            },
-            "name": "Allow-HTTPS"
-          }
-        ]
-      }
-    },        
-    {
-      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "AllowWebAndSSH",
-      "location": "[variables('location')]",
       "properties": {
+        "provisioningState": "Succeeded",
         "securityRules": [
           {
-            "name": "allow-ssh-to-opsman-green",
-            "properties": {
-              "description": "Allow Inbound SSH To Ops Manager",
-              "protocol": "*",
-              "sourcePortRange": "*",
-              "destinationPortRange": "22",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "[concat(variables('OpsManGreenIP'), '/32')]",
-              "access": "Allow",
-              "priority": 1200,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "allow-ssh-to-opsman-blue",
-            "properties": {
-              "description": "Allow Inbound SSH To Ops Manager",
-              "protocol": "*",
-              "sourcePortRange": "*",
-              "destinationPortRange": "22",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "[concat(variables('OpsManBlueIP'), '/32')]",
-              "access": "Allow",
-              "priority": 1250,
-              "direction": "Inbound"
-            }
-          },          
-          {
-            "name": "allow-http-to-opsman-green",
-            "properties": {
-              "description": "Allow Inbound HTTP To Ops Manager",
-              "protocol": "*",
-              "sourcePortRange": "*",
-              "destinationPortRange": "80",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "[concat(variables('OpsManGreenIP'), '/32')]",
-              "access": "Allow",
-              "priority": 1300,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "allow-http-to-opsman-blue",
-            "properties": {
-              "description": "Allow Inbound HTTP To Ops Manager",
-              "protocol": "*",
-              "sourcePortRange": "*",
-              "destinationPortRange": "80",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "[concat(variables('OpsManBlueIP'), '/32')]",
-              "access": "Allow",
-              "priority": 1350,
-              "direction": "Inbound"
-            }
-          },          
-          {
-            "name": "allow-https-to-opsman-green",
-            "properties": {
-              "description": "Allow Inbound HTTPS To Ops Manager",
-              "protocol": "*",
-              "sourcePortRange": "*",
-              "destinationPortRange": "443",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "[concat(variables('OpsManGreenIP'), '/32')]",
-              "access": "Allow",
-              "priority": 1400,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "allow-https-to-opsman-blue",
-            "properties": {
-              "description": "Allow Inbound HTTPS To Ops Manager",
-              "protocol": "*",
-              "sourcePortRange": "*",
-              "destinationPortRange": "443",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "[concat(variables('OpsManBlueIP'), '/32')]",
-              "access": "Allow",
-              "priority": 1450,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "allow-http",
+            "name": "bosh-director",
             "properties": {
               "protocol": "Tcp",
               "sourcePortRange": "*",
-              "destinationPortRange": "80",
-              "sourceAddressPrefix": "*",
+              "destinationPortRange": "25555",
+              "sourceAddressPrefix": "Internet",
               "destinationAddressPrefix": "*",
               "access": "Allow",
-              "priority": 1500,
-              "direction": "Inbound"
+              "priority": 202,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
             }
           },
           {
-            "name": "allow-https",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "443",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 1600,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "allow-diego-ssh",
+            "name": "diego-ssh",
             "properties": {
               "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "2222",
-              "sourceAddressPrefix": "*",
+              "sourceAddressPrefix": "Internet",
               "destinationAddressPrefix": "*",
               "access": "Allow",
-              "priority": 1700,
-              "direction": "Inbound"
+              "priority": 209,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
             }
           },
           {
-            "name": "allow-mysql-probe",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "1935",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 175,
-              "direction": "Inbound"
-            }
-          },          
-          {
-            "name": "allow-mysqql",
+            "name": "mysql",
             "properties": {
               "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "3306",
-              "sourceAddressPrefix": "*",
+              "sourceAddressPrefix": "Internet",
               "destinationAddressPrefix": "*",
               "access": "Allow",
-              "priority": 1750,
-              "direction": "Inbound"
+              "priority": 207,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
             }
           },
           {
-            "name": "allow-socks",
+            "name": "dns",
             "properties": {
-              "protocol": "Tcp",
+              "protocol": "*",
               "sourcePortRange": "*",
-              "destinationPortRange": "8443",
-              "sourceAddressPrefix": "*",
+              "destinationPortRange": "53",
+              "sourceAddressPrefix": "Internet",
               "destinationAddressPrefix": "*",
               "access": "Allow",
-              "priority": 1850,
-              "direction": "Inbound"
+              "priority": 203,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
             }
           },
           {
-            "name": "allow-credhub",
+            "name": "https",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "443",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 205,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "loggregator",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "4443",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 206,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "tcp",
             "properties": {
               "protocol": "Tcp",
               "sourcePortRange": "*",
-              "destinationPortRange": "8844",
-              "sourceAddressPrefix": "*",
+              "destinationPortRange": "1024-1173",
+              "sourceAddressPrefix": "Internet",
               "destinationAddressPrefix": "*",
               "access": "Allow",
-              "priority": 1950,
-              "direction": "Inbound"
+              "priority": 210,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
             }
           },
-            {
-              "name": "allow-boshdns",
-              "properties": {
-                "protocol": "Tcp",
-                "sourcePortRange": "*",
-                "destinationPortRange": "8853",
-                "sourceAddressPrefix": "*",
-                "destinationAddressPrefix": "*",
-                "access": "Allow",
-                "priority": 2050,
-                "direction": "Inbound"
-              }            
-          } 
-
+          {
+            "name": "mysql-healthcheck",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "1936",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 208,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "ssh",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 200,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "http",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "80",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 204,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "internal-anything",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "bosh-agent",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "6868",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 201,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          }
+        ],
+        "defaultSecurityRules": [
+          {
+            "name": "AllowVnetInBound",
+            "properties": {
+              "description": "Allow inbound traffic from all VMs in VNET",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 65000,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "AllowAzureLoadBalancerInBound",
+            "properties": {
+              "description": "Allow inbound traffic from azure load balancer",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "AzureLoadBalancer",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 65001,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "DenyAllInBound",
+            "properties": {
+              "description": "Deny all inbound traffic",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 65500,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "AllowVnetOutBound",
+            "properties": {
+              "description": "Allow outbound traffic from all VMs to all VMs in VNET",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 65000,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "AllowInternetOutBound",
+            "properties": {
+              "description": "Allow outbound traffic from all VMs to Internet",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "Internet",
+              "access": "Allow",
+              "priority": 65001,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "DenyAllOutBound",
+            "properties": {
+              "description": "Deny all outbound traffic",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 65500,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[variables('ops_manager_security_group_name')]",
+      "apiVersion": "2017-10-01",
+      "location": "[parameters('location')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "https",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "443",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 205,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "ssh",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 200,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "http",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "80",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 204,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          }
+        ],
+        "defaultSecurityRules": [
+          {
+            "name": "AllowVnetInBound",
+            "properties": {
+              "description": "Allow inbound traffic from all VMs in VNET",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 65000,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "AllowAzureLoadBalancerInBound",
+            "properties": {
+              "description": "Allow inbound traffic from azure load balancer",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "AzureLoadBalancer",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 65001,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "DenyAllInBound",
+            "properties": {
+              "description": "Deny all inbound traffic",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 65500,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "AllowVnetOutBound",
+            "properties": {
+              "description": "Allow outbound traffic from all VMs to all VMs in VNET",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 65000,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "AllowInternetOutBound",
+            "properties": {
+              "description": "Allow outbound traffic from all VMs to Internet",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "Internet",
+              "access": "Allow",
+              "priority": 65001,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "DenyAllOutBound",
+            "properties": {
+              "description": "Deny all outbound traffic",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 65500,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          }
         ]
       }
     },
@@ -605,31 +859,22 @@
           {
             "name": "infrastructure",
             "properties": {
-              "addressPrefix": "[variables('infrastructureaddressPrefix')]",
-              "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'AllowWebAndSSH')]"
-              }
+              "addressPrefix": "[variables('infrastructureaddressPrefix')]"
             }
           },
           {
             "name": "services",
             "properties": {
-              "addressPrefix": "[variables('servicesaddressPrefix')]",
-              "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'AllowWebAndSSH')]"
-              }
+              "addressPrefix": "[variables('servicesaddressPrefix')]"
             }
           },
           {
             "name": "pas",
             "properties": {
-              "addressPrefix": "[variables('pasaddressPrefix')]",
-              "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'AllowWebAndSSH')]"
-              }
+              "addressPrefix": "[variables('pasaddressPrefix')]"
             }
           }
-        ]        
+        ]
       }
     },
     {
@@ -886,7 +1131,7 @@
                 "id": "[variables('mysqllbProbeID')]"
               }
             }
-          }          
+          }
         ],
         "probes": [
           {
@@ -901,7 +1146,6 @@
         ]
       }
     },
-    
     {
       "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/networkInterfaces",
@@ -928,6 +1172,9 @@
               },
               "subnet": {
                 "id": "[reference(concat('Microsoft.Network/virtualNetworks/',variables('virtualNetworkName'))).subnets[0].id]"
+              },
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('pcf_ops_manager_security_group_name'))]"
               }
             }
           }
@@ -947,7 +1194,7 @@
         "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]",
         "[concat('Microsoft.Compute/images/', variables('OpsManVersion'))]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]"
-       ],
+      ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
@@ -964,9 +1211,9 @@
                   "keyData": "[parameters('sshKeyData')]"
                 }
               ]
-            }            
             }
-          },
+          }
+        },
         "storageProfile": {
           "imageReference": {
             "id": "[resourceId('Microsoft.Compute/images', variables('OpsManVersion'))]"
@@ -986,17 +1233,17 @@
           }
         }
       }
-    }   
+    }
   ],
   "outputs": {
     "Opsman URL": {
       "value": "[concat('https://', reference(variables('OpsManPublicIPName')).dnsSettings.fqdn)]",
       "type": "string"
     },
-      "Bosh Storageaccount": {
-        "value": "[parameters('storageAccountName')]",
-        "type": "string"
-      },
+    "Bosh Storageaccount": {
+      "value": "[parameters('storageAccountName')]",
+      "type": "string"
+    },
     "Extra Storageaccount Prefix": {
       "type": "string",
       "value": "[if(equals(parameters('useManagedDisks'), 'no'), variables('boshExtraStorageAccountName'), 'None, using ManagedDisks for extra Storage')]"
