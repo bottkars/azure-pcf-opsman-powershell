@@ -849,9 +849,7 @@
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[variables('location')]",
-      "dependsOn": [
-        "[concat('Microsoft.Network/networkSecurityGroups', '/', 'AllowWebAndSSH')]"
-      ],
+      "dependsOn": [],
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
@@ -1158,11 +1156,11 @@
         "deployment": "[parameters('deploymentcolor')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/networkSecurityGroups/', 'AllowWebAndSSH')]"
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('ops_manager_security_group_name'))]"
       ],
       "properties": {
         "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'AllowWebAndSSH')]"
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups',  variables('ops_manager_security_group_name'))]"
         },
         "ipConfigurations": [
           {
