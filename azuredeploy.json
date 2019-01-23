@@ -1144,7 +1144,7 @@
         ],
         "probes": [
           {
-            "name": "tcp-probe",
+            "name": "tcp1024",
             "properties": {
               "protocol": "Tcp",
               "port": 80,
