@@ -155,8 +155,8 @@
     "OpsManPublicIPName": "[concat('OpsManPublicIP_', parameters('deploymentcolor'))]",
     "OpsManIPConfigName": "[concat('OpsManIPConfig_', parameters('deploymentcolor'))]",
     "OpsManVersion": "[replace(parameters('opsManVHD'),'.vhd', '')]",
-    "ops_manager_security_group_name": "[concat(resourceGroup().name,'-pcf-ops-manager-security-group')]",
-    "bosh_deployed_vms_security_group_name": "[concat(resourceGroup().name,'-pcf-bosh-deployed-vms-security-group')]"
+    "ops_manager_security_group_name": "[concat(resourceGroup().name,'-ops-manager-security-group')]",
+    "bosh_deployed_vms_security_group_name": "[concat(resourceGroup().name,'-bosh-deployed-vms-security-group')]"
 
   },
   "resources": [
