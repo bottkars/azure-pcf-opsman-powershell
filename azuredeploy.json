@@ -120,9 +120,9 @@
     "xstorageid4": "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('boshExtraStorageAccountName'),'4'))]",
     "xstorageid5": "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('boshExtraStorageAccountName'),'5'))]",
     "virtualNetworkName": "[concat(resourceGroup().name,'-virtual-network')]",
-    "pas_subnet": "[concat(resourceGroup().name,'-pas-subnet')]",
-    "services_subnet": "[concat(resourceGroup().name,'-services-subnet')]",
-    "infrastructure_subnet": "[concat(resourceGroup().name,'-infrastructure-subnet')]",
+    "pas_subnet_name": "[concat(resourceGroup().name,'-pas-subnet')]",
+    "services_subnet_name": "[concat(resourceGroup().name,'-services-subnet')]",
+    "infrastructure_subnet_name": "[concat(resourceGroup().name,'-infrastructure-subnet')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
     "pcfVNetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
     "opsManNicName": "[concat('OPSMANNIC_',parameters('deploymentcolor'))]",
@@ -133,17 +133,23 @@
     "OpsManGreenIP": "[concat(parameters('mask'),'.8.4')]",
     "OpsManBlueIP": "[concat(parameters('mask'),'.8.5')]",
     "opsManPrivateIPAddress": "[if(equals(parameters('deploymentcolor'),'green'), variables('OpsManGreenIP'), variables('OpsManBlueIP'))]",
-    "pcflbName": "pcf-lb",
+    "pcflbName": "[concat(resourceGroup().name,'-web-lb')]",
     "pcflbID": "[resourceId('Microsoft.Network/loadBalancers',variables('pcflbName'))]",
     "pcffrontEndIPConfigID": "[concat(variables('pcflbID'),'/frontendIPConfigurations/pcf-fe-ip')]",
     "pcflbPoolID": "[concat(variables('pcflbID'),'/backendAddressPools/pcf-vms')]",
-    "pcflbProbeID": "[concat(variables('pcflbID'),'/probes/tcp80')]",
-    "diegosshlbName": "diegossh-lb",
+    "pcflbProbeID80": "[concat(variables('pcflbID'),'/probes/tcp80')]",
+    "pcflbProbeID443": "[concat(variables('pcflbID'),'/probes/tcp443')]",
+    "diegosshlbName": "[concat(resourceGroup().name,'-diego-ssh-lb')]",
     "diegosshlbID": "[resourceId('Microsoft.Network/loadBalancers',variables('diegosshlbName'))]",
     "diegosshfrontEndIPConfigID": "[concat(variables('diegosshlbID'),'/frontendIPConfigurations/diegossh-fe-ip')]",
     "diegosshlbPoolID": "[concat(variables('diegosshlbID'),'/backendAddressPools/diegossh-vms')]",
-    "diegosshlbProbeID": "[concat(variables('diegosshlbID'),'/probes/tcp80')]",
-    "mysqllbName": "mysql-lb",
+    "diegosshlbProbeID": "[concat(variables('diegosshlbID'),'/probes/tcp2222')]",
+    "tcplbName": "[concat(resourceGroup().name,'-tcp-lb')]",
+    "tcplbID": "[resourceId('Microsoft.Network/loadBalancers',variables('tcplbName'))]",
+    "tcpfrontEndIPConfigID": "[concat(variables('tcplbID'),'/frontendIPConfigurations/tcp-fe-ip')]",
+    "tcplbPoolID": "[concat(variables('tcplbID'),'/backendAddressPools/tcp-vms')]",
+    "tcplbProbeID": "[concat(variables('tcplbID'),'/probes/tcp80')]",
+    "mysqllbName": "[concat(resourceGroup().name,'-mysql-lb')]",
     "mysqllbID": "[resourceId('Microsoft.Network/loadBalancers',variables('mysqllbName'))]",
     "mysqlfrontEndIPConfigID": "[concat(variables('mysqllbID'),'/frontendIPConfigurations/mysql-fe-ip')]",
     "mysqllbPoolID": "[concat(variables('mysqllbID'),'/backendAddressPools/mysql-vms')]",
@@ -156,8 +162,10 @@
     "OpsManIPConfigName": "[concat('OpsManIPConfig_', parameters('deploymentcolor'))]",
     "OpsManVersion": "[replace(parameters('opsManVHD'),'.vhd', '')]",
     "ops_manager_security_group_name": "[concat(resourceGroup().name,'-ops-manager-security-group')]",
-    "bosh_deployed_vms_security_group_name": "[concat(resourceGroup().name,'-bosh-deployed-vms-security-group')]"
-
+    "bosh_deployed_vms_security_group_name": "[concat(resourceGroup().name,'-bosh-deployed-vms-security-group')]",
+    "pcf-lb-ip-name": "web-lb-public-ip",
+    "diego-ssh-lb-ip-name": "diego-ssh-lb-public-ip",
+    "tcp-lb-ip-name": "tcp-lb-public-ip"
   },
   "resources": [
     {
@@ -324,7 +332,7 @@
     {
       "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "pcf-lb-ip",
+      "name": "[variables('pcf-lb-ip-name')]",
       "location": "[variables('location')]",
       "properties": {
         "publicIPAllocationMethod": "Static"
@@ -333,7 +341,7 @@
     {
       "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "mysql-lb-ip",
+      "name": "[variables('tcp-lb-ip-name')]",
       "location": "[variables('location')]",
       "properties": {
         "publicIPAllocationMethod": "Static"
@@ -342,7 +350,7 @@
     {
       "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "diegossh-lb-ip",
+      "name": "[variables('diego-ssh-lb-ip-name')]",
       "location": "[variables('location')]",
       "properties": {
         "publicIPAllocationMethod": "Static"
@@ -858,19 +866,19 @@
         },
         "subnets": [
           {
-            "name": "[variables('infrastructure_subnet')]",
+            "name": "[variables('infrastructure_subnet_name')]",
             "properties": {
               "addressPrefix": "[variables('infrastructureaddressPrefix')]"
             }
           },
           {
-            "name": "[variables('services_subnet')]",
+            "name": "[variables('services_subnet_name')]",
             "properties": {
               "addressPrefix": "[variables('servicesaddressPrefix')]"
             }
           },
           {
-            "name": "[variables('pas_subnet')]",
+            "name": "[variables('pas_subnet_name')]",
             "properties": {
               "addressPrefix": "[variables('pasaddressPrefix')]"
             }
@@ -904,7 +912,7 @@
         ],
         "loadBalancingRules": [
           {
-            "name": "https",
+            "name": "web-https-rule",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('pcffrontEndIPConfigID')]"
@@ -918,12 +926,12 @@
               "enableFloatingIP": false,
               "idleTimeoutInMinutes": 4,
               "probe": {
-                "id": "[variables('pcflbProbeID')]"
+                "id": "[variables('pcflbProbeID443')]"
               }
             }
           },
           {
-            "name": "http",
+            "name": "web-http-rule",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('pcffrontEndIPConfigID')]"
@@ -937,12 +945,12 @@
               "enableFloatingIP": false,
               "idleTimeoutInMinutes": 4,
               "probe": {
-                "id": "[variables('pcflbProbeID')]"
+                "id": "[variables('pcflbProbeID80')]"
               }
             }
           },
           {
-            "name": "diego-ssh",
+            "name": "web-ntp-rule",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('pcffrontEndIPConfigID')]"
@@ -950,14 +958,11 @@
               "backendAddressPool": {
                 "id": "[variables('pcflbPoolID')]"
               },
-              "protocol": "Tcp",
-              "frontendPort": 2222,
-              "backendPort": 2222,
+              "protocol": "Udp",
+              "frontendPort": 123,
+              "backendPort": 123,
               "enableFloatingIP": false,
-              "idleTimeoutInMinutes": 4,
-              "probe": {
-                "id": "[variables('pcflbProbeID')]"
-              }
+              "idleTimeoutInMinutes": 4
             }
           }
         ],
@@ -970,8 +975,188 @@
               "intervalInSeconds": 5,
               "numberOfProbes": 2
             }
-          }
+          },
+          {
+            "name": "tcp443",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 443,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }  
         ]
+      }
+    },
+    {
+      "apiVersion": "2017-10-01",
+      "name": "[variables('tcplbName')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "Microsoft.Network/publicIPAddresses/tcp-lb-ip"
+      ],
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "tcp-fe-ip",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-ip')]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "tcp-backend-pool"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "tcp-rule-1024",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-ip')]"
+              },
+              "frontendPort": 1024,
+              "backendPort": 1024,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "protocol": "Tcp",
+              "enableTcpReset": false,
+              "loadDistribution": "Default",
+              "disableOutboundSnat": false,
+              "backendAddressPool": {
+                "id": "[variables('tcplbPoolID')]"
+              },
+              "probe": {
+                "id": "[variables('tcplbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "tcp-ntp-rule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-ip')]"
+              },
+              "frontendPort": 123,
+              "backendPort": 123,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "protocol": "Udp",
+              "enableTcpReset": false,
+              "loadDistribution": "Default",
+              "disableOutboundSnat": false,
+              "backendAddressPool": {
+                "id": "[variables('tcplbPoolID')]"
+              }
+            }
+          },
+          {
+            "name": "tcp-rule-1027",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-ip')]"
+              },
+              "frontendPort": 1027,
+              "backendPort": 1027,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "protocol": "Tcp",
+              "enableTcpReset": false,
+              "loadDistribution": "Default",
+              "disableOutboundSnat": false,
+              "backendAddressPool": {
+                "id": "[variables('tcplbPoolID')]"
+              },
+              "probe": {
+                "id": "[variables('tcplbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "tcp-rule-1028",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-ip')]"
+              },
+              "frontendPort": 1028,
+              "backendPort": 1028,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "protocol": "Tcp",
+              "enableTcpReset": false,
+              "loadDistribution": "Default",
+              "disableOutboundSnat": false,
+              "backendAddressPool": {
+                "id": "[variables('tcplbPoolID')]"
+              },
+              "probe": {
+                "id": "[variables('tcplbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "tcp-rule-1025",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-ip')]"
+              },
+              "frontendPort": 1025,
+              "backendPort": 1025,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "protocol": "Tcp",
+              "enableTcpReset": false,
+              "loadDistribution": "Default",
+              "disableOutboundSnat": false,
+              "backendAddressPool": {
+                "id": "[variables('tcplbPoolID')]"
+              },
+              "probe": {
+                "id": "[variables('tcplbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "tcp-rule-1026",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-ip')]"
+              },
+              "frontendPort": 1026,
+              "backendPort": 1026,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "protocol": "Tcp",
+              "enableTcpReset": false,
+              "loadDistribution": "Default",
+              "disableOutboundSnat": false,
+              "backendAddressPool": {
+                "id": "[variables('tcplbPoolID')]"
+              },
+              "probe": {
+                "id": "[variables('tcplbProbeID')]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "tcp-probe",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 80,
+              "intervalInSeconds": 15,
+              "numberOfProbes": 2
+            }
+          }
+        ],
+        "inboundNatRules": [],
+        "outboundRules": [],
+        "inboundNatPools": []
       }
     },
     {
@@ -999,46 +1184,28 @@
           }
         ],
         "loadBalancingRules": [
+
           {
-            "name": "https",
+            "name": "diego-ssh-ntp-rule",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[variables('diegosshfrontEndIPConfigID')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','diego-ssh-lb-ip')]"
               },
-              "backendAddressPool": {
-                "id": "[variables('diegosshlbPoolID')]"
-              },
-              "protocol": "Tcp",
-              "frontendPort": 443,
-              "backendPort": 443,
+              "frontendPort": 123,
+              "backendPort": 123,
               "enableFloatingIP": false,
               "idleTimeoutInMinutes": 4,
-              "probe": {
-                "id": "[variables('diegosshlbProbeID')]"
+              "protocol": "Udp",
+              "enableTcpReset": false,
+              "loadDistribution": "Default",
+              "disableOutboundSnat": false,
+              "backendAddressPool": {
+                "id": "[variables('diegosshlbPoolID')]"
               }
             }
           },
           {
-            "name": "http",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('diegosshfrontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('diegosshlbPoolID')]"
-              },
-              "protocol": "Tcp",
-              "frontendPort": 80,
-              "backendPort": 80,
-              "enableFloatingIP": false,
-              "idleTimeoutInMinutes": 4,
-              "probe": {
-                "id": "[variables('diegosshlbProbeID')]"
-              }
-            }
-          },
-          {
-            "name": "diego-ssh",
+            "name": "diego-ssh-rule",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('diegosshfrontEndIPConfigID')]"
@@ -1059,10 +1226,10 @@
         ],
         "probes": [
           {
-            "name": "tcp80",
+            "name": "tcp2222",
             "properties": {
               "protocol": "Tcp",
-              "port": 80,
+              "port": 2222,
               "intervalInSeconds": 5,
               "numberOfProbes": 2
             }
@@ -1083,8 +1250,9 @@
           {
             "name": "mysql-fe-ip",
             "properties": {
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','mysql-lb-ip')]"
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('pas_subnet_name'))]"
               }
             }
           }
@@ -1096,7 +1264,7 @@
         ],
         "loadBalancingRules": [
           {
-            "name": "mysql",
+            "name": "mysql-rule",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('mysqlfrontEndIPConfigID')]"
@@ -1115,7 +1283,7 @@
             }
           },
           {
-            "name": "mysql-probe",
+            "name": "mysql-ntp",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('mysqlfrontEndIPConfigID')]"
@@ -1123,14 +1291,11 @@
               "backendAddressPool": {
                 "id": "[variables('mysqllbPoolID')]"
               },
-              "protocol": "Tcp",
-              "frontendPort": 1936,
-              "backendPort": 1936,
+              "protocol": "Udp",
+              "frontendPort": 123,
+              "backendPort": 123,
               "enableFloatingIP": false,
-              "idleTimeoutInMinutes": 4,
-              "probe": {
-                "id": "[variables('mysqllbProbeID')]"
-              }
+              "idleTimeoutInMinutes": 4
             }
           }
         ],
