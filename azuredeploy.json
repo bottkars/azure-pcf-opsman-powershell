@@ -74,9 +74,9 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard F4s_v2",
+      "defaultValue": "Standard_F4s_v2",
       "allowedValues": [
-        "Standard F4s_v2",
+        "Standard_F4s_v2",
         "Standard_DS2_v2"
     ],
       "metadata": {
@@ -1310,7 +1310,8 @@
             }
           }
         ]
-      }
+      },
+      "dependsOn": ["[variables('pcfVNetID')]"]
     },
     {
       "apiVersion": "2017-10-01",
