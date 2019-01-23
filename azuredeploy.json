@@ -362,7 +362,6 @@
       "location": "[parameters('location')]",
       "type": "Microsoft.Network/networkSecurityGroups",
       "properties": {
-        "provisioningState": "Succeeded",
         "securityRules": [
           {
             "name": "bosh-director",
@@ -1017,7 +1016,7 @@
             "name": "tcp-rule-1024",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-public-ip')]"
+                "id": "[variables('tcpfrontEndIPConfigID')]"
               },
               "frontendPort": 1024,
               "backendPort": 1024,
@@ -1039,7 +1038,7 @@
             "name": "tcp-ntp-rule",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-public-ip')]"
+                "id": "[variables('tcpfrontEndIPConfigID')]"
               },
               "frontendPort": 123,
               "backendPort": 123,
@@ -1058,7 +1057,7 @@
             "name": "tcp-rule-1027",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-public-ip')]"
+                "id": "[variables('tcpfrontEndIPConfigID')]"
               },
               "frontendPort": 1027,
               "backendPort": 1027,
@@ -1080,7 +1079,7 @@
             "name": "tcp-rule-1028",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-public-ip')]"
+                "id": "[variables('tcpfrontEndIPConfigID')]"
               },
               "frontendPort": 1028,
               "backendPort": 1028,
@@ -1102,7 +1101,7 @@
             "name": "tcp-rule-1025",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-public-ip')]"
+                "id": "[variables('tcpfrontEndIPConfigID')]"
               },
               "frontendPort": 1025,
               "backendPort": 1025,
@@ -1124,7 +1123,7 @@
             "name": "tcp-rule-1026",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-public-ip')]"
+                "id": "[variables('tcpfrontEndIPConfigID')]"
               },
               "frontendPort": 1026,
               "backendPort": 1026,
@@ -1189,7 +1188,7 @@
             "name": "diego-ssh-ntp-rule",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','diego-ssh-lb-ip')]"
+                "id": "[variables('diegosshfrontEndIPConfigID')]"
               },
               "frontendPort": 123,
               "backendPort": 123,
@@ -1264,7 +1263,7 @@
             "name": "mysql-rule",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('pas_subnet_name'))]"
+                "id": "[variables('mysqlfrontEndIPConfigID')]"
               },
               "backendAddressPool": {
                 "id": "[variables('mysqllbPoolID')]"
@@ -1283,7 +1282,7 @@
             "name": "mysql-ntp",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('pas_subnet_name'))]"
+                "id": "[variables('mysqlfrontEndIPConfigID')]"
               },
               "backendAddressPool": {
                 "id": "[variables('mysqllbPoolID')]"
