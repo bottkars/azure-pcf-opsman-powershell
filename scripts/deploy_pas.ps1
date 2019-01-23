@@ -21,6 +21,7 @@ $OM_Target = $director_conf.OM_TARGET
 $downloaddir = $director_conf.downloaddir
 $PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME
 $domain = $director_conf.domain
+$RG = $director_conf.RG
 # getting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $env:OM_Password = $env_vars.OM_Password
