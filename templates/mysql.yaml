@@ -5,9 +5,9 @@ network-properties:
   service_network:
     name: ((pcf_service_network))
   other_availability_zones:
-  - name: ~
+  - name: 'null'
   singleton_availability_zone:
-    name: ~
+    name: 'null'
 product-properties:
   .properties.plan1_selector.leader_follower.instance_limit:
     value: 5
@@ -16,7 +16,7 @@ product-properties:
     selected_option: leader_follower
   .properties.plan1_selector.leader_follower.az_multi_select:
     value:
-    - ~
+    - 'null'
   .properties.plan2_selector:
     value: Inactive
     selected_option: inactive
