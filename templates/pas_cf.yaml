@@ -3,9 +3,9 @@ network-properties:
   network:
     name: ((pcf_pas_network))
   other_availability_zones:
-  - name: "null"
+  - name: ~
   singleton_availability_zone:
-    name: "null"
+    name: ~
 product-properties:
   .cloud_controller.apps_domain:
     value: ((pcf_apps_domain))
