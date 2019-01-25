@@ -207,8 +207,10 @@ $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
 $StopWatch_prepare.Start()
     
 if (!$OpsmanUpdate) {
-    Write-Host "==>Creating ResourceGroup $resourceGroup" -nonewline   
+    Write-Host "==>Creating ResourceGroups $resourceGroup and $Storageaccount" -nonewline   
     $new_rg = New-AzureRmResourceGroup -Name $resourceGroup -Location $location
+    $new_rg = New-AzureRmResourceGroup -Name $storageaccount -Location $location
+
     Write-Host -ForegroundColor green "[done]"
     if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
         $account_available = Get-AzureRmStorageAccountNameAvailability -Name $storageaccount 
@@ -225,9 +227,9 @@ if (!$OpsmanUpdate) {
 
         Write-Host "==>Creating StorageAccount $storageaccount" -nonewline
         if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
-            $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $resourceGroup `
+            $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $storageaccount `
                 -Name $storageAccount -Location $location `
-                -Type $storageType
+                -Type $storageType -ErrorAction SilentlyContinue
         }
         else {
             New-AzureRmResourceGroupDeployment -TemplateFile $PSScriptRoot/createstorageaacount.json -ResourceGroupName $resourceGroup -storageAccountName $storageaccount
