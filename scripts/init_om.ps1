@@ -1,5 +1,9 @@
 # about
-# we no use params :-)
+param(
+  [Parameter(ParameterSetName = "1", Mandatory = $false)]
+  [switch]
+  $NO_APPLY
+)
 Push-Location $PSScriptRoot
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
 $OM_Target = $director_conf.OM_TARGET
@@ -73,6 +77,7 @@ om --skip-ssl-validation `
 
 om --skip-ssl-validation `
  configure-director --config "$PSScriptRoot/../templates/director_conf.yaml" --vars-file "$HOME/director_vars.yaml"
+
 
 om --skip-ssl-validation apply-changes
 

@@ -86,8 +86,11 @@
     [ValidateNotNullOrEmpty()]
     [ValidateSet('cf', 'srt')]
     $PASTYPE = "srt",
-    [switch]$TESTONLY
-
+    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [switch]$TESTONLY,
+    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [switch]
+    $NO_APPLY
 )
 
 $DeployTimes = @()
@@ -408,7 +411,13 @@ if (!$OpsmanUpdate) {
             force_product_download   = $force_product_download.IsPresent.ToString()
         } | ConvertTo-Json
         $JSon | Set-Content $HOME/director.json
-        $command = "$PSScriptRoot/scripts/init_om.ps1"
+        if ($NO_APPLY.IsPresent){
+            $command = "$PSScriptRoot/scripts/init_om.ps1 -no_apply"
+        }
+        else {
+        $command = "$PSScriptRoot/scripts/init_om.ps1"    
+        }
+        
         Write-Host "Calling $command" 
         Invoke-Expression -Command $Command
         $StopWatch_deploy_opsman.Stop()
