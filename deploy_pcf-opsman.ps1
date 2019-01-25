@@ -292,7 +292,6 @@ else {
             Start-AzureStorageBlobCopy -DestContainer $image_containername -DestContext $dst_context
         $complete = $copy | Get-AzureStorageBlobCopyState -WaitForComplete
         Write-Host -ForegroundColor green "[done copying]"
-       
     }
     else {
         Write-Host -ForegroundColor Blue "[blob already exixts]"
