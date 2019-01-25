@@ -217,6 +217,13 @@ if (!$OpsmanUpdate) {
     Write-Host -ForegroundColor green "[done]"
 
     foreach ($Storageaccount in ($ImageStorageAccount, $boshstorageaccount)) {
+        if ($Storageaccount -eq $boshstorageaccount)
+        {
+            $storage_rg = $resourceGroup
+        }
+        else {
+            $storage_rg = $Storageaccount
+        }
         if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
             $account_available = Get-AzureRmStorageAccountNameAvailability -Name $storageaccount 
             $account_free = $account_available.NameAvailable
@@ -233,11 +240,11 @@ if (!$OpsmanUpdate) {
 
             Write-Host "==>Creating StorageAccount $storageaccount" -nonewline
             if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
-                $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $storageaccount `
+                $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $storage_rg `
                     -Name $storageaccount -Location $location `
                     -Type $storageType -ErrorAction SilentlyContinue
                 if (!$new_acsaccount) {
-                    $new_acsaccount = Get-AzureRmStorageAccount -ResourceGroupName $storageaccount | Where-Object StorageAccountName -match $storageaccount
+                    $new_acsaccount = Get-AzureRmStorageAccount -ResourceGroupName $storage_rg | Where-Object StorageAccountName -match $storageaccount
 
                 }    
 
