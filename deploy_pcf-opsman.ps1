@@ -67,7 +67,7 @@
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     $boshstorageaccount,
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
-    $ImageStorageAccount="pcfopsmanstorage", 
+    $ImageStorageAccount = "pcfopsmanstorage", 
     # The Containername we will host the Images for Opsmanager in
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
@@ -215,43 +215,49 @@ if (!$OpsmanUpdate) {
     $new_rg = New-AzureRmResourceGroup -Name $imagestorageaccount -Location $location -Force
 
     Write-Host -ForegroundColor green "[done]"
-    if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
-        $account_available = Get-AzureRmStorageAccountNameAvailability -Name $imagestorageaccount 
-        $account_free = $account_available.NameAvailable
-    }
-    else {
-        Write-Warning "we have a netcore bug with azurestack and can not test stoprageaccount availabilty"
-        $account_free = $true
-    }
-    # bug not working in netcore against azurestack, as we can not set profiles :-( 
-    # waiting for new az netcore module with updated api profiles
-    # new 
-    if ($account_free -eq $true) {
 
-        Write-Host "==>Creating StorageAccount $imagestorageaccount" -nonewline
+    foreach ($Storageaccount in ($ImageStorageAccount, $boshstorageaccount)) {
         if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
-            $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $imagestorageaccount `
-                -Name $imagestorageaccount -Location $location `
-                -Type $storageType -ErrorAction SilentlyContinue
-            if (!$new_acsaccount){
-                $new_acsaccount = Get-AzureRmStorageAccount -ResourceGroupName $ImageStorageAccount | Where-Object StorageAccountName -match $ImageStorageAccount
+            $account_available = Get-AzureRmStorageAccountNameAvailability -Name $storageaccount 
+            $account_free = $account_available.NameAvailable
+        }
+        else {
+            Write-Warning "we have a netcore bug with azurestack and can not test stoprageaccount availabilty"
+            $account_free = $true
+        }
 
-            }    
+        # bug not working in netcore against azurestack, as we can not set profiles :-( 
+        # waiting for new az netcore module with updated api profiles
+        # new 
+        if ($account_free -eq $true) {
 
-            $new_acsaccount | Set-AzureRmCurrentStorageAccount
+            Write-Host "==>Creating StorageAccount $storageaccount" -nonewline
+            if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
+                $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $storageaccount `
+                    -Name $storageaccount -Location $location `
+                    -Type $storageType -ErrorAction SilentlyContinue
+                if (!$new_acsaccount) {
+                    $new_acsaccount = Get-AzureRmStorageAccount -ResourceGroupName $storageaccount | Where-Object StorageAccountName -match $storageaccount
+
+                }    
+
+                $new_acsaccount | Set-AzureRmCurrentStorageAccount
                 Write-Host "Creating Container $OpsmanContainer in $($new_acsaccount.StorageAccountName)"
                 $Container = New-AzureStorageContainer -Name $OpsmanContainer -Permission blob
 
+            }
+            else {
+                New-AzureRmResourceGroupDeployment -TemplateFile $PSScriptRoot/createstorageaacount.json -ResourceGroupName $resourceGroup -storageAccountName $storageaccount
+            }
+
+            Write-Host -ForegroundColor green "[done]"
         }
         else {
-            New-AzureRmResourceGroupDeployment -TemplateFile $PSScriptRoot/createstorageaacount.json -ResourceGroupName $resourceGroup -storageAccountName $imagestorageaccount
-        }
-
-        Write-Host -ForegroundColor green "[done]"
+            Write-Host "$storageaccount already exists, operations might fail if not owner in same location" 
+        }  
+    
     }
-    else {
-        Write-Host "$imagestorageaccount already exists, operations might fail if not owner in same location" 
-    }    
+
    
 }
 $urlOfUploadedImageVhd = ('https://' + $imagestorageaccount + '.blob.' + $blobbaseuri + '/' + $image_containername + '/' + $opsManVHD)
@@ -424,11 +430,11 @@ if (!$OpsmanUpdate) {
             force_product_download   = $force_product_download.IsPresent.ToString()
         } | ConvertTo-Json
         $JSon | Set-Content $HOME/director.json
-        if ($NO_APPLY.IsPresent){
+        if ($NO_APPLY.IsPresent) {
             $command = "$PSScriptRoot/scripts/init_om.ps1 -no_apply"
         }
         else {
-        $command = "$PSScriptRoot/scripts/init_om.ps1"    
+            $command = "$PSScriptRoot/scripts/init_om.ps1"    
         }
         
         Write-Host "Calling $command" 
