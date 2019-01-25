@@ -65,7 +65,7 @@
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     $boshstorageaccount,
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
-    $ImageStorageAccount,   
+    $ImageStorageAccount="pcfopsmanstorage", 
     # The Containername we will host the Images for Opsmanager in
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
