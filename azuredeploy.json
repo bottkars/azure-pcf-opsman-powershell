@@ -2,9 +2,9 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "storageAccountName": {
+    "boshstorageaccountname": {
       "type": "string",
-      "defaultValue": "opsmanstorageaccount",
+      "defaultValue": "boshstorageaccount",
       "metadata": {
         "description": "Name of storage account created with Azure CLI"
       }
@@ -117,7 +117,7 @@
     "opsManVMName": "[parameters('opsManFQDNPrefix')]",
     "location": "[parameters('location')]",
     "vmStorageAccountContainerName": "vhds",
-    "storageid": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+    "storageid": "[resourceId('Microsoft.Storage/storageAccounts', parameters('boshstorageaccountname'))]",
     "xstorageid1": "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('boshExtraStorageAccountName'),'1'))]",
     "xstorageid2": "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('boshExtraStorageAccountName'),'2'))]",
     "xstorageid3": "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('boshExtraStorageAccountName'),'3'))]",
@@ -1408,7 +1408,7 @@
       "type": "string"
     },
     "Bosh Storageaccount": {
-      "value": "[parameters('storageAccountName')]",
+      "value": "[parameters('boshstorageaccountname')]",
       "type": "string"
     },
     "Extra Storageaccount Prefix": {

@@ -63,7 +63,9 @@
     [ValidateNotNullOrEmpty()]
     $dnsdomain = $Global:dnsdomain,
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
-    $storageaccount,
+    $boshstorageaccount,
+    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    $ImageStorageAccount,   
     # The Containername we will host the Images for Opsmanager in
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
@@ -190,10 +192,10 @@ Write-Host "$($opsManFQDNPrefix)green $Mask.8.4/32"
 Write-Host "$($opsManFQDNPrefix)blue $Mask.8.5/32"
 Write-Host
 $opsManFQDNPrefix = "$opsManFQDNPrefix$deploymentcolor"
-if (!$storageaccount) {
-    $storageaccount = 'opsmanstorage'
-    $storageaccount = ($resourceGroup + $Storageaccount) -Replace '[^a-zA-Z0-9]', ''
-    $storageaccount = ($Storageaccount.subString(0, [System.Math]::Min(23, $storageaccount.Length))).tolower()
+if (!$boshstorageaccount) {
+    $boshstorageaccount = 'boshstorage'
+    $boshstorageaccount = ($resourceGroup + $boshStorageaccount) -Replace '[^a-zA-Z0-9]', ''
+    $boshstorageaccount = ($boshStorageaccount.subString(0, [System.Math]::Min(23, $boshstorageaccount.Length))).tolower()
 }
 $OpsManBaseUri = Split-Path  $opsmanager_uri  
 $OpsmanContainer = Split-Path $OpsManBaseUri
@@ -201,19 +203,18 @@ $opsManVHD = Split-Path -Leaf $opsmanager_uri
 $opsmanVersion = $opsManVHD -replace ".vhd", ""
 Write-host "Preparing to deploy OpsMan $opsmanVersion for $deploymentcolor deployment" -ForegroundColor $deploymentcolor
 $storageType = 'Standard_LRS'
-
 $StopWatch_prepare = New-Object System.Diagnostics.Stopwatch
 $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
 $StopWatch_prepare.Start()
     
 if (!$OpsmanUpdate) {
-    Write-Host "==>Creating ResourceGroups $resourceGroup and $Storageaccount" -nonewline   
+    Write-Host "==>Creating ResourceGroups $resourceGroup and $imagestorageaccount" -nonewline   
     $new_rg = New-AzureRmResourceGroup -Name $resourceGroup -Location $location
-    $new_rg = New-AzureRmResourceGroup -Name $storageaccount -Location $location
+    $new_rg = New-AzureRmResourceGroup -Name $imagestorageaccount -Location $location
 
     Write-Host -ForegroundColor green "[done]"
     if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
-        $account_available = Get-AzureRmStorageAccountNameAvailability -Name $storageaccount 
+        $account_available = Get-AzureRmStorageAccountNameAvailability -Name $imagestorageaccount 
         $account_free = $account_available.NameAvailable
     }
     else {
@@ -225,25 +226,34 @@ if (!$OpsmanUpdate) {
     # new 
     if ($account_free -eq $true) {
 
-        Write-Host "==>Creating StorageAccount $storageaccount" -nonewline
+        Write-Host "==>Creating StorageAccount $imagestorageaccount" -nonewline
         if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
-            $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $storageaccount `
-                -Name $storageAccount -Location $location `
+            $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $imagestorageaccount `
+                -Name $imagestorageaccount -Location $location `
                 -Type $storageType -ErrorAction SilentlyContinue
+            if (!$new_acsaccount){
+                $new_acsaccount = Get-AzureRmStorageAccount -ResourceGroupName $ImageStorageAccount | Where-Object StorageAccountName -match $ImageStorageAccount
+
+            }    
+
+            $new_acsaccount | Set-AzureRmCurrentStorageAccount
+                Write-Host "Creating Container $OpsmanContainer in $($new_acsaccount.StorageAccountName)"
+                $Container = New-AzureStorageContainer -Name $OpsmanContainer -Permission blob
+
         }
         else {
-            New-AzureRmResourceGroupDeployment -TemplateFile $PSScriptRoot/createstorageaacount.json -ResourceGroupName $resourceGroup -storageAccountName $storageaccount
+            New-AzureRmResourceGroupDeployment -TemplateFile $PSScriptRoot/createstorageaacount.json -ResourceGroupName $resourceGroup -storageAccountName $imagestorageaccount
         }
 
         Write-Host -ForegroundColor green "[done]"
     }
     else {
-        Write-Host "$storageaccount already exists, operations might fail if not owner in same location" 
+        Write-Host "$imagestorageaccount already exists, operations might fail if not owner in same location" 
     }    
    
 }
-$urlOfUploadedImageVhd = ('https://' + $storageaccount + '.blob.' + $blobbaseuri + '/' + $image_containername + '/' + $opsManVHD)
-Write-Host "Starting upload Procedure for $opsManVHD into storageaccount $storageaccount, this may take a while"
+$urlOfUploadedImageVhd = ('https://' + $imagestorageaccount + '.blob.' + $blobbaseuri + '/' + $image_containername + '/' + $opsManVHD)
+Write-Host "Starting upload Procedure for $opsManVHD into storageaccount $imagestorageaccount, this may take a while"
 if ($Environment -eq 'AzureStack') {
     Write-Host "==>Checking OS Transfer Type" -nonewline 
     $transfer_type = (get-runningos).Webrequestor
@@ -261,7 +271,7 @@ if ($Environment -eq 'AzureStack') {
         }
     }  
     try {
-        $new_arm_vhd = Add-AzureRmVhd -ResourceGroupName $resourceGroup -Destination $urlOfUploadedImageVhd `
+        $new_arm_vhd = Add-AzureRmVhd -ResourceGroupName $imagestorageaccount -Destination $urlOfUploadedImageVhd `
             -LocalFilePath $localPath -ErrorAction SilentlyContinue
     }
     catch {
@@ -271,14 +281,14 @@ if ($Environment -eq 'AzureStack') {
 else {
     # Blob Copy routine
     $src_context = New-AzureStorageContext -StorageAccountName opsmanagerwesteurope -Anonymous
-    $dst_context = (Get-AzureRmStorageAccount -ResourceGroupName $storageaccount -Name $storageaccount).context
+    $dst_context = (Get-AzureRmStorageAccount -ResourceGroupName $imagestorageaccount -Name $imagestorageaccount).context
     ## check for blob
-    Write-Host "==>Checking blob $opsManVHD exixts in container $image_containername for Storageaccount $storageaccount" -NoNewline
+    Write-Host "==>Checking blob $opsManVHD exixts in container $image_containername for Storageaccount $imagestorageaccount" -NoNewline
     $ExistingBlob = Get-AzureStorageBlob -Context $dst_context -Blob $opsManVHD -Container $image_containername -ErrorAction SilentlyContinue
     if (!$ExistingBlob) {
         Write-Host -ForegroundColor Green "[blob needs to be uploaded]"
         # check container
-        Write-Host "==>Checking container $image_containername exists for Storageaccount $storageaccount" -NoNewline
+        Write-Host "==>Checking container $image_containername exists for Storageaccount $imagestorageaccount" -NoNewline
         $ContainerExists = (Get-AzureStorageContainer -Name $image_containername -Context $dst_context -ErrorAction SilentlyContinue)
         If (!$ContainerExists) {
             Write-Host -ForegroundColor Green "[creating container]"
@@ -287,7 +297,7 @@ else {
         else {
             Write-Host -ForegroundColor blue "[container already exists]"
         }
-        Write-Host "==>copying $opsManVHD into Storageaccount $storageaccount" -NoNewline
+        Write-Host "==>copying $opsManVHD into Storageaccount $imagestorageaccount" -NoNewline
         $copy = Get-AzureStorageBlob -Container images -Blob $opsManVHD -Context $src_context | `
             Start-AzureStorageBlobCopy -DestContainer $image_containername -DestContext $dst_context
         $complete = $copy | Get-AzureStorageBlobCopyState -WaitForComplete
@@ -336,7 +346,7 @@ else {
 $parameters = @{}
 $parameters.Add("SSHKeyData", $OPSMAN_SSHKEY)
 $parameters.Add("opsManFQDNPrefix", $opsManFQDNPrefix)
-$parameters.Add("storageAccountName", $storageaccount)
+$parameters.Add("boshstorageAccountName", $boshstorageaccount)
 $parameters.Add("opsManVHD", $opsManVHD)
 $parameters.Add("deploymentcolor", $deploymentcolor)
 $parameters.Add("mask", $mask)
@@ -356,7 +366,7 @@ if (!$OpsmanUpdate) {
     }
     else {
         New-AzureRmResourceGroupDeployment -Name $resourceGroup -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile $PSScriptRoot/azuredeploy.json -TemplateParameterObject $parameters
-        $MyStorageaccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup | Where-Object StorageAccountName -match $storageaccount
+        $MyStorageaccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup | Where-Object StorageAccountName -match $boshstorageaccount
         $MyStorageaccount | Set-AzureRmCurrentStorageAccount
         Write-Host "Creating Container Stemcell in $($MyStorageaccount.StorageAccountName)"
         $Container = New-AzureStorageContainer -Name stemcell -Permission Blob
@@ -394,7 +404,7 @@ if (!$OpsmanUpdate) {
             OM_TARGET                = "$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)"
             domain                   = "$($location).$($dnsdomain)"
             PCF_SUBDOMAIN_NAME       = $PCF_SUBDOMAIN_NAME
-            boshstorageaccountname   = $storageaccount 
+            boshstorageaccountname   = $boshstorageaccount 
             RG                       = $resourceGroup
             mysqlstorageaccountname  = $mysql_storage_account
             mysql_storage_key        = $mysql_storage_key
