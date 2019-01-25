@@ -249,8 +249,8 @@ if (!$OpsmanUpdate) {
                 }    
 
                 $new_acsaccount | Set-AzureRmCurrentStorageAccount
-                Write-Host "Creating Container $OpsmanContainer in $($new_acsaccount.StorageAccountName)"
-                $Container = New-AzureStorageContainer -Name $OpsmanContainer -Permission blob
+                Write-Host "Creating Container $image_containername in $($new_acsaccount.StorageAccountName)"
+                $Container = New-AzureStorageContainer -Name $image_containername -Permission blob
 
             }
             else {
