@@ -2,7 +2,7 @@
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet(
-        ## 2.1 starts here
+        <## 2.1 starts here
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.204.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.212.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.214.vhd',
@@ -20,7 +20,7 @@
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.372.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.377.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.389.vhd',
-        ## 2.2 starts here
+        ## 2.2 starts here ##>
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.292.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.296.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.300.vhd',
@@ -35,7 +35,8 @@
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.376.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.380.vhd',        
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.382.vhd',        
-
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.386.vhd',        
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.398.vhd',        
         ## 2.3 starts here
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.146.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.167.vhd',
@@ -44,13 +45,14 @@
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.188.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.194.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.212.vhd',        
-        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.224.vhd',        
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.224.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.237.vhd',        
         ## 2.4 starts here
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.117.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.131.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.142.vhd'
     )]
-    $opsmanager_uri = 'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.224.vhd',
+    $opsmanager_uri = 'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.237.vhd',
     # The name of the Ressource Group we want to Deploy to.
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
