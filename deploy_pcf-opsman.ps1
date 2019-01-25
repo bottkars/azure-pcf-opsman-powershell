@@ -271,7 +271,7 @@ if ($Environment -eq 'AzureStack') {
 else {
     # Blob Copy routine
     $src_context = New-AzureStorageContext -StorageAccountName opsmanagerwesteurope -Anonymous
-    $dst_context = (Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup -Name $storageaccount).context
+    $dst_context = (Get-AzureRmStorageAccount -ResourceGroupName $storageaccount -Name $storageaccount).context
     ## check for blob
     Write-Host "==>Checking blob $opsManVHD exixts in container $image_containername for Storageaccount $storageaccount" -NoNewline
     $ExistingBlob = Get-AzureStorageBlob -Context $dst_context -Blob $opsManVHD -Container $image_containername -ErrorAction SilentlyContinue
