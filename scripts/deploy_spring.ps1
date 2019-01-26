@@ -1,16 +1,18 @@
 #requires -module pivposh
-
-$spring_conf = Get-Content "$($HOME)/spring.json" | ConvertFrom-Json
+Push-Location $PSScriptRoot
+$PRODUCT_FILE = "$($HOME)/spring.json"
+if (!(Test-Path $PRODUCT_FILE))
+{$PRODUCT_FILE = "../examples/spring.json"}
+$spring_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
-$PCF_SPRING_VERSION = $spring_conf.PCF_SPRING_VERSION
-#$SPRING_STORAGE_KEY = $director_conf.spring_storage_key
-#$SPRING_STORAGEACCOUNTNAME = $director_conf.springstorageaccountname
+$PCF_spring_VERSION = $spring_conf.PCF_spring_VERSION
 
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
 $downloaddir = $director_conf.downloaddir
 $PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME
 $domain = $director_conf.domain
-# getting the env
+
+$config_file = $spring_conf.CONFIG_FILE
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $env:OM_Password = $env_vars.OM_Password
 $env:OM_Username = $env_vars.OM_Username
@@ -82,22 +84,18 @@ om --skip-ssl-validation `
 
 "
 product_name: $PRODUCT_NAME
-pcf_pas_network: pcf-pas-subnet `
-pcf_service_network: pcf-services-subnet `
-azure_storage_access_key: $SPRING_STORAGE_KEY `
-azure_account: $SPRING_STORAGEACCOUNTNAME `
-pcf_system_domain: sys.$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME `
-pcf_apps_domain: apps.$PCF_SUBDOMAIN_NAME.$PCF_DOMAIN_NAME `
-global_recipient_email: $GLOBAL_RECIPIENT_EMAIL `
-blob_store_base_url: $domain
+pcf_pas_network: pcf-pas-subnet
 " | Set-Content $HOME/spring_vars.yaml
 
 om --skip-ssl-validation `
   configure-product `
-  -c $PSScriptRoot/templates/spring.yaml -l "$HOME/spring_vars.yaml"
+  -c "$config_file" -l "$HOME/rabbitmq_vars.yaml"
 
 om --skip-ssl-validation `
-  apply-changes
+  apply-changes `
+  --product-name $PRODUCT_NAME
 
 om --skip-ssl-validation `
-  deployed-products  
+  deployed-products 
+
+Pop-Location 

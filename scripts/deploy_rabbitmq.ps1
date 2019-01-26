@@ -6,8 +6,6 @@ if (!(Test-Path $PRODUCT_FILE))
 $rabbitmq_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
 $PCF_RABBITMQ_VERSION = $rabbitmq_conf.PCF_RABBITMQ_VERSION
-#$RABBITMQ_STORAGE_KEY = $director_conf.rabbitmq_storage_key
-#$RABBITMQ_STORAGEACCOUNTNAME = $director_conf.rabbitmqstorageaccountname
 
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
 $downloaddir = $director_conf.downloaddir
@@ -16,7 +14,7 @@ $domain = $director_conf.domain
 
 $config_file = $rabbitmq_conf.CONFIG_FILE
 $OM_Target = $director_conf.OM_TARGET
-# setiing the env
+# setting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $env:OM_Password = $env_vars.OM_Password
 $env:OM_Username = $env_vars.OM_Username
