@@ -1,4 +1,4 @@
 {
-    "PCF_MYSQL_VERSION":  "2.5.3",
+    "PCF_MYSQL_VERSION":  "2.4.3",
     "CONFIG_FILE": "../templates/mysql.yaml"
 }
