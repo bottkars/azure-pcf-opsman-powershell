@@ -92,7 +92,7 @@ pcf_pas_network: pcf-pas-subnet
 
 om --skip-ssl-validation `
   configure-product `
-  -c "$config_file" -l "$HOME/rabbitmq_vars.yaml"
+  -c "$config_file" -l "$HOME/spring_vars.yaml"
 
 om --skip-ssl-validation `
   apply-changes `
