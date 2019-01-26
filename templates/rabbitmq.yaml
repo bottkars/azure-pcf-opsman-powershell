@@ -5,15 +5,15 @@ network-properties:
   service_network:
     name: ((pcf_service_network))
   other_availability_zones:
-  - name: "null"
+  - name: 'null'
   singleton_availability_zone:
-    name: "null"
+    name: 'null'
 product-properties:
   .properties.syslog_selector:
     value: disabled
   .properties.on_demand_broker_plan_1_rabbitmq_az_placement:
     value:
-    - "null"
+    - 'null'
   .properties.on_demand_broker_plan_1_disk_limit_acknowledgement:
     value:
     - acknowledge
