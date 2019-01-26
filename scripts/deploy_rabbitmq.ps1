@@ -92,7 +92,7 @@ server_admin_password: $PCF_PIVNET_UAA_TOKEN
 
 om --skip-ssl-validation `
   configure-product `
-  -c $PSScriptRoot/templates/rabbitmq.yaml -l "$HOME/rabbitmq_vars.yaml"
+  -c "$config_file" -l "$HOME/rabbitmq_vars.yaml"
 
 om --skip-ssl-validation `
   apply-changes
