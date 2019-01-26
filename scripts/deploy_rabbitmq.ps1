@@ -3,7 +3,7 @@ Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/rabbitmq.json"
 if (!(Test-Path $PRODUCT_FILE))
 {$PRODUCT_FILE = "../examples/rabbitmq.json"}
-$mysql_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
+$rabbitmq_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
 $PCF_RABBITMQ_VERSION = $rabbitmq_conf.PCF_RABBITMQ_VERSION
 #$RABBITMQ_STORAGE_KEY = $director_conf.rabbitmq_storage_key
