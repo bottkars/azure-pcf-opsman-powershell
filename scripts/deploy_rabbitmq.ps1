@@ -1,6 +1,5 @@
 #requires -module pivposh
 Push-Location $PSScriptRoot
-$PRODUCT_FILE = "$($HOME)/rabbitmq.json"
 if (!(Test-Path $PRODUCT_FILE))
 {$PRODUCT_FILE = "../examples/rabbitmq.json"}
 $rabbitmq_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
