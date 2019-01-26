@@ -89,8 +89,8 @@ om --skip-ssl-validation `
 
 "
 product_name: $PRODUCT_NAME
-pcf_pas_network: pcf-pas-subnet`
-pcf_service_network: pcf-services-subnet`
+pcf_pas_network: pcf-pas-subnet `
+pcf_service_network: pcf-services-subnet `
 azure_storage_access_key: $MYSQL_STORAGE_KEY`
 azure_account: $MYSQL_STORAGEACCOUNTNAME`
 global_recipient_email: $GLOBAL_RECIPIENT_EMAIL`
