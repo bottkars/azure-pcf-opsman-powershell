@@ -10,7 +10,10 @@ $PCF_RABBITMQ_VERSION = $rabbitmq_conf.PCF_RABBITMQ_VERSION
 $downloaddir = $director_conf.downloaddir
 $PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME
 $domain = $director_conf.domain
-# getting the env
+
+$config_file = $rabbitmq_conf.CONFIG_FILE
+$OM_Target = $director_conf.OM_TARGET
+# setiing the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $env:OM_Password = $env_vars.OM_Password
 $env:OM_Username = $env_vars.OM_Username
