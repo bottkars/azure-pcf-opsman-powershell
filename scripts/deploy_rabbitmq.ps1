@@ -98,7 +98,10 @@ om --skip-ssl-validation `
   -c "$config_file" -l "$HOME/rabbitmq_vars.yaml"
 
 om --skip-ssl-validation `
-  apply-changes
+  apply-changes `
+  --product-name $PRODUCT_NAME
 
 om --skip-ssl-validation `
-  deployed-products  
+  deployed-products 
+
+Pop-Location 

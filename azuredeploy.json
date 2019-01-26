@@ -6,7 +6,7 @@
       "type": "string",
       "defaultValue": "boshstorageaccount",
       "metadata": {
-        "description": "Name of storage account created with Azure CLI"
+        "description": "Name of storage account"
       }
     },
     "storageEndpoint": {
@@ -18,14 +18,14 @@
     },
     "OpsManImageURI": {
       "type": "string",
-      "defaultValue": "blob.local.azurestack.external",
+      "defaultValue": "https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.237.vhd",
       "metadata": {
         "description": "Uri of the Operations Manager VHD"
       }
     },
     "useManagedDisks": {
       "type": "string",
-      "defaultValue": "yes",
+      "defaultValue": "no",
       "allowedValues": [
         "yes",
         "no"
