@@ -17,6 +17,11 @@ The Powershell script makes use of:
 the [certificate helper script](/create_certs.ps1) may require openssl:
 - openssl for certificate creation
 
+The user may also want to deploy my custom AzureStack Dashboard Tiles
+
+[Pivotal Cloud Foundry Dashboard Tile](/docs/tile1.md)
+[Additional Repo´s Tile](/docs/tile2.md)
+
 ### requirements
 
    - Windows 10 or Server 2016 Machine with at least 20GB Disk Space (SSD recommended) 
@@ -40,7 +45,6 @@ just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager
 the deployment tool uses product specific .json files that degtermine thge Product version, and, in some cases ( e.g. srt or cf for pas) Product Names.
 If you want to use your own product version, simply copy and customize the corresponding Json File to $HOME. _DO NOT EDIT THE EXAMPLE FILES_ (as they are managed by git). the shipped product files always contain the **latest and tested running on azurestack**
 
-### product download
 
 #### Operation Manager Images
 
@@ -76,5 +80,5 @@ A Detailed Walkthrough can be found here
 [Part1 Deploy Ops Manager](https://community.emc.com/blogs/azurestack_guy/2018/06/22/getting-started-with-pcf-on-azurestack-asdk-part-1-deploy-opsmanager)  
 [Part2 Configure Ops Manager Bosh Director](https://community.emc.com/blogs/azurestack_guy/2018/08/01/getting-started-with-pcf-on-azurestack-asdk-part-2-configure-opsmanager)  
 
-[srt](./pas_srt_worksheet.md)  
+
 
