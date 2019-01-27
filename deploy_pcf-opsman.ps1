@@ -455,7 +455,7 @@ if (!$OpsmanUpdate) {
         
             if ($SPRING_AUTOPILOT.IsPresent) {
 
-                ForEach  ($tile in ('mysql', 'rabbit', 'spring'))
+                ForEach  ($tile in ('mysql', 'rabbitmq', 'spring'))
                 {
                     $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
                     $StopWatch_deploy.Start()

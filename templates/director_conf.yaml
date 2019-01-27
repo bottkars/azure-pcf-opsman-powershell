@@ -1,28 +1,7 @@
 ---
 director-configuration:
   max_threads: 8
-  ntp_servers_string: ((ntp_servers_string))  
-iaas-configuration:
- subscription_id: ((subscription_id))
- tenant_id: ((tenant_id))
- client_id: ((client_id))
- client_secret: ((client_secret))
- resource_group_name: ((resource_group_name))
- cloud_storage_type: ((cloud_storage_type))
- storage_account_type: 
- deployed_cloud_storage_type: 
- deployments_storage_account_name: ((deployments_storage_account_name))
- bosh_storage_account_name: ((bosh_storage_account_name))
- default_security_group: ((default_security_group))
- ssh_public_key: ((ssh_public_key))
- ssh_private_key: ((ssh_private_key))
- environment: AzureStack
- azure_stack:
-   domain: ((domain))
-   authentication: ((authentication))
-   resource: ((ressource))
-   endpoint_prefix: ((endpoint_prefix))
-   ca_cert: ((ca_cert)) 
+  ntp_servers_string: ((ntp_servers_string)) 
 networks-configuration:
  icmp_checks_enabled: false
  networks:
@@ -50,4 +29,26 @@ networks-configuration:
      gateway: ((services_gateway))
 network-assignment:
  network:
-  name: pcf-infrastructure-subnet
+  name: pcf-infrastructure-subnet   
+properties-configuration:  
+  iaas_configuration:
+  subscription_id: ((subscription_id))
+  tenant_id: ((tenant_id))
+  client_id: ((client_id))
+  client_secret: ((client_secret))
+  resource_group_name: ((resource_group_name))
+  cloud_storage_type: ((cloud_storage_type))
+  storage_account_type: 
+  deployed_cloud_storage_type: 
+  deployments_storage_account_name: ((deployments_storage_account_name))
+  bosh_storage_account_name: ((bosh_storage_account_name))
+  default_security_group: ((default_security_group))
+  ssh_public_key: ((ssh_public_key))
+  ssh_private_key: ((ssh_private_key))
+  environment: AzureStack
+  azure_stack:
+    domain: ((domain))
+    authentication: ((authentication))
+    resource: ((ressource))
+    endpoint_prefix: ((endpoint_prefix))
+    ca_cert: ((ca_cert)) 

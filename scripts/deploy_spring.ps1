@@ -63,8 +63,9 @@ om --skip-ssl-validation `
   --product $TARGET_FILENAME
 Write-Host "importing $STEMCELL_FILENAME into OpsManager"  
 om --skip-ssl-validation `
-  upload-stemcell `
-  --stemcell $STEMCELL_FILENAME
+    upload-stemcell `
+    --floating false `
+    --stemcell $STEMCELL_FILENAME
 
 $PRODUCTS=$(om --skip-ssl-validation `
   available-products `

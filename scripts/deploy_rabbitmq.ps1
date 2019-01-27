@@ -62,8 +62,9 @@ om --skip-ssl-validation `
   --product $TARGET_FILENAME
 Write-Host "importing $STEMCELL_FILENAME into OpsManager"  
 om --skip-ssl-validation `
-  upload-stemcell `
-  --stemcell $STEMCELL_FILENAME
+    upload-stemcell `
+    --floating false `
+    --stemcell $STEMCELL_FILENAME
 
 $PRODUCTS=$(om --skip-ssl-validation `
   available-products `
@@ -77,10 +78,10 @@ om --skip-ssl-validation `
   deployed-products
   # 2.  Stage using om cli
 
-  om --skip-ssl-validation `
-    stage-product `
-    --product-name $PRODUCT_NAME `
-    --product-version $VERSION
+om --skip-ssl-validation `
+  stage-product `
+  --product-name $PRODUCT_NAME `
+  --product-version $VERSION
 
 
 
