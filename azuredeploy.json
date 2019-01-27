@@ -6,7 +6,7 @@
       "type": "string",
       "defaultValue": "boshstorageaccount",
       "metadata": {
-        "description": "Name of storage account"
+        "description": "Name of storage account for bosh jobs"
       }
     },
     "storageEndpoint": {
@@ -116,13 +116,6 @@
     "boshExtraStorageAccountName": "[concat('xtrastrg',uniquestring(resourceGroup().id, deployment().name))]",
     "opsManVMName": "[parameters('opsManFQDNPrefix')]",
     "location": "[parameters('location')]",
-    "vmStorageAccountContainerName": "vhds",
-    "storageid": "[resourceId('Microsoft.Storage/storageAccounts', parameters('boshstorageaccountname'))]",
-    "xstorageid1": "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('boshExtraStorageAccountName'),'1'))]",
-    "xstorageid2": "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('boshExtraStorageAccountName'),'2'))]",
-    "xstorageid3": "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('boshExtraStorageAccountName'),'3'))]",
-    "xstorageid4": "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('boshExtraStorageAccountName'),'4'))]",
-    "xstorageid5": "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('boshExtraStorageAccountName'),'5'))]",
     "virtualNetworkName": "[concat(resourceGroup().name,'-virtual-network')]",
     "pas_subnet_name": "[concat(resourceGroup().name,'-pas-subnet')]",
     "services_subnet_name": "[concat(resourceGroup().name,'-services-subnet')]",
@@ -160,8 +153,6 @@
     "mysqllbProbeID": "[concat(variables('mysqllbID'),'/probes/tcp1936')]",
     "diagnosticsStorageAccountName": "[concat('diag', uniquestring(resourceGroup().id))]",
     "diagnosticsStorageAccountType": "Standard_LRS",
-    "mgmtSubnetRef": "[concat(variables('pcfVNetID'),'/subnets/', 'Management')]",
-    "publicIPRef": "[concat('Microsoft.Network/publicIPAddresses/',variables('OpsManPublicIPName'))]",
     "OpsManPublicIPName": "[concat('OpsManPublicIP_', parameters('deploymentcolor'))]",
     "OpsManIPConfigName": "[concat('OpsManIPConfig_', parameters('deploymentcolor'))]",
     "OpsManVersion": "[replace(parameters('opsManVHD'),'.vhd', '')]",
@@ -201,6 +192,17 @@
       "kind": "Storage",
       "properties": {}
     },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[parameters('boshStorageAccountName')]",
+      "apiVersion": "2017-10-01",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "Storage",
+      "properties": {}
+    },    
     {
       "type": "Microsoft.Storage/storageAccounts",
       "condition": "[equals(parameters('usemanageddisks'),'no')]",
@@ -1408,7 +1410,7 @@
       "type": "string"
     },
     "Bosh Storageaccount": {
-      "value": "[parameters('boshstorageaccountname')]",
+      "value": "[parameters('boshStorageAccountName')]",
       "type": "string"
     },
     "Extra Storageaccount Prefix": {

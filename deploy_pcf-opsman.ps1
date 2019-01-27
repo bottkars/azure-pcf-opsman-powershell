@@ -84,7 +84,7 @@
     [ValidateNotNullOrEmpty()]
     [ValidateSet('AzureCloud', 'AzureStack')]$Environment = "AzureStack",
     [switch]$PAS_AUTOPILOT,
-    [switch]$MYSQL_AUTOPILOT, 
+    [switch]$SPRING_AUTOPILOT, 
     [switch]$force_product_download,
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
@@ -210,65 +210,55 @@ $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
 $StopWatch_prepare.Start()
     
 if (!$OpsmanUpdate) {
-    Write-Host "==>Creating ResourceGroups $resourceGroup and $imagestorageaccount" -nonewline   
+    Write-Host "==>Creating ResourceGroups $resourceGroup and $ImageStorageAccount" -nonewline   
     $new_rg = New-AzureRmResourceGroup -Name $resourceGroup -Location $location -Force
-    $new_rg = New-AzureRmResourceGroup -Name $imagestorageaccount -Location $location -Force
-
+    $new_rg = New-AzureRmResourceGroup -Name $ImageStorageAccount -Location $location -Force
     Write-Host -ForegroundColor green "[done]"
-
-    foreach ($Storageaccount in ($ImageStorageAccount, $boshstorageaccount)) {
-        if ($Storageaccount -eq $boshstorageaccount)
-        {
-            $storage_rg = $resourceGroup
-        }
-        else {
-            $storage_rg = $Storageaccount
-        }
-        if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
-            $account_available = Get-AzureRmStorageAccountNameAvailability -Name $storageaccount 
-            $account_free = $account_available.NameAvailable
-        }
-        else {
-            Write-Warning "we have a netcore bug with azurestack and can not test stoprageaccount availabilty"
-            $account_free = $true
-        }
-
-        # bug not working in netcore against azurestack, as we can not set profiles :-( 
-        # waiting for new az netcore module with updated api profiles
-        # new 
-        if ($account_free -eq $true) {
-
-            Write-Host "==>Creating StorageAccount $storageaccount" -nonewline
-            if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
-                $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $storage_rg `
-                    -Name $storageaccount -Location $location `
-                    -Type $storageType -ErrorAction SilentlyContinue
-                if (!$new_acsaccount) {
-                    $new_acsaccount = Get-AzureRmStorageAccount -ResourceGroupName $storage_rg | Where-Object StorageAccountName -match $storageaccount
-
-                }    
-
-                $new_acsaccount | Set-AzureRmCurrentStorageAccount
-                Write-Host "Creating Container $image_containername in $($new_acsaccount.StorageAccountName)"
-                $Container = New-AzureStorageContainer -Name $image_containername -Permission blob
-
-            }
-            else {
-                New-AzureRmResourceGroupDeployment -TemplateFile $PSScriptRoot/createstorageaacount.json -ResourceGroupName $resourceGroup -storageAccountName $storageaccount
-            }
-
-            Write-Host -ForegroundColor green "[done]"
-        }
-        else {
-            Write-Host "$storageaccount already exists, operations might fail if not owner in same location" 
-        }  
-    
+    if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
+        $account_available = Get-AzureRmStorageAccountNameAvailability -Name $ImageStorageAccount 
+        $account_free = $account_available.NameAvailable
     }
+    else {
+        Write-Warning "we have a netcore bug with azurestack and can not test stoprageaccount availabilty"
+        $account_free = $true
+    }
+
+    # bug not working in netcore against azurestack, as we can not set profiles :-( 
+    # waiting for new az netcore module with updated api profiles
+    # new 
+    if ($account_free -eq $true) {
+
+        Write-Host "==>Creating StorageAccount $ImageStorageAccount" -nonewline
+        if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
+            $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $storage_rg `
+                -Name $ImageStorageAccount -Location $location `
+                -Type $storageType -ErrorAction SilentlyContinue
+            if (!$new_acsaccount) {
+                $new_acsaccount = Get-AzureRmStorageAccount -ResourceGroupName $storage_rg | Where-Object StorageAccountName -match $ImageStorageAccount
+
+            }    
+
+            $new_acsaccount | Set-AzureRmCurrentStorageAccount
+            Write-Host "Creating Container $image_containername in $($new_acsaccount.StorageAccountName)"
+            $Container = New-AzureStorageContainer -Name $image_containername -Permission blob
+
+        }
+        else {
+            New-AzureRmResourceGroupDeployment -TemplateFile $PSScriptRoot/createstorageaacount.json -ResourceGroupName $resourceGroup -storageAccountName $ImageStorageAccount
+        }
+
+        Write-Host -ForegroundColor green "[done]"
+    }
+    else {
+        Write-Host "$ImageStorageAccount already exists, operations might fail if not owner in same location" 
+    }  
+    
+    
 
    
 }
-$urlOfUploadedImageVhd = ('https://' + $imagestorageaccount + '.blob.' + $blobbaseuri + '/' + $image_containername + '/' + $opsManVHD)
-Write-Host "Starting upload Procedure for $opsManVHD into storageaccount $imagestorageaccount, this may take a while"
+$urlOfUploadedImageVhd = ('https://' + $ImageStorageAccount + '.blob.' + $blobbaseuri + '/' + $image_containername + '/' + $opsManVHD)
+Write-Host "Starting upload Procedure for $opsManVHD into storageaccount $ImageStorageAccount, this may take a while"
 if ($Environment -eq 'AzureStack') {
     Write-Host "==>Checking OS Transfer Type" -nonewline 
     $transfer_type = (get-runningos).Webrequestor
@@ -286,7 +276,7 @@ if ($Environment -eq 'AzureStack') {
         }
     }  
     try {
-        $new_arm_vhd = Add-AzureRmVhd -ResourceGroupName $imagestorageaccount -Destination $urlOfUploadedImageVhd `
+        $new_arm_vhd = Add-AzureRmVhd -ResourceGroupName $ImageStorageAccount -Destination $urlOfUploadedImageVhd `
             -LocalFilePath $localPath -ErrorAction SilentlyContinue
     }
     catch {
@@ -296,14 +286,14 @@ if ($Environment -eq 'AzureStack') {
 else {
     # Blob Copy routine
     $src_context = New-AzureStorageContext -StorageAccountName opsmanagerwesteurope -Anonymous
-    $dst_context = (Get-AzureRmStorageAccount -ResourceGroupName $imagestorageaccount -Name $imagestorageaccount).context
+    $dst_context = (Get-AzureRmStorageAccount -ResourceGroupName $ImageStorageAccount -Name $ImageStorageAccount).context
     ## check for blob
-    Write-Host "==>Checking blob $opsManVHD exixts in container $image_containername for Storageaccount $imagestorageaccount" -NoNewline
+    Write-Host "==>Checking blob $opsManVHD exixts in container $image_containername for Storageaccount $ImageStorageAccount" -NoNewline
     $ExistingBlob = Get-AzureStorageBlob -Context $dst_context -Blob $opsManVHD -Container $image_containername -ErrorAction SilentlyContinue
     if (!$ExistingBlob) {
         Write-Host -ForegroundColor Green "[blob needs to be uploaded]"
         # check container
-        Write-Host "==>Checking container $image_containername exists for Storageaccount $imagestorageaccount" -NoNewline
+        Write-Host "==>Checking container $image_containername exists for Storageaccount $ImageStorageAccount" -NoNewline
         $ContainerExists = (Get-AzureStorageContainer -Name $image_containername -Context $dst_context -ErrorAction SilentlyContinue)
         If (!$ContainerExists) {
             Write-Host -ForegroundColor Green "[creating container]"
@@ -312,7 +302,7 @@ else {
         else {
             Write-Host -ForegroundColor blue "[container already exists]"
         }
-        Write-Host "==>copying $opsManVHD into Storageaccount $imagestorageaccount" -NoNewline
+        Write-Host "==>copying $opsManVHD into Storageaccount $ImageStorageAccount" -NoNewline
         $copy = Get-AzureStorageBlob -Container images -Blob $opsManVHD -Context $src_context | `
             Start-AzureStorageBlobCopy -DestContainer $image_containername -DestContext $dst_context
         $complete = $copy | Get-AzureStorageBlobCopyState -WaitForComplete
@@ -361,7 +351,7 @@ else {
 $parameters = @{}
 $parameters.Add("SSHKeyData", $OPSMAN_SSHKEY)
 $parameters.Add("opsManFQDNPrefix", $opsManFQDNPrefix)
-$parameters.Add("boshstorageAccountName", $boshstorageaccount)
+$parameters.Add("boshStorageAccountName", $boshstorageaccount)
 $parameters.Add("opsManVHD", $opsManVHD)
 $parameters.Add("deploymentcolor", $deploymentcolor)
 $parameters.Add("mask", $mask)
@@ -453,20 +443,22 @@ if (!$OpsmanUpdate) {
             $StopWatch_deploy_pas.Start()
             $command = "$PSScriptRoot/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE"
             Write-Host "Calling $command" 
-            Invoke-Expression -Command $Command
+            Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pas-$(get-date -f yyyyMMddhhmmss).log"
             $StopWatch_deploy_pas.Stop()
             $DeployTimes += "PAS deployment took $($StopWatch_deploy_pas.Elapsed.Hours) hours, $($StopWatch_deploy_pas.Elapsed.Minutes) minutes and  $($StopWatch_deploy_pas.Elapsed.Seconds) seconds"
         
-            if ($MYSQL_AUTOPILOT.IsPresent) {
-                $StopWatch_deploy_mysql = New-Object System.Diagnostics.Stopwatch
-                $StopWatch_deploy_mysql.Start()
-        
-                $command = "$PSScriptRoot/scripts/deploy_mysql.ps1"
-                Write-Host "Calling $command" 
-                Invoke-Expression -Command $Command
-                $StopWatch_deploy_mysql.Stop()
-                $DeployTimes += "mysql deployment took $($StopWatch_deploy_mysql.Elapsed.Hours) hours, $($StopWatch_deploy_mysql.Elapsed.Minutes) minutes and  $($StopWatch_deploy_mysql.Elapsed.Seconds) seconds"
-        
+            if ($SPRING_AUTOPILOT.IsPresent) {
+
+                ForEach-Object $tile in ('mysql', 'rabbit', 'spring')
+                {
+                    $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
+                    $StopWatch_deploy.Start()
+                    $command = "$PSScriptRoot/scripts/deploy_$($tile).ps1"
+                    Write-Host "Calling $command" 
+                    Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/$($tile)-$(get-date -f yyyyMMddhhmmss).log"
+                    $StopWatch_deploy.Stop()
+                    $DeployTimes += "$tile deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds"
+                }
             }
         }    
     }
