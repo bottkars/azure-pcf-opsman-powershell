@@ -168,6 +168,9 @@
       "apiVersion": "2017-03-30",
       "name": "[variables('OpsManVersion')]",
       "location": "[parameters('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "properties": {
         "storageProfile": {
           "osDisk": {
@@ -186,6 +189,9 @@
       "name": "[variables('mysqlStorageAccountName')]",
       "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "sku": {
         "name": "Standard_LRS"
       },
@@ -197,6 +203,9 @@
       "name": "[parameters('boshStorageAccountName')]",
       "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "sku": {
         "name": "Standard_LRS"
       },
@@ -209,6 +218,9 @@
       "name": "[concat(variables('boshExtraStorageAccountName'), '1')]",
       "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "sku": {
         "name": "Standard_LRS"
       },
@@ -221,6 +233,9 @@
       "name": "[concat(variables('boshExtraStorageAccountName'), '2')]",
       "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "sku": {
         "name": "Standard_LRS"
       },
@@ -233,6 +248,9 @@
       "name": "[concat(variables('boshExtraStorageAccountName'), '3')]",
       "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "sku": {
         "name": "Standard_LRS"
       },
@@ -245,6 +263,9 @@
       "name": "[concat(variables('boshExtraStorageAccountName'), '4')]",
       "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "sku": {
         "name": "Standard_LRS"
       },
@@ -257,6 +278,9 @@
       "name": "[concat(variables('boshExtraStorageAccountName'), '5')]",
       "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "sku": {
         "name": "Standard_LRS"
       },
@@ -268,6 +292,9 @@
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2017-10-01",
       "location": "[resourceGroup().location]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "sku": {
         "name": "[variables('diagnosticsStorageAccountType')]"
       },
@@ -280,7 +307,8 @@
       "name": "[variables('OpsManPublicIPName')]",
       "location": "[variables('location')]",
       "tags": {
-        "deployment": "[parameters('deploymentcolor')]"
+        "deployment": "[parameters('deploymentcolor')]",
+        "provisioner": "pcf_opsman_template"
       },
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
@@ -293,6 +321,9 @@
       "type": "Microsoft.Network/dnszones",
       "condition": "[equals(parameters('Environment'),'AzureStack')]",
       "name": "[parameters('dnsZoneName')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "apiVersion": "2016-04-01",
       "location": "global",
       "properties": {}
@@ -300,6 +331,9 @@
     {
       "type": "Microsoft.Network/dnszones/A",
       "condition": "[equals(parameters('Environment'),'AzureStack')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "name": "[concat(parameters('dnsZoneName'), '/*.sys')]",
       "apiVersion": "2016-04-01",
       "location": "[variables('location')]",
@@ -322,6 +356,9 @@
       "name": "[concat(parameters('dnsZoneName'), '/*.apps')]",
       "apiVersion": "2016-04-01",
       "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "dependsOn": [
         "[parameters('dnsZoneName')]",
         "Microsoft.Network/publicIPAddresses/web-lb-public-ip"
@@ -340,6 +377,9 @@
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('pcf-lb-ip-name')]",
       "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "properties": {
         "publicIPAllocationMethod": "Static"
       }
@@ -349,6 +389,9 @@
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('tcp-lb-ip-name')]",
       "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "properties": {
         "publicIPAllocationMethod": "Static"
       }
@@ -358,6 +401,9 @@
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('diego-ssh-lb-ip-name')]",
       "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "properties": {
         "publicIPAllocationMethod": "Static"
       }
@@ -366,6 +412,9 @@
       "name": "[variables('bosh_deployed_vms_security_group_name')]",
       "apiVersion": "2017-10-01",
       "location": "[parameters('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "type": "Microsoft.Network/networkSecurityGroups",
       "properties": {
         "securityRules": [
@@ -690,6 +739,9 @@
       "name": "[variables('ops_manager_security_group_name')]",
       "apiVersion": "2017-10-01",
       "location": "[parameters('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "type": "Microsoft.Network/networkSecurityGroups",
       "properties": {
         "securityRules": [
@@ -862,6 +914,9 @@
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "dependsOn": [],
       "properties": {
         "addressSpace": {
@@ -896,6 +951,9 @@
       "name": "[variables('pcflbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "dependsOn": [
         "Microsoft.Network/publicIPAddresses/web-lb-public-ip"
       ],
@@ -998,6 +1056,9 @@
       "name": "[variables('tcplbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "dependsOn": [
         "Microsoft.Network/publicIPAddresses/tcp-lb-public-ip"
       ],
@@ -1169,6 +1230,9 @@
       "name": "[variables('diegosshlbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "dependsOn": [
         "Microsoft.Network/publicIPAddresses/diego-ssh-lb-public-ip"
       ],
@@ -1247,6 +1311,9 @@
       "name": "[variables('mysqllbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
       "properties": {
         "frontendIPConfigurations": [
           {
@@ -1321,7 +1388,8 @@
       "name": "[variables('opsManNicName')]",
       "location": "[variables('location')]",
       "tags": {
-        "deployment": "[parameters('deploymentcolor')]"
+        "deployment": "[parameters('deploymentcolor')]",
+        "provisioner": "pcf_opsman_template"
       },
       "dependsOn": [
         "[concat('Microsoft.Network/networkSecurityGroups/', variables('ops_manager_security_group_name'))]"
@@ -1357,7 +1425,8 @@
       "location": "[variables('location')]",
       "tags": {
         "deployment": "[parameters('deploymentcolor')]",
-        "opsmanversion": "[variables('OpsManVersion')]"
+        "opsmanversion": "[variables('OpsManVersion')]",
+        "provisioner": "pcf_opsman_template"
       },
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]",
