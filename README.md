@@ -1,4 +1,8 @@
 # PCF Azure Resource Manager (ARM) Templates and PAS AUTOPILOT
+<img src="https://docs.pivotal.io/images/PVLG-PivotalApplicationService-Symbol.png" height="100"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Heart_coraz%C3%B3n.svg/800px-Heart_coraz%C3%B3n.svg.png" height="100">
+<img src="./images/azurestack.png" height="100">
+
+
 
 This repository contains ARM templates that help operators deploy Ops Manager Director for Pivotal Cloud Foundry (PCF) to Azurestack (and azure).  
 
