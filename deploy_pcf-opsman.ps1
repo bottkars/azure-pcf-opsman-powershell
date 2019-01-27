@@ -168,6 +168,12 @@ if (!$location) {
 if (!$dnsdomain) {
     $dnsdomain = Read-Host "Please enter your DNS Domain [azurestack.external for asdk]"
 }
+
+if (!(test-path $($HOME)/opsman.pub))
+    {
+        write-host "Required $($HOME)/opsman.pub not found. please run ssh-keygen"
+        Break
+    }
 # The SSH Key for OpsManager
 $OPSMAN_SSHKEY = Get-Content "$HOME/opsman.pub"
 
