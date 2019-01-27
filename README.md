@@ -17,9 +17,9 @@ The Powershell script makes use of:
 the [certificate helper script](/create_certs.ps1) may require openssl:
 - openssl for certificate creation
 
-The user may also want to deploy my custom AzureStack Dashboard Tiles
+*The user may also want to deploy my custom AzureStack Dashboard Tiles*
 
-[Pivotal Cloud Foundry Dashboard Tile](/docs/tile1.md)
+[Pivotal Cloud Foundry Dashboard Tile](/docs/tile1.md)   
 [Additional Repo´s Tile](/docs/tile2.md)
 
 ### requirements
@@ -34,7 +34,7 @@ The user may also want to deploy my custom AzureStack Dashboard Tiles
 when using PAS Autopilot, a SSL Certificate is required for the pcf subdomain, containing wildcars SAN´s for vwarious PCF subdomains. the Cerificate must have the name of the pcfsubdomain.azurestackdomain.crt  
 if issued from a private / self signed Authority, the ca´s CERT must be appended to the file.  
 for testing on AzureStack / ASDK, you can use the [certificate helper script](/create_certs.ps1) script.
-To install OpenSSL, simply run the helper [helper script](/prepare_utils.ps1), that will also install PivPosh
+To install OpenSSL, simply run the helper [utilities helper script](/prepare_utils.ps1), that will also install PivPosh
 ### usage
 
 there is one central PS1 Script to deploy OPS Manager.  
