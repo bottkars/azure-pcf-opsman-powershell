@@ -1,5 +1,6 @@
 ﻿param(
-    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet(
         <## 2.1 starts here
@@ -54,45 +55,78 @@
     )]
     $opsmanager_uri = 'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.237.vhd',
     # The name of the Ressource Group we want to Deploy to.
-    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     $resourceGroup = 'pcf',
     # region of the Deployment., local for ASDK
-    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     $location = $GLOBAL:AZS_Location,
-    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     $dnsdomain = $Global:dnsdomain,
-    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
     $boshstorageaccount,
-    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [Parameter(ParameterSetName = "update", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
     $ImageStorageAccount = "pcfopsmanstorage", 
     # The Containername we will host the Images for Opsmanager in
-    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     $image_containername = 'opsman-image',
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [Parameter(ParameterSetName = "update", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
     $opsManFQDNPrefix = "pcfopsman",
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
     $PCF_SUBDOMAIN_NAME = "pcfdemo",
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
     [switch]$RegisterProviders,
+    [Parameter(ParameterSetName = "update", Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
     [switch]$OpsmanUpdate,
-    [Parameter(ParameterSetName = "1", Mandatory = $false)][ValidateSet('green', 'blue')]$deploymentcolor = "green",
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [Parameter(ParameterSetName = "update", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
     [ipaddress]$subnet = "10.0.0.0",
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [Parameter(ParameterSetName = "update", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
     $downloadpath = "$($HOME)/Downloads",
     # [switch]$useManagedDisks, wait´s for new cpi...
-    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [Parameter(ParameterSetName = "update", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
     [ValidateNotNullOrEmpty()]
     [ValidateSet('AzureCloud', 'AzureStack')]$Environment = "AzureStack",
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [Parameter(ParameterSetName = "update", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
     [switch]$PAS_AUTOPILOT,
-    [switch]$SPRING_AUTOPILOT, 
-    [switch]$force_product_download,
-    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet('cf', 'srt')]
     $PASTYPE = "srt",
-    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('mysql', 'rabbitmq', 'spring', 'redis')]
+    [string[]]$tiles,
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [switch]$force_product_download,
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
     [switch]$TESTONLY,
-    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
     [switch]
     $NO_APPLY
 )
@@ -169,11 +203,10 @@ if (!$dnsdomain) {
     $dnsdomain = Read-Host "Please enter your DNS Domain [azurestack.external for asdk]"
 }
 
-if (!(test-path -Path "$($HOME)/opsman.pub"))
-    {
-        write-host "Required $($HOME)/opsman.pub not found. please run ssh-keygen"
-        Break
-    }
+if (!(test-path -Path "$($HOME)/opsman.pub")) {
+    write-host "Required $($HOME)/opsman.pub not found. please run ssh-keygen"
+    Break
+}
 # The SSH Key for OpsManager
 $OPSMAN_SSHKEY = Get-Content "$HOME/opsman.pub"
 
@@ -357,7 +390,6 @@ else {
 $parameters = @{}
 $parameters.Add("SSHKeyData", $OPSMAN_SSHKEY)
 $parameters.Add("opsManFQDNPrefix", $opsManFQDNPrefix)
-$parameters.Add("boshStorageAccountName", $boshstorageaccount)
 $parameters.Add("opsManVHD", $opsManVHD)
 $parameters.Add("deploymentcolor", $deploymentcolor)
 $parameters.Add("mask", $mask)
@@ -371,7 +403,9 @@ $StopWatch_deploy.Start()
 
 Write-host "Starting $deploymentcolor Deployment of $opsManFQDNPrefix $opsmanVersion" -ForegroundColor $deploymentcolor
 if (!$OpsmanUpdate) {
-    $parameters.Add("dnsZoneName", $dnsZoneName) 
+    $parameters.Add("dnsZoneName", $dnsZoneName)
+    $parameters.Add("boshStorageAccountName", $boshstorageaccount)
+ 
     if ($TESTONLY.IsPresent) {
         Test-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile $PSScriptRoot/azuredeploy.json -TemplateParameterObject $parameters
     }
@@ -452,24 +486,20 @@ if (!$OpsmanUpdate) {
             Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pas-$(get-date -f yyyyMMddhhmmss).log"
             $StopWatch_deploy_pas.Stop()
             $DeployTimes += "PAS deployment took $($StopWatch_deploy_pas.Elapsed.Hours) hours, $($StopWatch_deploy_pas.Elapsed.Minutes) minutes and  $($StopWatch_deploy_pas.Elapsed.Seconds) seconds"
-        
-            if ($SPRING_AUTOPILOT.IsPresent) {
-
-                ForEach  ($tile in ('mysql', 'rabbitmq', 'spring'))
-                {
-                    $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
-                    $StopWatch_deploy.Start()
-                    $command = "$PSScriptRoot/scripts/deploy_$($tile).ps1"
-                    Write-Host "Calling $command" 
-                    Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/$($tile)-$(get-date -f yyyyMMddhhmmss).log"
-                    $StopWatch_deploy.Stop()
-                    $DeployTimes += "$tile deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds"
-                }
+            if ($tiles -contains 'spring') {
+                $tiles = ('mysql', 'rabbitmq', 'spring', 'redis') + $tiles
+            }
+            ForEach ($tile in $tiles) {
+                $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
+                $StopWatch_deploy.Start()
+                $command = "$PSScriptRoot/scripts/deploy_$($tile).ps1"
+                Write-Host "Calling $command" 
+                Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/$($tile)-$(get-date -f yyyyMMddhhmmss).log"
+                $StopWatch_deploy.Stop()
+                $DeployTimes += "$tile deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds"
             }
         }    
     }
-
-
 }
 else {
     if ($TESTONLY.IsPresent) {
