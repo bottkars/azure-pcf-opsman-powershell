@@ -17,5 +17,6 @@ product-properties:
   .properties.small_plan_selector.active.az_single_select:
     value: 'null'
   .properties.medium_plan_selector:
+    value: Plan Inactive    
   .properties.large_plan_selector:
     value: Plan Inactive
