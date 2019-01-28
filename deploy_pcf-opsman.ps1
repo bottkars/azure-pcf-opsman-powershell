@@ -496,6 +496,7 @@ if (!$OpsmanUpdate) {
                 $tiles = ('mysql', 'rabbitmq', 'spring', 'redis') + $tiles
                 $tiles = $tiles | Select-Object -Unique
             }
+            Write-Host -ForegroundColor Magenta "Going to deploy the Following Tiles: $($tiles -join ",")"
             ForEach ($tile in $tiles) {
                 $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
                 $StopWatch_deploy.Start()
