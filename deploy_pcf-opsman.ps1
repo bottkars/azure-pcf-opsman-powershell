@@ -481,6 +481,9 @@ if (!$OpsmanUpdate) {
         Invoke-Expression -Command $Command
         $StopWatch_deploy_opsman.Stop()
         $DeployTimes += "opsman deployment took $($StopWatch_deploy_opsman.Elapsed.Hours) hours, $($StopWatch_deploy_opsman.Elapsed.Minutes) minutes and  $($StopWatch_deploy_opsman.Elapsed.Seconds) seconds"
+        if ($tiles) {
+            $PAS_AUTOPILOT = $true
+        }
         if ($PAS_AUTOPILOT.IsPresent) {
             $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
             $StopWatch_deploy_pas.Start()
@@ -491,6 +494,7 @@ if (!$OpsmanUpdate) {
             $DeployTimes += "PAS deployment took $($StopWatch_deploy_pas.Elapsed.Hours) hours, $($StopWatch_deploy_pas.Elapsed.Minutes) minutes and  $($StopWatch_deploy_pas.Elapsed.Seconds) seconds"
             if ($tiles -contains 'spring') {
                 $tiles = ('mysql', 'rabbitmq', 'spring', 'redis') + $tiles
+                $tiles = $tiles | Select-Object -Unique
             }
             ForEach ($tile in $tiles) {
                 $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
