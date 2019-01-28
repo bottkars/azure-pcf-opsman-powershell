@@ -211,9 +211,9 @@ if (!(test-path -Path "$($HOME)/opsman.pub")) {
     Pop-Location
     Break
 }
-if (!(test-path -Path "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($DOMAIN).crt")) {
-    write-host "Required$($HOME)/$($PCF_SUBDOMAIN_NAME).$($DOMAIN).crt not found. 
-    please run ./create_certs.ps1 -PCF_SUBSOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $DOMAIN
+if (!(test-path -Path "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($dnsdomain).crt")) {
+    write-host "Required$($HOME)/$($PCF_SUBDOMAIN_NAME).$($dnsdomain).crt not found. 
+    please run ./create_certs.ps1 -PCF_SUBSOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $dnsdomain
     or provide your own cert´s"
     Pop-Location
     Break
