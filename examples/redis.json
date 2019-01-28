@@ -1,4 +1,4 @@
 {
-    "PCF_RABBITMQ_VERSION":  "2.0.0",
-    "CONFIG_FILE": "../templates/rabbitmq/2.0.0/redis.yaml"
+    "PCF_REDIS_VERSION":  "2.0.0",
+    "CONFIG_FILE": "../templates/redis/2.0.0/redis.yaml"
 }

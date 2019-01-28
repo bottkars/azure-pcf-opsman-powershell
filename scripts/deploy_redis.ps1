@@ -5,7 +5,7 @@ if (!(Test-Path $PRODUCT_FILE))
 {$PRODUCT_FILE = "../examples/redis.json"}
 $redis_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
-$PCF_redis_VERSION = $redis_conf.PCF_redis_VERSION
+$PCF_REDIS_VERSION = $redis_conf.PCF_REDIS_VERSION
 
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
 $downloaddir = $director_conf.downloaddir
@@ -25,14 +25,14 @@ $GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $slug_id = "p-redis"
 
-Write-Host "Getting Release for $slug_id $PCF_redis_VERSION"
-$piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_redis_VERSION | Select-Object -First 1
+Write-Host "Getting Release for $slug_id $PCF_REDIS_VERSION"
+$piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_REDIS_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
-Write-Host "Accepting EULA for $slug_id $PCF_redis_VERSION"
+Write-Host "Accepting EULA for $slug_id $PCF_REDIS_VERSION"
 $eula = $piv_release | Confirm-PIVEula -access_token $access_token
 $piv_object = $piv_release_id | Where-Object aws_object_key -Like *$slug_id*.pivotal*
-$output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_redis_VERSION)" -Force
+$output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_REDIS_VERSION)" -Force
 
 if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
@@ -43,7 +43,7 @@ if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.Fu
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
         --pivnet-file-glob $(Split-Path -Leaf $piv_object.aws_object_key) `
         --pivnet-product-slug $slug_id `
-        --product-version $PCF_redis_VERSION `
+        --product-version $PCF_REDIS_VERSION `
         --stemcell-iaas azure `
         --download-stemcell `
         --output-directory  "$($output_directory.FullName)"
