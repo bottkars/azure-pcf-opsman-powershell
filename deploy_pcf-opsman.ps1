@@ -252,10 +252,11 @@ if  ($PsCmdlet.ParameterSetName -eq "install")
                     $tiles = ('mysql', 'rabbitmq', 'spring', 'redis') + $tiles
                     $tiles = $tiles | Select-Object -Unique
                 }
-                Write-Host -ForegroundColor Magenta "Going to deploy PCF $PASTYPE with the Following Tiles: $($tiles -join ",")"
+                Write-Host -ForegroundColor White -NoNewline "Going to deploy PCF $PASTYPE with the Following Tiles: "
+                Write-Host -ForegroundColor Green  "$($tiles -join ",")"
             }
         elseif ($PAS_AUTOPILOT.IsPresent) {
-            Write-Host -ForegroundColor Magenta "Going to deploy PCF $PASTYPE without Tiles"
+            Write-Host -ForegroundColor White "Going to deploy PCF $PASTYPE without Tiles"
         }    
 
     }
