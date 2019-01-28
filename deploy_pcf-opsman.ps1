@@ -210,14 +210,17 @@ if (!(test-path -Path "$($HOME)/opsman.pub")) {
     write-host "Required $($HOME)/opsman.pub not found. please run ssh-keygen"
     Break
 }
+if (!(test-path -Path "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($PCF_DOMAIN_NAME).crt")) {
+    write-host "Required $($HOME)/opsman.pub not found. please run ssh-keygen"
+    Break
+}
+
 # The SSH Key for OpsManager
 $OPSMAN_SSHKEY = Get-Content "$HOME/opsman.pub"
-
 $dnsZoneName = "$PCF_SUBDOMAIN_NAME.$Location.$dnsdomain"
 $blobbaseuri = (Get-AzureRmContext).Environment.StorageEndpointSuffix
 $BaseNetworkVersion = [version]$subnet.IPAddressToString
 $mask = "$($BaseNetworkVersion.Major).$($BaseNetworkVersion.Minor)"
-
 $infrastructure_cidr = "$mask.8.0/26"
 $infrastructure_range = "$mask.8.1-$mask.8.10"
 $infrastructure_gateway = "$mask.8.1"
@@ -235,6 +238,23 @@ Write-Host "$resourceGroup-virtual-network/$resourceGroup-pas-subnet            
 Write-Host "$($opsManFQDNPrefix)green $Mask.8.4/32"
 Write-Host "$($opsManFQDNPrefix)blue $Mask.8.5/32"
 Write-Host
+
+if  ($PsCmdlet.ParameterSetName -eq install)
+    {
+        if ($tiles)
+            {
+                [switch]$PAS_AUTOPILOT = $true
+                if ($tiles -contains 'spring') {
+                    $tiles = ('mysql', 'rabbitmq', 'spring', 'redis') + $tiles
+                    $tiles = $tiles | Select-Object -Unique
+                }
+                Write-Host -ForegroundColor Magenta "Going to deploy PCF $PASTYPE with the Following Tiles: $($tiles -join ",")"
+            }
+        elseif ($PAS_AUTOPILOT.IsPresent) {
+            Write-Host -ForegroundColor Magenta "Going to deploy PCF $PASTYPE without Tiles"
+        }    
+
+    }
 $opsManFQDNPrefix = "$opsManFQDNPrefix$deploymentcolor"
 if (!$boshstorageaccount) {
     $boshstorageaccount = 'boshstorage'
@@ -481,9 +501,7 @@ if (!$OpsmanUpdate) {
         Invoke-Expression -Command $Command
         $StopWatch_deploy_opsman.Stop()
         $DeployTimes += "opsman deployment took $($StopWatch_deploy_opsman.Elapsed.Hours) hours, $($StopWatch_deploy_opsman.Elapsed.Minutes) minutes and  $($StopWatch_deploy_opsman.Elapsed.Seconds) seconds"
-        if ($tiles) {
-            $PAS_AUTOPILOT = $true
-        }
+
         if ($PAS_AUTOPILOT.IsPresent) {
             $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
             $StopWatch_deploy_pas.Start()
@@ -492,11 +510,7 @@ if (!$OpsmanUpdate) {
             Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pas-$(get-date -f yyyyMMddhhmmss).log"
             $StopWatch_deploy_pas.Stop()
             $DeployTimes += "PAS deployment took $($StopWatch_deploy_pas.Elapsed.Hours) hours, $($StopWatch_deploy_pas.Elapsed.Minutes) minutes and  $($StopWatch_deploy_pas.Elapsed.Seconds) seconds"
-            if ($tiles -contains 'spring') {
-                $tiles = ('mysql', 'rabbitmq', 'spring', 'redis') + $tiles
-                $tiles = $tiles | Select-Object -Unique
-            }
-            Write-Host -ForegroundColor Magenta "Going to deploy the Following Tiles: $($tiles -join ",")"
+
             ForEach ($tile in $tiles) {
                 $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
                 $StopWatch_deploy.Start()
