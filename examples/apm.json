@@ -1,4 +1,4 @@
 {
     "PCF_APM_VERSION":  "1.14.4",
-    "CONFIG_FILE": "../templates/redis/$PCF_APM_VERSION/redis.yaml"
+    "CONFIG_FILE": "../templates/redis/$PCF_APM_VERSION/apm.yaml"
 }
