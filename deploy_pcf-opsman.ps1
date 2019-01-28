@@ -239,7 +239,7 @@ Write-Host "$($opsManFQDNPrefix)green $Mask.8.4/32"
 Write-Host "$($opsManFQDNPrefix)blue $Mask.8.5/32"
 Write-Host
 
-if  ($PsCmdlet.ParameterSetName -eq install)
+if  ($PsCmdlet.ParameterSetName -eq "install")
     {
         if ($tiles)
             {
