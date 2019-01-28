@@ -104,8 +104,8 @@
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [ValidateNotNullOrEmpty()]
-    [ValidateSet('AzureCloud', 'AzureStack')]$Environment = "AzureStack",
+    [ValidateSet('AzureCloud', 'AzureStack')]
+    $Environment = "AzureStack",
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
@@ -119,6 +119,9 @@
     [ValidateNotNullOrEmpty()]
     [ValidateSet('mysql', 'rabbitmq', 'spring', 'redis')]
     [string[]]$tiles,
+    [Parameter(ParameterSetName = "update", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('green', 'blue')]$deploymentcolor = "green",
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [switch]$force_product_download,
