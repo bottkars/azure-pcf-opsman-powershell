@@ -71,7 +71,7 @@ $PRODUCTS=$(om --skip-ssl-validation `
     --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
 $PRODUCT=$PRODUCTS| where name -Match $slug_id
-$PRODUCT_NAME=$PRODUCT.name
+$PCF_REDIS_VERSION=$PRODUCT.name
 $VERSION=$PRODUCT.version
 
 om --skip-ssl-validation `
