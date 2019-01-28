@@ -12,6 +12,7 @@ It also feature a Powershell Script to automate beyond what the template can do:
 - Download the Pivotal Operation Manager Image  
 - Configure Pivotal Operation Manager  
 - Auto Deploy Deploy PCF and add on Tiles  
+![deploy-pcf](https://user-images.githubusercontent.com/8255007/51845629-2b0d7400-2318-11e9-96dd-d4e3c3ff64b3.gif)   
 
 The Powershell script makes use of:
 
