@@ -208,12 +208,14 @@ if (!$dnsdomain) {
 
 if (!(test-path -Path "$($HOME)/opsman.pub")) {
     write-host "Required $($HOME)/opsman.pub not found. please run ssh-keygen"
+    Pop-Location
     Break
 }
 if (!(test-path -Path "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($PCF_DOMAIN_NAME).crt")) {
     write-host "Required$($HOME)/$($PCF_SUBDOMAIN_NAME).$($PCF_DOMAIN_NAME).crt not found. 
     please run ./create_certs.ps1 -PCF_SUBSOMAIN_NAME $PCF_SUBDOMAIN_NAME$ -PCF_DOMAIN_NAME $PCF_DOMAIN_NAME
     or provide your own cert´s"
+    Pop-Location
     Break
 }
 
