@@ -46,6 +46,7 @@ the [certificate helper script](/create_certs.ps1) may require openssl:
    - AZureStack / ASDK runnin 1811
    - omcli and PIVPOSH ( can be installed with prepare_utils.ps1)
    - a customized env.json file in the users $HOME, see [example](/env.example.json)
+   - read the documentation, twice
 
 #### certificates
 
@@ -54,10 +55,24 @@ if issued from a private / self signed Authority, the ca´s CERT must be appende
 for testing on AzureStack / ASDK, you can use the [certificate helper script](/create_certs.ps1) script.
 To install OpenSSL, simply run the helper [utilities helper script](/prepare_utils.ps1), that will also install PivPosh
 
-### usage
+## usage
 
 there is one central PS1 Script to deploy OPS Manager.  
 just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager  
+
+    - to get started, clone into the master branch:  
+ ```Powershell
+ git clone --single-branch --branch master https://github.com/bottkars/azure-pcf-opsman-powershell ./pcf
+ ```
+ *it is assumed to clone into ./pcf, as all decriped commands in here use that location*
+
+    - run the helper utility to install omcli, openssh and thge pivposh powershell module
+
+```Powershell
+.\pcf\prepare_utils.ps1
+```
+
+    - start a deployment with a test parameter
 
 ### product customizations  
 

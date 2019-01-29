@@ -1,18 +1,4 @@
 ### prepare utils
-$global:vmxtoolkit_type="win_x86_64"
-Write-Host "installing module pivposh"
-Install-Module pivposh -scope CurrentUser -Force
-$omdir = New-Item -ItemType Directory "$HOME/om" -Force
-Write-Host "installing omcli to $($omdir.fullname)/om.exe"
-
-Invoke-WebRequest -UseBasicParsing -Uri https://github.com/pivotal-cf/om/releases/download/0.51.0/om-windows.exe -OutFile "$($omdir.fullname)/om.exe"
-unblock-file "$($omdir.fullname)/om.exe"
-
-$OpenSSL=Receive-LABOpenSSL -Destination "$($HOME)/Downloads" -OpenSSL_Ver 1_1_0 
-$OpenSSLArgs = '/silent'
-$Setuppath = "$($HOME)/Downloads/$($OpenSSL.Filename)"
-unblock-file $Setuppath
-Start-Process -FilePath $Setuppath -ArgumentList $OpenSSLArgs -PassThru -Wait
 
 <#
 .Synopsis
@@ -96,4 +82,20 @@ $object | Add-Member -MemberType NoteProperty -Name Filename -Value $FileName
 $object | Add-Member -MemberType NoteProperty -Name Version -Value $Version
 Write-Output $object 
 }
+
+$global:vmxtoolkit_type="win_x86_64"
+Write-Host "installing module pivposh"
+Install-Module pivposh -scope CurrentUser -Force
+$omdir = New-Item -ItemType Directory "$HOME/om" -Force
+Write-Host "installing omcli to $($omdir.fullname)/om.exe"
+
+Invoke-WebRequest -UseBasicParsing -Uri https://github.com/pivotal-cf/om/releases/download/0.51.0/om-windows.exe -OutFile "$($omdir.fullname)/om.exe"
+unblock-file "$($omdir.fullname)/om.exe"
+
+$OpenSSL=Receive-LABOpenSSL -Destination "$($HOME)/Downloads" -OpenSSL_Ver 1_1_0 
+$OpenSSLArgs = '/silent'
+$Setuppath = "$($HOME)/Downloads/$($OpenSSL.Filename)"
+unblock-file $Setuppath
+Start-Process -FilePath $Setuppath -ArgumentList $OpenSSLArgs -PassThru -Wait
+
 
