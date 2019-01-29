@@ -331,7 +331,7 @@
     },
     {
       "type": "Microsoft.Network/dnszones/A",
-      "name": "[concat(parameters('dnsZoneName'), parameters('opsManFQDNPrefix'))]",
+      "name": "[concat(parameters('dnsZoneName'),'/', parameters('opsManFQDNPrefix'))]",
       "apiVersion": "2016-04-01",
       "properties": {
           "TTL": 60,
