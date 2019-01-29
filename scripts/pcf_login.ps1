@@ -30,6 +30,7 @@ $PCF_ADMIN_USER=om --skip-ssl-validation `
       | ConvertFrom-Json
 
 
-cf login -u $PCF_ADMIN_USER.credential.value.identity `
- -p $PCF_ADMIN_USER.credential.value.password `
- -a $PCF_API
+cf login --skip-ssl-validation `
+  -u $PCF_ADMIN_USER.credential.value.identity `
+  -p $PCF_ADMIN_USER.credential.value.password `
+  -a $PCF_API
