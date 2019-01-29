@@ -117,7 +117,7 @@
     $PASTYPE = "srt",
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet('mysql', 'rabbitmq', 'spring', 'redis','apm')]
+    [ValidateSet('mysql', 'rabbitmq', 'spring', 'redis','apm','dataflow')]
     [string[]]$tiles,
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
