@@ -23,7 +23,7 @@ $env:Path = "$($env:Path);$HOME/OM"
 $GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
-$slug_id = "p-apm"
+$slug_id = "apm"
 
 Write-Host "Getting Release for $slug_id $PCF_APM_VERSION"
 $piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_APM_VERSION | Select-Object -First 1
