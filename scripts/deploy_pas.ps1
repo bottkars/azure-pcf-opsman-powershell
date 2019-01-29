@@ -43,6 +43,13 @@ $PCF_DOMAIN_NAME=$domain
 
 $slug_id = "elastic_runtime"
 
+
+Write-Host "Accepting EULA´s for Stemcells"
+$access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
+Confirm-PIVEula -access_token $PCF_PIVNET_UAA_TOKEN -slugid 233 -id 162133
+Confirm-PIVEula -access_token $PCF_PIVNET_UAA_TOKEN -slugid 233 -id 286469
+Write-Host "Accepting EULA for $slug_id $PRODUCT_NAME $PCF_PAS_VERSION"
+
 Write-Host "Getting Release for $PRODUCT_NAME $PCF_PAS_VERSION"
 $piv_release = Get-PIVRelease -id elastic-runtime | where version -Match $PCF_PAS_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
@@ -50,6 +57,9 @@ $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 Write-Host "Accepting EULA for $slug_id $PRODUCT_NAME $PCF_PAS_VERSION"
 $eula = $piv_release | Confirm-PIVEula -access_token $access_token
 $piv_object = $piv_release_id | Where-Object aws_object_key -Like *$PRODUCT_NAME*.pivotal*
+write-host
+
+
 $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($PRODUCT_NAME)_$($PCF_PAS_VERSION)" -Force
 
 if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.FullName)/download-file.json"))) {
