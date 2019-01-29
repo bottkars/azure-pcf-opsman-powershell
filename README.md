@@ -63,16 +63,26 @@ just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager
     - to get started, clone into the master branch:  
  ```Powershell
  git clone --single-branch --branch master https://github.com/bottkars/azure-pcf-opsman-powershell ./pcf
+ set-location ./pcf
  ```
- *it is assumed to clone into ./pcf, as all decriped commands in here use that location*
 
     - run the helper utility to install omcli, openssh and thge pivposh powershell module
 
 ```Powershell
-.\pcf\prepare_utils.ps1
+./prepare_utils.ps1
 ```
 
     - start a deployment with a test parameter
+    this wil make sure we can deploy to the desired resource group and test´s if we can use the storageaccount for opsman images ( note: the storageaccount for the images can be shared between different installations, for test , dev, etc. the deployment will create custom images from that location)
+
+```
+./deploy_pcf-opsman.ps1 -resourceGroup pcftest -location local -subnet 10.30.0.0 -PCF_SUBDOMAIN_NAME pcftest  -dnsdomain azurestack.external -downloadpath E:\PCF\ -TESTONLY
+```
+
+    - start the deployment
+    once test and download´s are finished, run without test parameter. this is an example for an azure stack. therefore, location ( region ) and dnsdomain of the Stack  might be omitted
+./deploy_pcf-opsman.ps1 -resourceGroup pcftest -location local -subnet 10.30.0.0 -PCF_SUBDOMAIN_NAME pcftest  -dnsdomain azurestack.external -downloadpath E:\PCF\
+
 
 ### product customizations  
 
@@ -97,7 +107,7 @@ below are some examples for running and customizing
 ### deploy PCF opsman and Pivotal Application Service (PAS SmallRunTime (SRT) )
 
 ```powershell
-.\pcf\deploy_pcf-opsman.ps1 -PAS_AUTOPILOT
+./deploy_pcf-opsman.ps1 -PAS_AUTOPILOT
 ```
 
 ### deploy PCF opsman and Pivotal Application Service and FULL CF
@@ -105,7 +115,7 @@ below are some examples for running and customizing
 -PAS_TYPE allows you to switch from srt ( default) to full CF
 
 ```powershell
-.\pcf\deploy_pcf-opsman.ps1 -PAS_AUTOPILOT -PAS_TYPE cf
+./deploy_pcf-opsman.ps1 -PAS_AUTOPILOT -PAS_TYPE cf
 ```
 
 ### Deploy PCF Opsman, SRT, MYSQL, RabbitMq and Spring Cloud Services
