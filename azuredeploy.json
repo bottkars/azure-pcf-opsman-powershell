@@ -337,7 +337,7 @@
           "TTL": 60,
           "ARecords": [
               {
-                "ipv4Address": "[reference(concat('Microsoft.Network/publicIPAddresses/',variables('OpsManPublicIPName')))]"
+                "ipv4Address": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('OpsManPublicIPName'))).IpAddress]"
               }
           ],
           "targetResource": {}
