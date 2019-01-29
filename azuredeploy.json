@@ -1392,7 +1392,8 @@
         "provisioner": "pcf_opsman_template"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/networkSecurityGroups/', variables('ops_manager_security_group_name'))]"
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('ops_manager_security_group_name'))]",
+        "[concat('Microsoft.Network/publicIPAddresses/',variables('OpsManPublicIPName'))]"
       ],
       "properties": {
         "networkSecurityGroup": {
