@@ -215,8 +215,10 @@ if (!(test-path -Path "$($HOME)/opsman.pub")) {
     Pop-Location
     Break
 }
-if (!(test-path -Path "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($location).$($dnsdomain).crt")) {
-    write-host "Required$($HOME)/$($PCF_SUBDOMAIN_NAME).$($location).$($dnsdomain).crt not found. 
+$dnsZoneName = "$PCF_SUBDOMAIN_NAME.$Location.$dnsdomain"
+
+if (!(test-path -Path "$($HOME)/$($dnsZoneName).crt")) {
+    write-host "Required$($HOME)/$($dnsZoneName).crt not found. 
     Now Generating Self Signed Certificates
     "
     $command= "$PSScriptRoot/scripts/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain)"
@@ -224,6 +226,14 @@ if (!(test-path -Path "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($location).$($dnsdomain
     Invoke-Expression -Command $command
 }
 
+if (!(test-path -Path "$($HOME)/$($dnsZoneName).key")) {
+    write-host "Required$($HOME)/$($dnsZoneName).key not found. 
+    Now Generating Self Signed Certificates
+    "
+    $command= "$PSScriptRoot/scripts/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain)"
+    Write-Host "Now running $command"
+    Invoke-Expression -Command $command
+}
 # The SSH Key for OpsManager
 $OPSMAN_SSHKEY = Get-Content "$HOME/opsman.pub"
 $dnsZoneName = "$PCF_SUBDOMAIN_NAME.$Location.$dnsdomain"
