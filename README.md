@@ -96,12 +96,13 @@ just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager
 
 if the installation  succeeds, be happy, everything is fine.  
 
-5. install the PAS Tile now, run
+5. Install the PAS Tile
+to install the PAS Tile now, run
 
 ```Powershell
 .\scripts\deploy_pas.ps1 -DIRECTOR_CONF_FILE $HOME\director_pcftest.json
 ```
-*the file name is director_**rgname**.json* 
+**note**: *the file name is director_**rgname**.json* 
 
 youn can use the deloyment_ scripts in the ./scripts folder to deploy all supported tiles manually after install. 
 
