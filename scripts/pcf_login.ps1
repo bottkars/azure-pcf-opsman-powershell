@@ -13,7 +13,7 @@ $BOSH_CREDENTIALS= om --skip-ssl-validation `
       --silent `
       --path /api/v0/deployed/director/credentials/bosh_commandline_credentials
 #>
- 
+Write-Host "Reading deployed Products from OpsManager" 
 $DEPLOYED_PRODUCTS=om --skip-ssl-validation `
     curl `
       --silent `
@@ -22,7 +22,7 @@ $DEPLOYED_PRODUCTS=om --skip-ssl-validation `
 
 
 $PCF=$DEPLOYED_PRODUCTS | Select-Object | where type -eq cf      
-
+Write-Host "Getting cf Credentials from OpsManger"
 $PCF_ADMIN_USER=om --skip-ssl-validation `
     curl `
       --silent `
@@ -30,4 +30,6 @@ $PCF_ADMIN_USER=om --skip-ssl-validation `
       | ConvertFrom-Json
 
 
-      cf login -u $PCF_ADMIN_USER.credential.value.identity -p $PCF_ADMIN_USER.credential.value.password
+cf login -u $PCF_ADMIN_USER.credential.value.identity `
+ -p $PCF_ADMIN_USER.credential.value.password `
+ -a $PCF_API
