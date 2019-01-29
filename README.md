@@ -58,15 +58,15 @@ if issued from a private / self signed Authority, the ca´s CERT must be appende
 for testing on AzureStack / ASDK, you can use the [certificate helper script](/create_certs.ps1) script.
 To install OpenSSL, simply run the helper [utilities helper script](/prepare_utils.ps1), that will also install PivPosh
 
-## usage
+## Usage
 this section desccribes various command options
 
-### basic testing / Opsman Director only
+### Basic testing / Opsman Director only
 
 there is one central PS1 Script to deploy OPS Manager.  
 just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager  
 
-- to get started, clone into the master branch:  
+1. to get started, clone into the master branch:  
  ```Powershell
  git clone --single-branch --branch master https://github.com/bottkars/azure-pcf-opsman-powershell ./pcf
  set-location ./pcf
@@ -74,20 +74,20 @@ just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager
 
  *to update the repo, just `run git pull` at any time
 
-- run the helper utility to install omcli, openssh and thge pivposh powershell module
+2. run the helper utility to install omcli, openssh and thge pivposh powershell module
 
 ```Powershell
 ./prepare_utils.ps1
 ```
 
-- start a deployment with a test parameter
+3. start a deployment with a test parameter
     this wil make sure we can deploy to the desired resource group and test´s if we can use the storageaccount for opsman images ( note: the storageaccount for the images can be shared between different installations, for test , dev, etc. the deployment will create custom images from that location)
 
 ```
 ./deploy_pcf-opsman.ps1 -resourceGroup pcftest -location local -subnet 10.30.0.0 -PCF_SUBDOMAIN_NAME pcftest  -dnsdomain azurestack.external -downloadpath E:\PCF\ -TESTONLY
 ```
 
-- start the deployment
+4. start the deployment
     once test and download´s are finished, run without test parameter. this is an example for an azure stack.  location ( region ) and dnsdomain of the Stack  might be omitted, the script will ask you for it anyway
 
 ```Powershell
@@ -96,20 +96,21 @@ just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager
 
 if the installation  succeeds, be happy, everything is fine.  
 
-to install the PAS Tile now, run
+5. install the PAS Tile now, run
 
 ```Powershell
 .\scripts\deploy_pas.ps1 -DIRECTOR_CONF_FILE $HOME\director_pcftest.json
 ```
 *the file name is director_**rgname**.json* 
 
-youn can use the dployment scripts to deploy all supported tiles manually after install. 
-you can delete the installation by 
+youn can use the deloyment_ scripts in the ./scripts folder to deploy all supported tiles manually after install. 
+
+6. Delete the installation 
 
 ```Powershell
 Get-AzureRmResourceGroup pcftest  | Remove-AzureRmResourceGroup -Force
 ```
-
+this will remove the PCF installation. the pcfopsmanstorage ResourceGroup will remain, as you might want to re-use the images for the next installation  :smile: 
 ### Advanced Installation
 
 - install PCF, Spring Dataflow and Spring Cloud Service
