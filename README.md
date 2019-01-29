@@ -46,7 +46,7 @@ those will create a dashboard view like this one:
    - Windows 10 or Server 2016 Machine with at least 20GB Disk Space (SSD recommended) 
    - Pre Configured  Certificates OR openssl ( can be installed with prepare_utils.ps1)
    - Powershell 5
-   - AZureStack / ASDK runnin 1811
+   - AzureStack / ASDK runnin 1811
    - omcli and PIVPOSH ( can be installed with prepare_utils.ps1)
    - a customized env.json file in the users $HOME, see [example](/env.example.json)
    - read the documentation, twice
@@ -72,6 +72,8 @@ just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager
  set-location ./pcf
  ```
 
+ *to update the repo, just `run git pull` at any time
+
     - run the helper utility to install omcli, openssh and thge pivposh powershell module
 
 ```Powershell
@@ -86,22 +88,35 @@ just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager
 ```
 
     - start the deployment
-    once test and download´s are finished, run without test parameter. this is an example for an azure stack. therefore, location ( region ) and dnsdomain of the Stack  might be omitted
+    once test and download´s are finished, run without test parameter. this is an example for an azure stack.  location ( region ) and dnsdomain of the Stack  might be omitted, the script will ask you for it anyway
+
+```Powershell
 ./deploy_pcf-opsman.ps1 -resourceGroup pcftest -location local -subnet 10.30.0.0 -PCF_SUBDOMAIN_NAME pcftest  -dnsdomain azurestack.external -downloadpath E:\PCF\
+```
 
 if the installation  succeeds, be happy, everything is fine.  
 
-to install the PAS Tile nowe, run
+to install the PAS Tile now, run
 
 ```Powershell
 .\scripts\deploy_pas.ps1 -DIRECTOR_CONF_FILE $HOME\director_pcftest.json
 ```
 *the file name is director_**rgname**.json* 
+
+youn can use the dployment scripts to deploy all supported tiles manually after install. 
 you can delete the installation by 
 
 ```Powershell
 Get-AzureRmResourceGroup pcftest  | Remove-AzureRmResourceGroup -Force
 ```
+
+### Advanced Installation
+
+    - install PCF, Spring Dataflow and Spring Cloud Service
+    this will include required redis, rabbit and mysql
+```Powershell
+./deploy_pcf-opsman.ps1 -resourceGroup pcfprod -subnet 10.30.0.0 -PCF_SUBDOMAIN_NAME pcfprod -downloadpath E:\PCF\ -tiles spring,dataflow
+``` 
 ### product customizations  
 
 the deployment tool uses product specific .json files that degtermine thge Product version, and, in some cases ( e.g. srt or cf for pas) Product Names.
