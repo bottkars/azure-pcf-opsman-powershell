@@ -130,17 +130,17 @@ If you want to use yoa specific product version, simply copy and customize the c
  the shipped product files always contain the **latest and tested running on azurestack** ::verifyed_by_azurestack_guy::
 
 
-#### Operation Manager Images
+#### Operations Manager Images
 
-opsman images will be first downloaded locally and the uploaded do a *dedicated* storageaccount outside the PCF resource group. this allows for deleting the complete deployment without the reuirement to upload the OpsmanImage again
+opsman images will be first downloaded locally and then uploaded to a *dedicated* storageaccount outside the PCF resource group. this allows for deleting the complete deployment without the reuirement to upload the OpsmanImage again
 
-#### tiles
-procucts tile required will be downloaded to $HOME/downloads.  
-to specify a different download directory, use  *-downloadpath yourpath*  when calling *deploy_pcf-opsman.ps1*
+#### Tiles
+procucts tile required will be downloaded to $HOME/downloads by default.    
+to specify a different download directory, use  *-downloadpath yourpath*  when calling *deploy_pcf-opsman.ps1*.  
 required products will be downloaded automatically using OMCLI when:
 - *deploy_pcf-opsman.ps1* is stated with -force_procuct_download
 - no productfile is available in the download location
-## Deployment EXAMPLES
+##- More  Deployment EXAMPLES
 
 below are some examples for running and customizing
 
@@ -160,7 +160,14 @@ below are some examples for running and customizing
 
 ### Deploy PCF Opsman, SRT, MYSQL, RabbitMq and Spring Cloud Services
 
-
+```Powershell
+./deploy_pcf-opsman.ps1 `
+ -resourceGroup pcfprod `
+ -subnet 10.30.0.0 `
+ -PCF_SUBDOMAIN_NAME pcfprod `
+ -downloadpath E:\PCF\ `
+ -tiles spring,dataflow
+```
 
 ### Deploying Opsman only
 
