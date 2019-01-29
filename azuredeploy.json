@@ -1491,7 +1491,7 @@
   ],
   "outputs": {
     "Opsman URL": {
-      "value": "[concat('https://',parameters('opsManFQDNPrefix'), parameters('dnsZoneName'))]",
+      "value": "[concat('https://',parameters('opsManFQDNPrefix'),'.', parameters('dnsZoneName'))]",
       "type": "string"
     },
     "Bosh Storageaccount": {
