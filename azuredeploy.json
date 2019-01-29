@@ -312,9 +312,6 @@
       },
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
-        "dnsSettings": {
-          "fqdn": "[concat(parameters('opsManFQDNPrefix'), parameters('dnsZoneName'))]"
-        }
       }
     },
     {
