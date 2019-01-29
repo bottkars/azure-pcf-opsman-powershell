@@ -249,7 +249,11 @@ if  ($PsCmdlet.ParameterSetName -eq "install")
             {
                 [switch]$PAS_AUTOPILOT = $true
                 if ($tiles -contains 'spring') {
-                    $tiles = ('mysql', 'rabbitmq', 'spring', 'redis') + $tiles
+                    $tiles = ('mysql', 'rabbitmq', 'spring') + $tiles
+                    $tiles = $tiles | Select-Object -Unique
+                }
+                if ($tiles -contains 'dataflow') {
+                    $tiles = ('mysql', 'rabbitmq','redis','dataflow') + $tiles
                     $tiles = $tiles | Select-Object -Unique
                 }
                 Write-Host -ForegroundColor White -NoNewline "Going to deploy PCF $PASTYPE with the Following Tiles: "

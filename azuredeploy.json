@@ -313,7 +313,6 @@
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[parameters('opsManFQDNPrefix')]",
           "fqdn": "[concat(parameters('opsManFQDNPrefix'), parameters('dnsZoneName'))]"
         }
       }
@@ -1495,7 +1494,7 @@
   ],
   "outputs": {
     "Opsman URL": {
-      "value": "[concat('https://', reference(variables('OpsManPublicIPName')).dnsSettings.fqdn)]",
+      "value": "[concat('https://',parameters('opsManFQDNPrefix'), parameters('dnsZoneName'))]",
       "type": "string"
     },
     "Bosh Storageaccount": {
