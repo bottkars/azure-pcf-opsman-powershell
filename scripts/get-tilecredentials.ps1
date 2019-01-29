@@ -1,3 +1,5 @@
+$director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
+$OM_Target = $director_conf.OM_TARGET
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $env:OM_Password = $env_vars.OM_Password
 $env:OM_Username = $env_vars.OM_Username
