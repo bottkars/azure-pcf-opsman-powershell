@@ -311,7 +311,7 @@
         "provisioner": "pcf_opsman_template"
       },
       "properties": {
-        "publicIPAllocationMethod": "Dynamic",
+        "publicIPAllocationMethod": "Dynamic"
       }
     },
     {
