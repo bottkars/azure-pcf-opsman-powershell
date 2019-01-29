@@ -215,11 +215,12 @@ if (!(test-path -Path "$($HOME)/opsman.pub")) {
     Pop-Location
     Break
 }
-if (!(test-path -Path "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($dnsdomain).crt")) {
-    write-host "Required$($HOME)/$($PCF_SUBDOMAIN_NAME).$($dnsdomain).crt not found. 
+if (!(test-path -Path "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($location).$($dnsdomain).crt")) {
+    write-host "Required$($HOME)/$($PCF_SUBDOMAIN_NAME).$($location).$($dnsdomain).crt not found. 
     Now Generating Self Signed Certificates
     "
-    $command= "$PSScriptRoot/scripts/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $dnsdomain"
+    $command= "$PSScriptRoot/scripts/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain)"
+    Write-Host "Now running $command"
     Invoke-Expression -Command $command
 }
 
