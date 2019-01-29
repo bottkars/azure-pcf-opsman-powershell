@@ -1,10 +1,15 @@
 #requires -module pivposh
+param(
+    [Parameter(Mandatory = $true)]	
+    [Validatescript( {Test-Path -Path $_ })]
+    $DIRECTOR_CONF_FILE
+)
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/mysql.json"
 if (!(Test-Path $PRODUCT_FILE))
 {$PRODUCT_FILE = "../examples/mysql.json"}
 $mysql_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
-$director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
+$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $PCF_MYSQL_VERSION = $mysql_conf.PCF_MYSQL_VERSION
 $MYSQL_STORAGE_KEY = $director_conf.mysql_storage_key
 $MYSQL_STORAGEACCOUNTNAME = $director_conf.mysqlstorageaccountname

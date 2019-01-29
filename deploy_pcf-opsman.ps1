@@ -121,7 +121,8 @@
     [string[]]$tiles,
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet('green', 'blue')]$deploymentcolor = "green",
+    [ValidateSet('green', 'blue')]
+    $deploymentcolor = "green",
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [switch]$force_product_download,
@@ -197,6 +198,9 @@ if ($Environment -eq "AzureStack" -and (get-runningos).OSType -ne "win_x86_64") 
     Write-Host "Current OSType $((get-runningos).OSType)"
     Break
 }
+
+$DIRECTOR_CONF_FILE="$HOME/director_$($resourceGroup).json"   
+
 Push-Location
 Set-Location $PSScriptRoot
 if (!$location) {
@@ -498,7 +502,7 @@ if (!$OpsmanUpdate) {
             downloaddir              = $downloadpath
             force_product_download   = $force_product_download.IsPresent.ToString()
         } | ConvertTo-Json
-        $JSon | Set-Content $HOME/director.json
+        $JSon | Set-Content $DIRECTOR_CONF_FILE
         if ($NO_APPLY.IsPresent) {
             $command = "$PSScriptRoot/scripts/init_om.ps1 -no_apply"
         }
@@ -514,7 +518,7 @@ if (!$OpsmanUpdate) {
         if ($PAS_AUTOPILOT.IsPresent) {
             $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
             $StopWatch_deploy_pas.Start()
-            $command = "$PSScriptRoot/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE"
+            $command = "$PSScriptRoot/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
             Write-Host "Calling $command" 
             Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pas-$(get-date -f yyyyMMddhhmmss).log"
             $StopWatch_deploy_pas.Stop()
@@ -523,7 +527,7 @@ if (!$OpsmanUpdate) {
             ForEach ($tile in $tiles) {
                 $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
                 $StopWatch_deploy.Start()
-                $command = "$PSScriptRoot/scripts/deploy_$($tile).ps1"
+                $command = "$PSScriptRoot/scripts/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
                 Write-Host "Calling $command" 
                 Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/$($tile)-$(get-date -f yyyyMMddhhmmss).log"
                 $StopWatch_deploy.Stop()

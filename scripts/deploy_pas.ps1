@@ -1,11 +1,13 @@
 #requires -module pivposh
 param(
+  [Parameter(Mandatory = $true)]	
+  [Validatescript({Test-Path -Path $_ })]
+  $DIRECTOR_CONF_FILE,
 
-  [Parameter(ParameterSetName = "1", Mandatory = $false)]
+  [Parameter(Mandatory = $false)]
   [ValidateNotNullOrEmpty()]
   [ValidateSet('cf','srt')]
   $PRODUCT_NAME="srt"
-
 
 )
 Push-Location $PSScriptRoot
@@ -13,7 +15,7 @@ $PRODUCT_FILE = "$($HOME)/pas_$($PRODUCT_NAME).json"
 if (!(Test-Path $PRODUCT_FILE))
   {$PRODUCT_FILE = "../examples/pas_$($PRODUCT_NAME).json"}
 $pas_conf = Get-Content $PRODUCT_FILE | ConvertFrom-Json
-$director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
+$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $PCF_PAS_VERSION = $pas_conf.PCF_PAS_VERSION
 $config_file = $pas_conf.CONFIG_FILE
 $OM_Target = $director_conf.OM_TARGET

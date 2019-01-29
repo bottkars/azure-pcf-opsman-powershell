@@ -1,7 +1,12 @@
 #requires -module pivposh
+param(
+  [Parameter(Mandatory = $true)]	
+[Validatescript({Test-Path -Path $_ })]
+$DIRECTOR_CONF_FILE
+)
 
 $pasw_conf = Get-Content "$($HOME)/pasw.json" | ConvertFrom-Json
-$director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
+$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 
 $PCF_PASW_VERSION = $pasw_conf.PCF_PAS_VERSION
 $PRODUCT_NAME = $pasw_conf.PRODUCT_NAME

@@ -1,10 +1,15 @@
 #requires -module pivposh
+param(
+  [Parameter(Mandatory = $true)]	
+[Validatescript({Test-Path -Path $_ })]
+$DIRECTOR_CONF_FILE
+)
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/apm.json"
 if (!(Test-Path $PRODUCT_FILE))
 {$PRODUCT_FILE = "../examples/apm.json"}
 $apm_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
-$director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
+$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $PCF_APM_VERSION = $apm_conf.PCF_APM_VERSION
 
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)

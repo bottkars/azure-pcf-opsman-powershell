@@ -1,11 +1,15 @@
-# about
+#requires -module pivposh
 param(
-  [Parameter(ParameterSetName = "1", Mandatory = $false)]
-  [switch]
-  $NO_APPLY
+    [Parameter(Mandatory = $true)]	
+    [Validatescript( {Test-Path -Path $_ })]
+    $DIRECTOR_CONF_FILE,
+
+    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [switch]
+    $NO_APPLY
 )
 Push-Location $PSScriptRoot
-$director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
+$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $OM_Target = $director_conf.OM_TARGET
 $domain = $director_conf.domain  
 $boshstorageaccountname = $director_conf.boshstorageaccountname
@@ -28,7 +32,7 @@ $env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
-$ntp_servers_string =$env_vars.NTP_SERVERS_STRING
+$ntp_servers_string = $env_vars.NTP_SERVERS_STRING
 
 $env:Path = "$($env:Path);$HOME/OM"
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
@@ -39,7 +43,7 @@ $ssh_private_key = Get-Content $HOME/opsman
 $ssh_private_key = $ssh_private_key -join "\r\n"
 $ca_cert = Get-Content $HOME/root.pem
 $ca_cert = $ca_cert -join "\r\n"
-$content=get-content "../templates/director_vars.yaml"
+$content = get-content "../templates/director_vars.yaml"
 $content += "default_security_group: $RG-bosh-deployed-vms-security-group"
 $content += "subscription_id: $((Get-AzureRmSubscription).SubscriptionId)"
 $content += "tenant_id: $((Get-AzureRmSubscription).TenantId)"
@@ -69,18 +73,18 @@ $content += "services-subnet: $RG-virtual-network/$RG-services-subnet"
 $content | Set-Content $HOME/director_vars.yaml
 
 om --skip-ssl-validation `
-configure-authentication `
---decryption-passphrase $PCF_PIVNET_UAA_TOKEN
+    configure-authentication `
+    --decryption-passphrase $PCF_PIVNET_UAA_TOKEN
 
 om --skip-ssl-validation `
- deployed-products
+    deployed-products
 
 om --skip-ssl-validation `
- configure-director --config "$PSScriptRoot/../templates/director_conf.yaml" --vars-file "$HOME/director_vars.yaml"
+    configure-director --config "$PSScriptRoot/../templates/director_conf.yaml" --vars-file "$HOME/director_vars.yaml"
 
 
 om --skip-ssl-validation apply-changes
 
 om --skip-ssl-validation `
- deployed-products
+    deployed-products
 Pop-Location

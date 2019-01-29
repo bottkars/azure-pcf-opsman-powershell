@@ -1,10 +1,15 @@
 #requires -module pivposh
+param(
+    [Parameter(Mandatory = $true)]	
+    [Validatescript( {Test-Path -Path $_ })]
+    $DIRECTOR_CONF_FILE
+)
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/dataflow.json"
 if (!(Test-Path $PRODUCT_FILE))
 {$PRODUCT_FILE = "../examples/dataflow.json"}
 $dataflow_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
-$director_conf = Get-Content "$($HOME)/director.json" | ConvertFrom-Json
+$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $PCF_DATAFLOW_VERSION = $dataflow_conf.PCF_DATAFLOW_VERSION
 
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
@@ -50,38 +55,38 @@ if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.Fu
 }
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
-$TARGET_FILENAME=$download_file.product_path
-$STEMCELL_FILENAME=$download_file.stemcell_path
+$TARGET_FILENAME = $download_file.product_path
+$STEMCELL_FILENAME = $download_file.stemcell_path
 
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
 om --skip-ssl-validation `
-  --request-timeout 3600 `
-  upload-product `
-  --product $TARGET_FILENAME
+    --request-timeout 3600 `
+    upload-product `
+    --product $TARGET_FILENAME
 Write-Host "importing $STEMCELL_FILENAME into OpsManager"  
 om --skip-ssl-validation `
     upload-stemcell `
     --floating=false `
     --stemcell $STEMCELL_FILENAME
 
-$PRODUCTS=$(om --skip-ssl-validation `
-  available-products `
-    --format json) | ConvertFrom-Json
+$PRODUCTS = $(om --skip-ssl-validation `
+        available-products `
+        --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
-$PRODUCT=$PRODUCTS| where name -Match $slug_id
+$PRODUCT = $PRODUCTS| where name -Match $slug_id
 $PRODUCT_NAME = $PRODUCT.name
-$VERSION=$PRODUCT.version
+$VERSION = $PRODUCT.version
 
 om --skip-ssl-validation `
-  deployed-products
-  # 2.  Stage using om cli
+    deployed-products
+# 2.  Stage using om cli
 
 om --skip-ssl-validation `
-  stage-product `
-  --product-name $PRODUCT_NAME `
-  --product-version $VERSION
+    stage-product `
+    --product-name $PRODUCT_NAME `
+    --product-version $VERSION
 
 
 
@@ -93,14 +98,14 @@ server_admin_password: $PCF_PIVNET_UAA_TOKEN
 " | Set-Content $HOME/dataflow_vars.yaml
 
 om --skip-ssl-validation `
-  configure-product `
-  -c "$config_file" -l "$HOME/dataflow_vars.yaml"
+    configure-product `
+    -c "$config_file" -l "$HOME/dataflow_vars.yaml"
 
 om --skip-ssl-validation `
-  apply-changes `
-  --product-name $PRODUCT_NAME
+    apply-changes `
+    --product-name $PRODUCT_NAME
 
 om --skip-ssl-validation `
-  deployed-products 
+    deployed-products 
 
 Pop-Location 
