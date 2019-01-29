@@ -34,7 +34,7 @@ the [certificate helper script](/create_certs.ps1) may require openssl:
 - <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_pivotal_mysql@2x.png" height="16"> MySQL 2.4.3
 - <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_rabbitmq_cf@2x.png" height="16"> RabbitMQ 1.15.3
 - <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_spring_cloud_services_cf@2x.png" height="16"> Spring Cloud Services 2.0.5
-- <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_spring_cloud_dataflow_cf@2x.png" Spring Cloud Dataflow
+- <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_spring_cloud_dataflow_cf@2x.png" height="16"> Spring Cloud Dataflow
 - Redis
 - APM
 
