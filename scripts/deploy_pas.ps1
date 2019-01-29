@@ -1,19 +1,19 @@
 #requires -module pivposh
 param(
-  [Parameter(Mandatory = $true)]	
-  [Validatescript({Test-Path -Path $_ })]
-  $DIRECTOR_CONF_FILE,
+    [Parameter(Mandatory = $true)]	
+    [Validatescript( {Test-Path -Path $_ })]
+    $DIRECTOR_CONF_FILE,
 
-  [Parameter(Mandatory = $false)]
-  [ValidateNotNullOrEmpty()]
-  [ValidateSet('cf','srt')]
-  $PRODUCT_NAME="srt"
+    [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('cf', 'srt')]
+    $PRODUCT_NAME = "srt"
 
 )
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/pas_$($PRODUCT_NAME).json"
 if (!(Test-Path $PRODUCT_FILE))
-  {$PRODUCT_FILE = "../examples/pas_$($PRODUCT_NAME).json"}
+{$PRODUCT_FILE = "../examples/pas_$($PRODUCT_NAME).json"}
 $pas_conf = Get-Content $PRODUCT_FILE | ConvertFrom-Json
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $PCF_PAS_VERSION = $pas_conf.PCF_PAS_VERSION
@@ -31,13 +31,13 @@ $env:OM_Username = $env_vars.OM_Username
 $env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
-$smtp_address=$env_vars.SMTP_ADDRESS
-$smtp_identity=$env_vars.SMTP_IDENTITY
-$smtp_password=$env_vars.SMTP_PASSWORD
-$smtp_from=$env_vars.SMTP_FROM
-$smtp_port=$env_vars.SMTP_PORT
-$pcf_notifications_email=$env_vars.PCF_NOTIFICATIONS_EMAIL
-$PCF_DOMAIN_NAME=$domain
+$smtp_address = $env_vars.SMTP_ADDRESS
+$smtp_identity = $env_vars.SMTP_IDENTITY
+$smtp_password = $env_vars.SMTP_PASSWORD
+$smtp_from = $env_vars.SMTP_FROM
+$smtp_port = $env_vars.SMTP_PORT
+$pcf_notifications_email = $env_vars.PCF_NOTIFICATIONS_EMAIL
+$PCF_DOMAIN_NAME = $domain
 
 
 
@@ -46,8 +46,8 @@ $slug_id = "elastic_runtime"
 
 Write-Host "Accepting EULA´s for Stemcells"
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
-Confirm-PIVEula -access_token $access_token -slugid 233 -id 162133
-Confirm-PIVEula -access_token $access_token -slugid 233 -id 286469
+$eula = Confirm-PIVEula -access_token $access_token -slugid 233 -id 162133
+$eula = Confirm-PIVEula -access_token $access_token -slugid 233 -id 286469
 Write-Host "Accepting EULA for $slug_id $PRODUCT_NAME $PCF_PAS_VERSION"
 
 Write-Host "Getting Release for $PRODUCT_NAME $PCF_PAS_VERSION"
@@ -78,60 +78,57 @@ if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.Fu
 
 }
 
-if ($LASTEXITCODE -ne 0)
-  {
+if ($LASTEXITCODE -ne 0) {
     write-Host  "Error running om, please fix"
     Pop-Location
     break
-  }
+}
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
-$TARGET_FILENAME=$download_file.product_path
-$STEMCELL_FILENAME=$download_file.stemcell_path
+$TARGET_FILENAME = $download_file.product_path
+$STEMCELL_FILENAME = $download_file.stemcell_path
 
 om --skip-ssl-validation `
-deployed-products
+    deployed-products
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
 om --skip-ssl-validation `
-  --request-timeout 3600 `
-  upload-product `
-  --product $TARGET_FILENAME
-if ($LASTEXITCODE -ne 0)
-  {
+    --request-timeout 3600 `
+    upload-product `
+    --product $TARGET_FILENAME
+if ($LASTEXITCODE -ne 0) {
     write-Host  "Error running om, please fix and retry"
     Pop-Location
     break
-  }
+}
 Write-Host "importing $STEMCELL_FILENAME into OpsManager"  
 om --skip-ssl-validation `
-  upload-stemcell `
-  --stemcell $STEMCELL_FILENAME
-if ($LASTEXITCODE -ne 0)
-  {
+    upload-stemcell `
+    --stemcell $STEMCELL_FILENAME
+if ($LASTEXITCODE -ne 0) {
     write-Host  "Error running om, please fix and retry"
     Pop-Location
     break
-  }
-$PRODUCTS=$(om --skip-ssl-validation `
-  available-products `
-    --format json) | ConvertFrom-Json
+}
+$PRODUCTS = $(om --skip-ssl-validation `
+        available-products `
+        --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
-$VERSION= $PRODUCTS.version
-$PRODUCT_NAME=$PRODUCTS.name
-  # 2.  Stage using om cli
+$VERSION = $PRODUCTS.version
+$PRODUCT_NAME = $PRODUCTS.name
+# 2.  Stage using om cli
 
 om --skip-ssl-validation `
-  stage-product `
-  --product-name $PRODUCT_NAME `
-  --product-version $VERSION
+    stage-product `
+    --product-name $PRODUCT_NAME `
+    --product-version $VERSION
 
 
-$PCF_KEY_PEM=get-content "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($PCF_DOMAIN_NAME).key"
-$PCF_KEY_PEM=$PCF_KEY_PEM  -join "\r\n"
-$PCF_CERT_PEM=get-content "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($PCF_DOMAIN_NAME).crt"
-$PCF_CERT_PEM=$PCF_CERT_PEM  -join "\r\n"
+$PCF_KEY_PEM = get-content "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($PCF_DOMAIN_NAME).key"
+$PCF_KEY_PEM = $PCF_KEY_PEM -join "\r\n"
+$PCF_CERT_PEM = get-content "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($PCF_DOMAIN_NAME).crt"
+$PCF_CERT_PEM = $PCF_CERT_PEM -join "\r\n"
     
 
 "
@@ -155,17 +152,16 @@ pcf_notifications_email: $pcf_notifications_email
 " | Set-Content $HOME/vars.yaml
 
 om --skip-ssl-validation `
-  configure-product `
-  -c "$config_file" -l $HOME/vars.yaml
-if ($LASTEXITCODE -ne 0)
-  {
+    configure-product `
+    -c "$config_file" -l $HOME/vars.yaml
+if ($LASTEXITCODE -ne 0) {
     write-Host  "Error running om, please fix and retry"
     Pop-Location
     break
-  }
+}
 om --skip-ssl-validation `
-  apply-changes
+    apply-changes
 
 om --skip-ssl-validation `
-  deployed-products
+    deployed-products
 Pop-Location

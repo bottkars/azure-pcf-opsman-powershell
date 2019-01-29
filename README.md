@@ -83,7 +83,11 @@ just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager
     once test and download´s are finished, run without test parameter. this is an example for an azure stack. therefore, location ( region ) and dnsdomain of the Stack  might be omitted
 ./deploy_pcf-opsman.ps1 -resourceGroup pcftest -location local -subnet 10.30.0.0 -PCF_SUBDOMAIN_NAME pcftest  -dnsdomain azurestack.external -downloadpath E:\PCF\
 
+if the installation  succeeds, be happy, everything is fine.  
+you can delete the installation by 
 
+```Powershell
+Get
 ### product customizations  
 
 the deployment tool uses product specific .json files that degtermine thge Product version, and, in some cases ( e.g. srt or cf for pas) Product Names.
