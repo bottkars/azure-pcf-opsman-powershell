@@ -110,7 +110,7 @@ youn can use the deloyment_ scripts in the ./scripts folder to deploy all suppor
 ```Powershell
 Get-AzureRmResourceGroup pcftest  | Remove-AzureRmResourceGroup -Force
 ```
-this will remove the PCF installation. the pcfopsmanstorage ResourceGroup will remain, as you might want to re-use the images for the next installation  :smile: 
+this will remove the PCF installation. the pcfopsmanstorage ResourceGroup will remain, as you might want to re-use the images for the next installation  :sunglasses: 
 ### Advanced Installation
 
 - install PCF, Spring Dataflow and Spring Cloud Service
