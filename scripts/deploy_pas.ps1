@@ -46,8 +46,8 @@ $slug_id = "elastic_runtime"
 
 Write-Host "Accepting EULA´s for Stemcells"
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
-Confirm-PIVEula -access_token $PCF_PIVNET_UAA_TOKEN -slugid 233 -id 162133
-Confirm-PIVEula -access_token $PCF_PIVNET_UAA_TOKEN -slugid 233 -id 286469
+Confirm-PIVEula -access_token $access_token -slugid 233 -id 162133
+Confirm-PIVEula -access_token $access_token -slugid 233 -id 286469
 Write-Host "Accepting EULA for $slug_id $PRODUCT_NAME $PCF_PAS_VERSION"
 
 Write-Host "Getting Release for $PRODUCT_NAME $PCF_PAS_VERSION"
