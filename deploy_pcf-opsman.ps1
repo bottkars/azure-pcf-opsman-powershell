@@ -507,7 +507,7 @@ if (!$OpsmanUpdate) {
             $command = "$PSScriptRoot/scripts/init_om.ps1 -no_apply"
         }
         else {
-            $command = "$PSScriptRoot/scripts/init_om.ps1"    
+            $command = "$PSScriptRoot/scripts/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"    
         }
         
         Write-Host "Calling $command" 
