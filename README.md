@@ -66,7 +66,7 @@ this section desccribes various command options
 there is one central PS1 Script to deploy OPS Manager.  
 just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager  
 
-    - to get started, clone into the master branch:  
+- to get started, clone into the master branch:  
  ```Powershell
  git clone --single-branch --branch master https://github.com/bottkars/azure-pcf-opsman-powershell ./pcf
  set-location ./pcf
@@ -74,20 +74,20 @@ just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager
 
  *to update the repo, just `run git pull` at any time
 
-    - run the helper utility to install omcli, openssh and thge pivposh powershell module
+- run the helper utility to install omcli, openssh and thge pivposh powershell module
 
 ```Powershell
 ./prepare_utils.ps1
 ```
 
-    - start a deployment with a test parameter
+- start a deployment with a test parameter
     this wil make sure we can deploy to the desired resource group and test´s if we can use the storageaccount for opsman images ( note: the storageaccount for the images can be shared between different installations, for test , dev, etc. the deployment will create custom images from that location)
 
 ```
 ./deploy_pcf-opsman.ps1 -resourceGroup pcftest -location local -subnet 10.30.0.0 -PCF_SUBDOMAIN_NAME pcftest  -dnsdomain azurestack.external -downloadpath E:\PCF\ -TESTONLY
 ```
 
-    - start the deployment
+- start the deployment
     once test and download´s are finished, run without test parameter. this is an example for an azure stack.  location ( region ) and dnsdomain of the Stack  might be omitted, the script will ask you for it anyway
 
 ```Powershell
@@ -112,7 +112,7 @@ Get-AzureRmResourceGroup pcftest  | Remove-AzureRmResourceGroup -Force
 
 ### Advanced Installation
 
-    - install PCF, Spring Dataflow and Spring Cloud Service
+- install PCF, Spring Dataflow and Spring Cloud Service
     this will include required redis, rabbit and mysql
 ```Powershell
 ./deploy_pcf-opsman.ps1 -resourceGroup pcfprod -subnet 10.30.0.0 -PCF_SUBDOMAIN_NAME pcfprod -downloadpath E:\PCF\ -tiles spring,dataflow
@@ -131,8 +131,8 @@ opsman images will be first downloaded locally and the uploaded do a *dedicated*
 procucts tile required will be downloaded to $HOME/downloads.  
 to specify a different download directory, use  *-downloadpath yourpath*  when calling *deploy_pcf-opsman.ps1*
 required products will be downloaded automatically using OMCLI when:
-    - *deploy_pcf-opsman.ps1* is stated with -force_procuct_download
-    - no productfile is available in the download location
+- *deploy_pcf-opsman.ps1* is stated with -force_procuct_download
+- no productfile is available in the download location
 ## Deployment EXAMPLES
 
 below are some examples for running and customizing
