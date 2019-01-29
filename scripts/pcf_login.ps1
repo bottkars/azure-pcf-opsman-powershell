@@ -6,7 +6,7 @@ $env:OM_Username = $env_vars.OM_Username
 $env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 
-$PCF_API ="api.sys.$($director_conf.PCF_SUBDOMAIN_NAME).($director_conf.domain)"
+$PCF_API ="api.sys.$($director_conf.PCF_SUBDOMAIN_NAME).$($director_conf.domain)"
 <#
 $BOSH_CREDENTIALS= om --skip-ssl-validation `
     curl `
