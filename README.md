@@ -117,12 +117,17 @@ this will remove the PCF installation. the pcfopsmanstorage ResourceGroup will r
 - install PCF, Spring Dataflow and Spring Cloud Service
     this will include required redis, rabbit and mysql
 ```Powershell
-./deploy_pcf-opsman.ps1 -resourceGroup pcfprod -subnet 10.30.0.0 -PCF_SUBDOMAIN_NAME pcfprod -downloadpath E:\PCF\ -tiles spring,dataflow
+./deploy_pcf-opsman.ps1 -resourceGroup pcfprod `
+ -subnet 10.30.0.0 `
+ -PCF_SUBDOMAIN_NAME pcfprod `
+ -downloadpath E:\PCF\ `
+ -tiles spring,dataflow
 ``` 
 ### product customizations  
 
-the deployment tool uses product specific .json files that degtermine thge Product version, and, in some cases ( e.g. srt or cf for pas) Product Names.
-If you want to use your own product version, simply copy and customize the corresponding Json File to $HOME. _DO NOT EDIT THE EXAMPLE FILES_ (as they are managed by git). the shipped product files always contain the **latest and tested running on azurestack**
+the deployment tool uses product specific .json files that degtermine the Product version, and, in some cases ( e.g. srt or cf for pas) Product Names.  
+If you want to use yoa specific product version, simply copy and customize the corresponding Json File from /examples to $HOME.   _DO NOT EDIT THE EXAMPLE FILES_ (as they are managed by git).  
+ the shipped product files always contain the **latest and tested running on azurestack** ::verifyed_by_azurestack_guy::
 
 
 #### Operation Manager Images
