@@ -478,7 +478,7 @@ if (!$OpsmanUpdate) {
         $StopWatch_deploy_opsman.Start()
         # will create director.json for future
         $JSon = [ordered]@{
-            OM_TARGET                = "$($opsManFQDNPrefix).$($location).cloudapp.$($dnsdomain)"
+            OM_TARGET                = "$($opsManFQDNPrefix).$($dnszonename)"
             domain                   = "$($location).$($dnsdomain)"
             PCF_SUBDOMAIN_NAME       = $PCF_SUBDOMAIN_NAME
             boshstorageaccountname   = $boshstorageaccount 
