@@ -23,11 +23,14 @@ the [certificate helper script](/create_certs.ps1) may require openssl:
 
 - openssl for certificate creation
 
-*The user may also want to deploy my custom AzureStack Dashboard Tiles*
+*The user may also want to deploy my custom AzureStack Dashboard Tiles* :   
 
-[Pivotal Cloud Foundry Dashboard Tile](/docs/tile1.md)   
+[Pivotal Cloud Foundry Dashboard Tile](/docs/tile1.md)  
+
 [Additional Repo´s Tile](/docs/tile2.md)
 
+those will create a dashboard view like this one:  
+![image](https://user-images.githubusercontent.com/8255007/51927715-7dbc5e00-23f4-11e9-8664-ec5df43eb19e.png)  
 
 ### Initial supported Pivotal Cloudfoundry Tiles and Versions
 - <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_pivotalapplicationservice@2x.png" height="16"> PAS 2.3.5 
@@ -56,6 +59,9 @@ for testing on AzureStack / ASDK, you can use the [certificate helper script](/c
 To install OpenSSL, simply run the helper [utilities helper script](/prepare_utils.ps1), that will also install PivPosh
 
 ## usage
+this section desccribes various command options
+
+### basic testing / Opsman Director only
 
 there is one central PS1 Script to deploy OPS Manager.  
 just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager  
@@ -84,10 +90,18 @@ just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager
 ./deploy_pcf-opsman.ps1 -resourceGroup pcftest -location local -subnet 10.30.0.0 -PCF_SUBDOMAIN_NAME pcftest  -dnsdomain azurestack.external -downloadpath E:\PCF\
 
 if the installation  succeeds, be happy, everything is fine.  
+
+to install the PAS Tile nowe, run
+
+```Powershell
+.\scripts\deploy_pas.ps1 -DIRECTOR_CONF_FILE $HOME\director_pcftest.json
+```
+*the file name is director_**rgname**.json* 
 you can delete the installation by 
 
 ```Powershell
-Get
+Get-AzureRmResourceGroup pcftest  | Remove-AzureRmResourceGroup -Force
+```
 ### product customizations  
 
 the deployment tool uses product specific .json files that degtermine thge Product version, and, in some cases ( e.g. srt or cf for pas) Product Names.
