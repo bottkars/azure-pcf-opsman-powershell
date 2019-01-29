@@ -313,7 +313,8 @@
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[parameters('opsManFQDNPrefix')]"
+          "domainNameLabel": "[parameters('opsManFQDNPrefix')]",
+          "fqdn": "[concat(parameters('opsManFQDNPrefix'), parameters('dnsZoneName'))]"
         }
       }
     },
@@ -328,6 +329,24 @@
       "location": "global",
       "properties": {}
     },
+    {
+      "type": "Microsoft.Network/dnszones/A",
+      "name": "[concat(parameters('dnsZoneName'), parameters('opsManFQDNPrefix'))]",
+      "apiVersion": "2016-04-01",
+      "properties": {
+          "TTL": 60,
+          "ARecords": [
+              {
+                "ipv4Address": "[reference(concat('Microsoft.Network/publicIPAddresses/',variables('OpsManPublicIPName')))]"
+              }
+          ],
+          "targetResource": {}
+      },
+      "dependsOn": [
+        "[parameters('dnsZoneName')]",
+        "[concat('Microsoft.Network/publicIPAddresses/',variables('OpsManPublicIPName'))]"
+      ]
+  },
     {
       "type": "Microsoft.Network/dnszones/A",
       "condition": "[equals(parameters('Environment'),'AzureStack')]",
