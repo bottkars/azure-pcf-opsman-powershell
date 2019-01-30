@@ -30,13 +30,13 @@ $env:Path = "$($env:Path);$HOME/OM"
 $GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
-$slug_id = "p-masb-cloud-services"
+$slug_id = "azure-service-broker"
 
 Write-Host "Getting Release for $slug_id $PCF_MASB_VERSION"
 $piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_MASB_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
-Confirm-PIVEula -access_token $access_token -slugid 233 -id 290314
+Confirm-PIVEula -access_token $access_token -slugid 82 -id 290314
 
 
 Write-Host "Accepting EULA for $slug_id $PCF_MASB_VERSION"
