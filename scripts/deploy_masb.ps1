@@ -112,7 +112,7 @@ azure_subscription_id: $AZURE_SUBSCRIPTION_ID
 azure_tenant_id: $AZURE_TENANT_ID
 azure_client_id: $AZURE_CLIENT_ID
 azure_client_secret: $AZURE_CLIENT_SECRET
-azure_broker_database_server: $($ENV_SHORT_NAME).database.windows.net
+azure_broker_database_server: masb$($ENV_SHORT_NAME).database.windows.net
 azure_broker_database_name: masb$($ENV_SHORT_NAME)
 azure_broker_database_password: $PCF_PIVNET_UAA_TOKEN
 azure_broker_database_encryption_key: 12345678901234567890123456789012
