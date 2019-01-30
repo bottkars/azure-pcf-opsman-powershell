@@ -42,7 +42,7 @@ Write-Host "Getting Release for $slug_id $PCF_MASB_VERSION"
 $piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_MASB_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
-Confirm-PIVEula -access_token $access_token -slugid 82 -id 290314
+$eula = Confirm-PIVEula -access_token $access_token -slugid 82 -id 290314
 
 
 Write-Host "Accepting EULA for $slug_id $PCF_MASB_VERSION"
