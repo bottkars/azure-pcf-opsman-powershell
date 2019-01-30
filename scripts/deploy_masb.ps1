@@ -36,7 +36,7 @@ $AZURE_SUBSCRIPTION_ID = $env_vars.AZURE_SUBSCRIPTION_ID
 $AZURE_TENANT_ID = $env_vars.AZURE_TENANT_ID
 $AZURE_CLIENT_ID = $env_vars.AZURE_CLIENT_ID
 $AZURE_CLIENT_SECRET = $env_vars.AZURE_CLIENT_SECRET
-$ENV_SHORT_NAME = $env_vars.PCF_SUBDOMAIN_NAME
+$ENV_SHORT_NAME = $PCF_SUBDOMAIN_NAME
 ###
 Write-Host "Getting Release for $slug_id $PCF_MASB_VERSION"
 $piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_MASB_VERSION | Select-Object -First 1
@@ -112,8 +112,8 @@ azure_subscription_id: $AZURE_SUBSCRIPTION_ID
 azure_tenant_id: $AZURE_TENANT_ID
 azure_client_id: $AZURE_CLIENT_ID
 azure_client_secret: $AZURE_CLIENT_SECRET
-azure_broker_database_server: $($ENV_SHORT_NAME)sql.database.windows.net
-azure_broker_database_name: masb$($ENV_SHORT_NAME)sql
+azure_broker_database_server: $($ENV_SHORT_NAME).database.windows.net
+azure_broker_database_name: masb$($ENV_SHORT_NAME)
 azure_broker_database_password: $PCF_PIVNET_UAA_TOKEN
 azure_broker_database_encryption_key: 12345678901234567890123456789012
 " | Set-Content $HOME/masb_vars.yaml
