@@ -92,9 +92,7 @@ om --skip-ssl-validation `
 
 "
 product_name: $PRODUCT_NAME
-pcf_pas_network: pcf-pas-subnet `
-pcf_service_network: pcf-services-subnet `
-server_admin_password: $PCF_PIVNET_UAA_TOKEN 
+pcf_pas_network: pcf-pas-subnet
 " | Set-Content $HOME/apm_vars.yaml
 
 om --skip-ssl-validation `
@@ -103,7 +101,7 @@ om --skip-ssl-validation `
 
 om --skip-ssl-validation `
   apply-changes `
-  --product-name $slug_id
+  --product-name $PRODUCT_NAME
 
 om --skip-ssl-validation `
   deployed-products 
