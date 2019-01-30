@@ -1,0 +1,4 @@
+{
+    "PCF_MASB_VERSION":  "1.10.1",
+    "CONFIG_FILE": "../templates/MASB/1.10.1/masb.yaml"
+}
