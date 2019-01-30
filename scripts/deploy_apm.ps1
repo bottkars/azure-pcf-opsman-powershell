@@ -103,7 +103,7 @@ om --skip-ssl-validation `
 
 om --skip-ssl-validation `
   apply-changes `
-  --product-name $PRODUCT_NAME
+  --product-name $slug_id
 
 om --skip-ssl-validation `
   deployed-products 
