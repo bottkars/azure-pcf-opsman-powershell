@@ -115,7 +115,7 @@ azure_client_secret: $AZURE_CLIENT_SECRET
 azure_broker_database_server: masb$($ENV_SHORT_NAME).database.windows.net
 azure_broker_database_name: masb$($ENV_SHORT_NAME)
 azure_broker_database_password: $PCF_PIVNET_UAA_TOKEN
-azure_broker_database_encryption_key: 12345678901234567890123456789012
+azure_broker_database_encryption_key: $(-join ((65..90) + (97..122) | Get-Random -Count 32 | % {[char]$_}))
 " | Set-Content $HOME/masb_vars.yaml
 
 om --skip-ssl-validation `
