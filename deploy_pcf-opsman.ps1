@@ -363,7 +363,7 @@ if ($Environment -eq 'AzureStack') {
     }  
     try {
         $new_arm_vhd = Add-AzureRmVhd -ResourceGroupName $ImageStorageAccount -Destination $urlOfUploadedImageVhd `
-            -LocalFilePath $localPath -ErrorAction SilentlyContinue
+            -LocalFilePath $localPath -OverWrite:$false -ErrorAction SilentlyContinue
     }
     catch {
         Write-Warning "Image already exists for $opsManVHD, not overwriting"
