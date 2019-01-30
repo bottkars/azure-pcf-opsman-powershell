@@ -51,9 +51,8 @@
         ## 2.4 starts here
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.117.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.131.vhd',
-        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.142.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.142.vhd'
         ## 2.5 start here
-        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.5-build.96.vhd'
         )]
     $opsmanager_uri = 'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.237.vhd',
     # The name of the Ressource Group we want to Deploy to.
@@ -517,7 +516,7 @@ if (!$OpsmanUpdate) {
         } | ConvertTo-Json
         $JSon | Set-Content $DIRECTOR_CONF_FILE
         if ($NO_APPLY.IsPresent) {
-            $command = "$PSScriptRoot/scripts/init_om.ps1 -no_apply"
+            $command = "$PSScriptRoot/scripts/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -no_apply"
         }
         else {
             $command = "$PSScriptRoot/scripts/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"    
