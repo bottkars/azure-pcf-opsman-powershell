@@ -84,7 +84,7 @@ If you do not have git installed, i recommend
 
 2. create an ssh keypair
 
-you need ssh-keygen, i recomment the version from gitscm 
+you need ssh-keygen, I recommend the version from gitscm 
 ```Powershell
 ssh-keygen -t rsa -f $HOME/opsman -C ubuntu
 ```
