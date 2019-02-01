@@ -4,9 +4,10 @@
 
 
 
-This repository contains ARM templates that help operators deploy Ops Manager Director for Pivotal Cloud Foundry (PCF) to Azurestack (and azure).  
+This repository contains ARM templates that help operators deploy Pivotal Cloud Foundry (PCF) to Azurestack (and azure) along with a number of Supported Services ( Tiles )
 
-It also feature a Powershell Script to automate beyond what the template can do:  
+
+It features a set of Powershell Scripts to automate beyond what the template can do:  
 
 - Configure required Storage Accounts  
 - Download the Pivotal Operation Manager Image  
