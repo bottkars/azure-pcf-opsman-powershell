@@ -66,28 +66,43 @@ this section desccribes various command options
 there is one central PS1 Script to deploy OPS Manager.  
 just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager  
 
-1. to get started, clone into the master branch:  
- ```Powershell
- git clone --single-branch --branch master https://github.com/bottkars/azure-pcf-opsman-powershell ./pcf
- set-location ./pcf
- ```
+1. to get started, clone into the master branch. 
+If you do not have git installed, i recommend
+
+    ```Powershell
+    install-script install-gitscm -scope currentuser
+    install-gitscm.ps1
+    ```
+    then clone the Repo:
+
+    ```Powershell
+    git clone --single-branch --branch master https://github.com/bottkars/azure-pcf-opsman-powershell ./pcf
+    set-location ./pcf
+    ```
 
  *to update the repo, just `run git pull` at any time
 
-2. run the helper utility to install omcli, openssh and thge pivposh powershell module
+2. create an ssh keypair
+
+you need ssh-keygen, i recomment the version from gitscm 
+```Powershell
+ssh-keygen -t rsa -f $HOME/opsman -C ubuntu
+```
+
+3. run the helper utility to install omcli, openssh and thge pivposh powershell module
 
 ```Powershell
 ./prepare_utils.ps1
 ```
 
-3. start a deployment with a test parameter
+4. start a deployment with a test parameter
     this wil make sure we can deploy to the desired resource group and test´s if we can use the storageaccount for opsman images ( note: the storageaccount for the images can be shared between different installations, for test , dev, etc. the deployment will create custom images from that location)
 
 ```
 ./deploy_pcf-opsman.ps1 -resourceGroup pcftest -location local -subnet 10.30.0.0 -PCF_SUBDOMAIN_NAME pcftest  -dnsdomain azurestack.external -downloadpath E:\PCF\ -TESTONLY
 ```
 
-4. start the deployment
+5. start the deployment
     once test and download´s are finished, run without test parameter. this is an example for an azure stack.  location ( region ) and dnsdomain of the Stack  might be omitted, the script will ask you for it anyway
 
 ```Powershell
@@ -96,7 +111,7 @@ just enter `deploy_pcf-opsman.ps1` will deploy the latest default OpsManager
 
 if the installation  succeeds, be happy, everything is fine.  
 
-5. Install the PAS Tile
+6. Install the PAS Tile
 to install the PAS Tile now, run
 
 ```Powershell
