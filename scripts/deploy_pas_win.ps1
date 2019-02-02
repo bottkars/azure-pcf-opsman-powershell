@@ -101,6 +101,12 @@ $PRODUCT_NAME=$PRODUCTS.name
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
 
+    om --skip-ssl-validation `
+    assign-stemcell `
+    --product $PRODUCT_NAME `
+    --stemcell $STEMCELL_VERSION
+
+
 
 $PCF_KEY_PEM=get-content ./pcfdemo.local.azurestack.external.key
 $PCF_KEY_PEM=$PCF_KEY_PEM  -join "\r\n"

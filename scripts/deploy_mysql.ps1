@@ -62,7 +62,7 @@ if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.Fu
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME = $download_file.product_path
 $STEMCELL_FILENAME = $download_file.stemcell_path
-
+$STEMCELL_VERSION =  $download_file.stemcell_version
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
@@ -92,6 +92,12 @@ om --skip-ssl-validation `
     stage-product `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
+
+    om --skip-ssl-validation `
+    assign-stemcell `
+    --product $PRODUCT_NAME `
+    --stemcell $STEMCELL_VERSION
+
 
 "
 product_name: $PRODUCT_NAME

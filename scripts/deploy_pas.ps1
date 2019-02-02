@@ -48,7 +48,7 @@ Write-Host "Accepting EULA´s for Stemcells"
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 $eula = Confirm-PIVEula -access_token $access_token -slugid 233 -id 162133
 $eula = Confirm-PIVEula -access_token $access_token -slugid 233 -id 286469
-$eula = Confirm-PIVEula -access_token $access_token -slugid 233 -id 290314
+$eula = Confirm-PIVEula -access_token $access_token -slugid 82 -id 290314
 Write-Host "Accepting EULA for $slug_id $PRODUCT_NAME $PCF_PAS_VERSION"
 
 Write-Host "Getting Release for $PRODUCT_NAME $PCF_PAS_VERSION"
@@ -85,9 +85,11 @@ if ($LASTEXITCODE -ne 0) {
     break
 }
 
+
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME = $download_file.product_path
 $STEMCELL_FILENAME = $download_file.stemcell_path
+$STEMCELL_VERSION =  $download_file.stemcell_version
 
 om --skip-ssl-validation `
     deployed-products
@@ -112,6 +114,8 @@ if ($LASTEXITCODE -ne 0) {
     Pop-Location
     break
 }
+
+
 $PRODUCTS = $(om --skip-ssl-validation `
         available-products `
         --format json) | ConvertFrom-Json
@@ -124,6 +128,12 @@ om --skip-ssl-validation `
     stage-product `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
+
+    om --skip-ssl-validation `
+    assign-stemcell `
+    --product $PRODUCT_NAME `
+    --stemcell $STEMCELL_VERSION
+
 
 
 $PCF_KEY_PEM = get-content "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($PCF_DOMAIN_NAME).key"
