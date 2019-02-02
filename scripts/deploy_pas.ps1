@@ -49,7 +49,6 @@ $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 $eula = Confirm-PIVEula -access_token $access_token -slugid 233 -id 162133
 $eula = Confirm-PIVEula -access_token $access_token -slugid 233 -id 286469
 $eula = Confirm-PIVEula -access_token $access_token -slugid 82 -id 290314
-Write-Host "Accepting EULA for $slug_id $PRODUCT_NAME $PCF_PAS_VERSION"
 
 Write-Host "Getting Release for $PRODUCT_NAME $PCF_PAS_VERSION"
 $piv_release = Get-PIVRelease -id elastic-runtime | where version -Match $PCF_PAS_VERSION | Select-Object -First 1
