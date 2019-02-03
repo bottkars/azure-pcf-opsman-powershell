@@ -321,10 +321,10 @@ if (!$OpsmanUpdate) {
     Write-Host "==>Creating ResourceGroups $resourceGroup" -nonewline   
     $new_rg = New-AzureRmResourceGroup -Name $resourceGroup -Location $location -Force
     Write-Host -ForegroundColor green "[done]"
-    Write-Host "==>Assigning Contributer Role for /subscriptions/$((Get-AzureRmContext).Subscription.Id) to client_id  $($env_vars.client_id)" -nonewline   
+    Write-Host "==>Assigning Contributer Role for /subscriptions/$((Get-AzureRmContext).Subscription.Id) to client_id $($env_vars.client_id)" -nonewline   
     New-AzureRmRoleAssignment -Scope "/subscriptions/$((Get-AzureRmContext).Subscription.Id)" `
     -ServicePrincipalName $env_vars.client_id `
-    -RoleDefinitionName Contributor -ErrorAction SilentlyContinue | Out-Null
+    -RoleDefinitionName Contributor -ErrorAction SilentlyContinue -Force | Out-Null
     Write-Host -ForegroundColor green "[done]"
     if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
         $account_available = Get-AzureRmStorageAccountNameAvailability -Name $ImageStorageAccount 
