@@ -310,7 +310,6 @@ $storageType = 'Standard_LRS'
 $StopWatch_prepare = New-Object System.Diagnostics.Stopwatch
 $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
 $StopWatch_prepare.Start()
-    
 if (!$OpsmanUpdate) {
     Write-Host "==>Creating ResourceGroups $resourceGroup and $ImageStorageAccount" -nonewline   
     $new_rg = New-AzureRmResourceGroup -Name $resourceGroup -Location $location -Force
@@ -324,7 +323,6 @@ if (!$OpsmanUpdate) {
         Write-Warning "we have a netcore bug with azurestack and can not test stoprageaccount availabilty"
         $account_free = $true
     }
-
     # bug not working in netcore against azurestack, as we can not set profiles :-( 
     # waiting for new az netcore module with updated api profiles
     # new 
@@ -343,20 +341,15 @@ if (!$OpsmanUpdate) {
                 $RG = New-AzureRmResourceGroup -Name $image_rg -Location $location
                 Write-Host -ForegroundColor Green [Done]
             }
-            
-
-
             $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $image_rg `
                 -Name $ImageStorageAccount -Location $location `
                 -Type $storageType # -ErrorAction SilentlyContinue
             if (!$new_acsaccount) {
                 $new_acsaccount = Get-AzureRmStorageAccount -ResourceGroupName $image_rg | Where-Object StorageAccountName -match $ImageStorageAccount
             }    
-
             $new_acsaccount | Set-AzureRmCurrentStorageAccount
             Write-Host "Creating Container $image_containername in $($new_acsaccount.StorageAccountName)"
             $Container = New-AzureStorageContainer -Name $image_containername -Permission blob
-
         }
         else {
             write-host "Scenario currently not supported"
