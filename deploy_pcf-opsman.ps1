@@ -313,7 +313,6 @@ $StopWatch_prepare.Start()
 if (!$OpsmanUpdate) {
     Write-Host "==>Creating ResourceGroups $resourceGroup and $ImageStorageAccount" -nonewline   
     $new_rg = New-AzureRmResourceGroup -Name $resourceGroup -Location $location -Force
-    $new_rg = New-AzureRmResourceGroup -Name $ImageStorageAccount -Location $location -Force
     Write-Host -ForegroundColor green "[done]"
     if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
         $account_available = Get-AzureRmStorageAccountNameAvailability -Name $ImageStorageAccount 
