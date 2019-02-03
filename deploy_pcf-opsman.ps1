@@ -63,6 +63,11 @@
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     $resourceGroup = 'pcf',
+    # Name of the Storage Resource Group for Images
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [Parameter(ParameterSetName = "update", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    $storage_rg = 'opsmanimage_rg',    
     # region of the Deployment., local for ASDK
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
@@ -77,12 +82,12 @@
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    $ImageStorageAccount = "pcfopsmanstorage", 
+    $ImageStorageAccount = "opsmanagerimage", 
     # The Containername we will host the Images for Opsmanager in
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    $image_containername = 'opsman-image',
+    $image_containername = 'images',
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
