@@ -20,13 +20,16 @@ if (!$Global:Service_RM_Account.Context)
     break
     }
 
-if (!($RG = Get-AzureRmResourceGroup -Name $rg_name -Location local))
-    {
-    Write-Host -ForegroundColor White -NoNewline "Creating RG $rg_name"
+try {
+    Write-Host -ForegroundColor White -NoNewline "Checking for RG $rg_name"
+    $RG=Get-AzureRmResourceGroup -Name $rg_name -Location local -ErrorAction Stop  
+}
+catch {
+    Write-Host -ForegroundColor Red [failed]
+    Write-Host -ForegroundColor White -NoNewline "Creating RG $rg_name"        
     $RG = New-AzureRmResourceGroup -Name $rg_name -Location local
-    Write-Host -ForegroundColor Green [Done]
-    }
-
+}
+Write-Host -ForegroundColor Green [Done]
 try {
     $AZSOffer = Get-AzsManagedOffer -Name $offer -ResourceGroupName $rg_name -ErrorAction SilentlyContinue
 }
@@ -48,8 +51,9 @@ if (!($ComputeQuota = Get-AzsComputeQuota -Name pcf-compute))
 if (!($NetworkQuota = Get-AzsNetworkQuota -Name pcf-network))
     {
     $NetworkQuota = New-AzsNetworkQuota -Name pcf-network `
-    -Location local -MaxPublicIpsPerSubscription 20 -MaxVNetsPerSubscription 5 `
-    -MaxVirtualNetworkGatewaysPerSubscription 5 `
+    -Location local -MaxPublicIpsPerSubscription 20 `
+    -MaxVNetsPerSubscription 20 `
+    -MaxVirtualNetworkGatewaysPerSubscription 20 `
     -MaxVirtualNetworkGatewayConnectionsPerSubscription 1000 -MaxNicsPerSubscription 200
     }
 
