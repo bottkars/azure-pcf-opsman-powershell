@@ -324,7 +324,7 @@ if (!$OpsmanUpdate) {
     Write-Host "==>Assigning Contributer Role for /subscriptions/$((Get-AzureRmContext).Subscription.Id) to client_id  $($env_vars.client_id)" -nonewline   
     New-AzureRmRoleAssignment -Scope "/subscriptions/$((Get-AzureRmContext).Subscription.Id)" `
     -ServicePrincipalName $env_vars.client_id `
-    -RoleDefinitionName Contributor | Out-Null
+    -RoleDefinitionName Contributor -ErrorAction SilentlyContinue | Out-Null
     Write-Host -ForegroundColor green "[done]"
     if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
         $account_available = Get-AzureRmStorageAccountNameAvailability -Name $ImageStorageAccount 
