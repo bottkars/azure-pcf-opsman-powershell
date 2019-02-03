@@ -359,9 +359,10 @@ if (!$OpsmanUpdate) {
 
         }
         else {
+            write-host "Scenario currently not supported"
+            BREAK
             New-AzureRmResourceGroupDeployment -TemplateFile $PSScriptRoot/createstorageaacount.json -ResourceGroupName $resourceGroup -storageAccountName $ImageStorageAccount
         }
-
         Write-Host -ForegroundColor green "[done]"
     }
     else {
