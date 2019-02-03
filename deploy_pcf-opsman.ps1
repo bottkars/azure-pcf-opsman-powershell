@@ -144,6 +144,14 @@
     $NO_APPLY
 )
 
+if (!(Test-Path $HOME/env.json))
+    {
+     "Please create $HOME/env.vars see README.md for details"
+    }
+else    
+{
+    $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
+}
 $DeployTimes = @()
 function get-runningos {
     # backward copatibility for peeps runnin powershell 5
@@ -313,6 +321,9 @@ $StopWatch_prepare.Start()
 if (!$OpsmanUpdate) {
     Write-Host "==>Creating ResourceGroups $resourceGroup and $ImageStorageAccount" -nonewline   
     $new_rg = New-AzureRmResourceGroup -Name $resourceGroup -Location $location -Force
+    New-AzureRmRoleAssignment -ResourceGroupName $resourceGroup `
+    -ServicePrincipalName $env_vars.client_id `
+    -RoleDefinitionName Contributor
     Write-Host -ForegroundColor green "[done]"
     if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
         $account_available = Get-AzureRmStorageAccountNameAvailability -Name $ImageStorageAccount 
