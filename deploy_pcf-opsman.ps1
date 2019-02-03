@@ -341,16 +341,16 @@ if (!$OpsmanUpdate) {
                 Write-Host -ForegroundColor Red [failed]
                 Write-Host -ForegroundColor White -NoNewline "Creating RG $storage_rg"        
                 $RG = New-AzureRmResourceGroup -Name $storage_rg -Location $location
+                Write-Host -ForegroundColor Green [Done]
             }
-            Write-Host -ForegroundColor Green [Done]
+            
 
 
             $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $storage_rg `
                 -Name $ImageStorageAccount -Location $location `
-                -Type $storageType -ErrorAction SilentlyContinue
+                -Type $storageType # -ErrorAction SilentlyContinue
             if (!$new_acsaccount) {
                 $new_acsaccount = Get-AzureRmStorageAccount -ResourceGroupName $storage_rg | Where-Object StorageAccountName -match $ImageStorageAccount
-
             }    
 
             $new_acsaccount | Set-AzureRmCurrentStorageAccount
