@@ -92,9 +92,8 @@ om --skip-ssl-validation `
     --product-version $VERSION
 
     om --skip-ssl-validation `
-    assign-stemcell `
-    --product $PRODUCT_NAME `
-    --stemcell $STEMCELL_VERSION
+    assign-stemcell --latest `
+    --product $PRODUCT_NAME
 
 
 

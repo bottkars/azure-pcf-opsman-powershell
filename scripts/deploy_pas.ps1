@@ -88,7 +88,7 @@ if ($LASTEXITCODE -ne 0) {
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME = $download_file.product_path
 $STEMCELL_FILENAME = $download_file.stemcell_path
-$STEMCELL_VERSION =  $download_file.stemcell_version
+$STEMCELL_VERSION = $download_file.stemcell_version
 
 om --skip-ssl-validation `
     deployed-products
@@ -128,10 +128,9 @@ om --skip-ssl-validation `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
 
-    om --skip-ssl-validation `
-    assign-stemcell `
-    --product $PRODUCT_NAME `
-    --stemcell $STEMCELL_VERSION
+om --skip-ssl-validation `
+    assign-stemcell --latest `
+    --product $PRODUCT_NAME
 
 
 

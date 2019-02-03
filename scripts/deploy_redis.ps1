@@ -91,11 +91,9 @@ om --skip-ssl-validation `
   --product-version $VERSION
 
 om --skip-ssl-validation `
-  assign-stemcell `
-  --product $PRODUCT_NAME `
-  --stemcell $STEMCELL_VERSION
-
-
+  assign-stemcell --latest`
+  --product $PRODUCT_NAME
+  
 "
 product_name: $PRODUCT_NAME
 pcf_pas_network: pcf-pas-subnet `
