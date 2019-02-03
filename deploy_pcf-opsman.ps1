@@ -67,7 +67,7 @@
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    $storage_rg = 'opsmanimage_rg',    
+    $image_rg = 'opsmanimage_rg',    
     # region of the Deployment., local for ASDK
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
@@ -334,23 +334,23 @@ if (!$OpsmanUpdate) {
         if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
             ## test RG
             try {
-                Write-Host -ForegroundColor White -NoNewline "Checking for RG $storage_rg"
-                $RG=Get-AzureRmResourceGroup -Name $storage_rg -Location local -ErrorAction Stop  
+                Write-Host -ForegroundColor White -NoNewline "Checking for RG $image_rg"
+                $RG=Get-AzureRmResourceGroup -Name $image_rg -Location local -ErrorAction Stop  
             }
             catch {
                 Write-Host -ForegroundColor Red [failed]
-                Write-Host -ForegroundColor White -NoNewline "Creating RG $storage_rg"        
-                $RG = New-AzureRmResourceGroup -Name $storage_rg -Location $location
+                Write-Host -ForegroundColor White -NoNewline "Creating Image  RG $image_rg"        
+                $RG = New-AzureRmResourceGroup -Name $image_rg -Location $location
                 Write-Host -ForegroundColor Green [Done]
             }
             
 
 
-            $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $storage_rg `
+            $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $image_rg `
                 -Name $ImageStorageAccount -Location $location `
                 -Type $storageType # -ErrorAction SilentlyContinue
             if (!$new_acsaccount) {
-                $new_acsaccount = Get-AzureRmStorageAccount -ResourceGroupName $storage_rg | Where-Object StorageAccountName -match $ImageStorageAccount
+                $new_acsaccount = Get-AzureRmStorageAccount -ResourceGroupName $image_rg | Where-Object StorageAccountName -match $ImageStorageAccount
             }    
 
             $new_acsaccount | Set-AzureRmCurrentStorageAccount
@@ -392,7 +392,7 @@ if ($Environment -eq 'AzureStack') {
         }
     }  
     try {
-        $new_arm_vhd = Add-AzureRmVhd -ResourceGroupName $ImageStorageAccount -Destination $urlOfUploadedImageVhd `
+        $new_arm_vhd = Add-AzureRmVhd -ResourceGroupName $image_rg -Destination $urlOfUploadedImageVhd `
             -LocalFilePath $localPath -OverWrite:$false -ErrorAction SilentlyContinue -NumberOfUploaderThreads 32
     }
     catch {
@@ -402,7 +402,7 @@ if ($Environment -eq 'AzureStack') {
 else {
     # Blob Copy routine
     $src_context = New-AzureStorageContext -StorageAccountName opsmanagerwesteurope -Anonymous
-    $dst_context = (Get-AzureRmStorageAccount -ResourceGroupName $ImageStorageAccount -Name $ImageStorageAccount).context
+    $dst_context = (Get-AzureRmStorageAccount -ResourceGroupName $image_rg -Name $ImageStorageAccount).context
     ## check for blob
     Write-Host "==>Checking blob $opsManVHD exixts in container $image_containername for Storageaccount $ImageStorageAccount" -NoNewline
     $ExistingBlob = Get-AzureStorageBlob -Context $dst_context -Blob $opsManVHD -Container $image_containername -ErrorAction SilentlyContinue
