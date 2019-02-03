@@ -83,12 +83,10 @@ If you do not have git installed, i recommend
 
  *to update the repo, just `run git pull` at any time
 
-2. create an ssh keypair
+2. Azure Stack CA root certificate
 
-you need ssh-keygen, I recommend the version from gitscm 
-```Powershell
-ssh-keygen -t rsa -f $HOME/opsman -C ubuntu
-```
+The azurestack root ca file must be located in $HOME/root.pem in pem format.  
+Please consult [AzureStack Documentation](https://docs.microsoft.com/en-us/azure/azure-stack/azure-stack-cli-admin#export-the-azure-stack-ca-root-certificate) on how to obtain
 
 3. run the helper utility to install omcli, openssh and thge pivposh powershell module
 
