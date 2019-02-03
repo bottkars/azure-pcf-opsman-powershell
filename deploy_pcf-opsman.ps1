@@ -330,7 +330,7 @@ if (!$OpsmanUpdate) {
     # new 
     if ($account_free -eq $true) {
 
-        Write-Host "==>Creating StorageAccount $ImageStorageAccount" -nonewline
+        Write-Host "==>Creating StorageAccount $ImageStorageAccount"
         if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
             ## test RG
             try {
