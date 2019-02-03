@@ -56,7 +56,7 @@
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.142.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.145.vhd'
         ## 2.5 start here
-        )]
+    )]
     $opsmanager_uri = 'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.244.vhd',
     # The name of the Ressource Group we want to Deploy to.
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
@@ -126,7 +126,7 @@
     $PASTYPE = "srt",
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet('mysql', 'rabbitmq', 'spring', 'redis','apm','dataflow')]
+    [ValidateSet('mysql', 'rabbitmq', 'spring', 'redis', 'apm', 'dataflow')]
     [string[]]$tiles,
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
@@ -144,12 +144,10 @@
     $NO_APPLY
 )
 
-if (!(Test-Path $HOME/env.json))
-    {
-     "Please create $HOME/env.vars see README.md for details"
-    }
-else    
-{
+if (!(Test-Path $HOME/env.json)) {
+    "Please create $HOME/env.vars see README.md for details"
+}
+else {
     $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 }
 $DeployTimes = @()
@@ -216,7 +214,7 @@ if ($Environment -eq "AzureStack" -and (get-runningos).OSType -ne "win_x86_64") 
     Break
 }
 
-$DIRECTOR_CONF_FILE="$HOME/director_$($resourceGroup).json"   
+$DIRECTOR_CONF_FILE = "$HOME/director_$($resourceGroup).json"   
 
 Push-Location
 Set-Location $PSScriptRoot
@@ -228,9 +226,15 @@ if (!$dnsdomain) {
 }
 
 if (!(test-path -Path "$($HOME)/opsman.pub")) {
-    write-host "Required $($HOME)/opsman.pub not found. please run ssh-keygen"
-    Pop-Location
-    Break
+    if (Get-Command ssh-keygen.exe -ErrorAction SilentlyContinue) {
+        ssh-keygen.exe -t rsa -f $HOME/opsman -C ubuntu -N """" -Q
+    }
+    else {    
+        write-host "ssh-keygen not found and no Required $($HOME)/opsman.pub key installed
+        not found. you may want to install ssh-kegen using `"install-script install-gitscm -scope currentuser;install-gitscm.ps1`""
+        Pop-Location
+        Break
+    }
 }
 if (!(test-path -Path "$($HOME)/root.pem")) {
     write-host "Required $($HOME)/root.pem not found.
@@ -245,7 +249,7 @@ if (!(test-path -Path "$($HOME)/$($dnsZoneName).crt")) {
     write-host "Required$($HOME)/$($dnsZoneName).crt not found. 
     Now Generating Self Signed Certificates
     "
-    $command= "$PSScriptRoot/scripts/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain)"
+    $command = "$PSScriptRoot/scripts/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain)"
     Write-Host "Now running $command"
     Invoke-Expression -Command $command
 }
@@ -254,7 +258,7 @@ if (!(test-path -Path "$($HOME)/$($dnsZoneName).key")) {
     write-host "Required$($HOME)/$($dnsZoneName).key not found. 
     Now Generating Self Signed Certificates
     "
-    $command= "$PSScriptRoot/scripts/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain)"
+    $command = "$PSScriptRoot/scripts/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain)"
     Write-Host "Now running $command"
     Invoke-Expression -Command $command
 }
@@ -282,27 +286,25 @@ Write-Host "$($opsManFQDNPrefix)green $Mask.8.4/32"
 Write-Host "$($opsManFQDNPrefix)blue $Mask.8.5/32"
 Write-Host
 
-if  ($PsCmdlet.ParameterSetName -eq "install")
-    {
-        if ($tiles)
-            {
-                [switch]$PAS_AUTOPILOT = $true
-                if ($tiles -contains 'spring') {
-                    $tiles = ('mysql', 'rabbitmq', 'spring') + $tiles
-                    $tiles = $tiles | Select-Object -Unique
-                }
-                if ($tiles -contains 'dataflow') {
-                    $tiles = ('mysql', 'rabbitmq','redis','dataflow') + $tiles
-                    $tiles = $tiles | Select-Object -Unique
-                }
-                Write-Host -ForegroundColor White -NoNewline "Going to deploy PCF $PASTYPE with the Following Tiles: "
-                Write-Host -ForegroundColor Green  "$($tiles -join ",")"
-            }
-        elseif ($PAS_AUTOPILOT.IsPresent) {
-            Write-Host -ForegroundColor White "Going to deploy PCF $PASTYPE without Tiles"
-        }    
-
+if ($PsCmdlet.ParameterSetName -eq "install") {
+    if ($tiles) {
+        [switch]$PAS_AUTOPILOT = $true
+        if ($tiles -contains 'spring') {
+            $tiles = ('mysql', 'rabbitmq', 'spring') + $tiles
+            $tiles = $tiles | Select-Object -Unique
+        }
+        if ($tiles -contains 'dataflow') {
+            $tiles = ('mysql', 'rabbitmq', 'redis', 'dataflow') + $tiles
+            $tiles = $tiles | Select-Object -Unique
+        }
+        Write-Host -ForegroundColor White -NoNewline "Going to deploy PCF $PASTYPE with the Following Tiles: "
+        Write-Host -ForegroundColor Green  "$($tiles -join ",")"
     }
+    elseif ($PAS_AUTOPILOT.IsPresent) {
+        Write-Host -ForegroundColor White "Going to deploy PCF $PASTYPE without Tiles"
+    }    
+
+}
 $opsManFQDNPrefix = "$opsManFQDNPrefix$deploymentcolor"
 if (!$boshstorageaccount) {
     $boshstorageaccount = 'boshstorage'
@@ -323,8 +325,8 @@ if (!$OpsmanUpdate) {
     Write-Host -ForegroundColor green "[done]"
     Write-Host "==>Assigning Contributer Role for /subscriptions/$((Get-AzureRmContext).Subscription.Id) to client_id $($env_vars.client_id)" -nonewline   
     New-AzureRmRoleAssignment -Scope "/subscriptions/$((Get-AzureRmContext).Subscription.Id)" `
-    -ServicePrincipalName $env_vars.client_id `
-    -RoleDefinitionName Contributor -ErrorAction SilentlyContinue | Out-Null
+        -ServicePrincipalName $env_vars.client_id `
+        -RoleDefinitionName Contributor -ErrorAction SilentlyContinue | Out-Null
     Write-Host -ForegroundColor green "[done]"
     if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
         $account_available = Get-AzureRmStorageAccountNameAvailability -Name $ImageStorageAccount 
@@ -344,7 +346,7 @@ if (!$OpsmanUpdate) {
             ## test RG
             try {
                 Write-Host -ForegroundColor White -NoNewline "Checking for RG $image_rg "
-                $RG=Get-AzureRmResourceGroup -Name $image_rg -Location local -ErrorAction Stop  
+                $RG = Get-AzureRmResourceGroup -Name $image_rg -Location local -ErrorAction Stop  
             }
             catch {
                 Write-Host -ForegroundColor yellow [need to create]
