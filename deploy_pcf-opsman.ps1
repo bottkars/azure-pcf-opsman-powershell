@@ -332,6 +332,20 @@ if (!$OpsmanUpdate) {
 
         Write-Host "==>Creating StorageAccount $ImageStorageAccount" -nonewline
         if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
+            ## test RG
+            $storage_rg = "plans_and_offers"
+            try {
+                Write-Host -ForegroundColor White -NoNewline "Checking for RG $storage_rg"
+                $RG=Get-AzureRmResourceGroup -Name $storage_rg -Location local -ErrorAction Stop  
+            }
+            catch {
+                Write-Host -ForegroundColor Red [failed]
+                Write-Host -ForegroundColor White -NoNewline "Creating RG $storage_rg"        
+                $RG = New-AzureRmResourceGroup -Name $storage_rg -Location $location
+            }
+            Write-Host -ForegroundColor Green [Done]
+
+
             $new_acsaccount = New-AzureRmStorageAccount -ResourceGroupName $storage_rg `
                 -Name $ImageStorageAccount -Location $location `
                 -Type $storageType -ErrorAction SilentlyContinue
