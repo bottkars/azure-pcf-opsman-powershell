@@ -331,12 +331,12 @@ if (!$OpsmanUpdate) {
         if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
             ## test RG
             try {
-                Write-Host -ForegroundColor White -NoNewline "Checking for RG $image_rg"
+                Write-Host -ForegroundColor White -NoNewline "Checking for RG $image_rg "
                 $RG=Get-AzureRmResourceGroup -Name $image_rg -Location local -ErrorAction Stop  
             }
             catch {
-                Write-Host -ForegroundColor Red [failed]
-                Write-Host -ForegroundColor White -NoNewline "Creating Image  RG $image_rg"        
+                Write-Host -ForegroundColor yellow [need to create]
+                Write-Host -ForegroundColor White -NoNewline "Creating Image RG $image_rg"        
                 $RG = New-AzureRmResourceGroup -Name $image_rg -Location $location
                 Write-Host -ForegroundColor Green [Done]
             }
@@ -347,7 +347,7 @@ if (!$OpsmanUpdate) {
                 $new_acsaccount = Get-AzureRmStorageAccount -ResourceGroupName $image_rg | Where-Object StorageAccountName -match $ImageStorageAccount
             }    
             $new_acsaccount | Set-AzureRmCurrentStorageAccount
-            Write-Host "Creating Container $image_containername in $($new_acsaccount.StorageAccountName)"
+            Write-Host "Creating Container `"$image_containername`" in $($new_acsaccount.StorageAccountName)"
             $Container = New-AzureStorageContainer -Name $image_containername -Permission blob
         }
         else {
