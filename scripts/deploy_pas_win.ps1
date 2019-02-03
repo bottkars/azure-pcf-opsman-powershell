@@ -102,7 +102,8 @@ $PRODUCT_NAME=$PRODUCTS.name
     --product-version $VERSION
 
     om --skip-ssl-validation `
-    assign-stemcell --latest `
+    assign-stemcell  `
+  --stemcell latest `
     --product $PRODUCT_NAME
 
 
