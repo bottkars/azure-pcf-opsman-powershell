@@ -310,7 +310,6 @@ if (!$boshstorageaccount) {
     $boshstorageaccount = ($boshStorageaccount.subString(0, [System.Math]::Min(23, $boshstorageaccount.Length))).tolower()
 }
 $OpsManBaseUri = Split-Path  $opsmanager_uri  
-$OpsmanContainer = Split-Path $OpsManBaseUri
 $opsManVHD = Split-Path -Leaf $opsmanager_uri
 $opsmanVersion = $opsManVHD -replace ".vhd", ""
 Write-host "Preparing to deploy OpsMan $opsmanVersion for $deploymentcolor deployment" -ForegroundColor $deploymentcolor
@@ -319,11 +318,13 @@ $StopWatch_prepare = New-Object System.Diagnostics.Stopwatch
 $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
 $StopWatch_prepare.Start()
 if (!$OpsmanUpdate) {
-    Write-Host "==>Creating ResourceGroups $resourceGroup and $ImageStorageAccount" -nonewline   
+    Write-Host "==>Creating ResourceGroups $resourceGroup" -nonewline   
     $new_rg = New-AzureRmResourceGroup -Name $resourceGroup -Location $location -Force
+    Write-Host -ForegroundColor green "[done]"
+    Write-Host "==>Assigning Contributer Role for ResourceGroup $resourceGroup to $(env_vars.client_id)" -nonewline   
     New-AzureRmRoleAssignment -ResourceGroupName $resourceGroup `
     -ServicePrincipalName $env_vars.client_id `
-    -RoleDefinitionName Contributor
+    -RoleDefinitionName Contributor | Out-Null
     Write-Host -ForegroundColor green "[done]"
     if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
         $account_available = Get-AzureRmStorageAccountNameAvailability -Name $ImageStorageAccount 
