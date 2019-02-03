@@ -547,11 +547,11 @@ if (!$OpsmanUpdate) {
         Invoke-Expression -Command $Command
         $StopWatch_deploy_opsman.Stop()
         $DeployTimes += "opsman deployment took $($StopWatch_deploy_opsman.Elapsed.Hours) hours, $($StopWatch_deploy_opsman.Elapsed.Minutes) minutes and  $($StopWatch_deploy_opsman.Elapsed.Seconds) seconds"
-
+        $ScriptHome = $PSScriptRoot
         if ($PAS_AUTOPILOT.IsPresent) {
             $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
             $StopWatch_deploy_pas.Start()
-            $command = "$PSScriptRoot/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
+            $command = "$ScriptHome/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
             Write-Host "Calling $command" 
             Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pas-$(get-date -f yyyyMMddhhmmss).log"
             $StopWatch_deploy_pas.Stop()
@@ -560,7 +560,7 @@ if (!$OpsmanUpdate) {
             ForEach ($tile in $tiles) {
                 $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
                 $StopWatch_deploy.Start()
-                $command = "$PSScriptRoot/scripts/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
+                $command = "$ScriptHome/scripts/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
                 Write-Host "Calling $command" 
                 Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/$($tile)-$(get-date -f yyyyMMddhhmmss).log"
                 $StopWatch_deploy.Stop()
