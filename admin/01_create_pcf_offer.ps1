@@ -31,10 +31,9 @@ catch {
 }
 Write-Host -ForegroundColor Green [Done]
 try {
-    $AZSOffer = Get-AzsManagedOffer -Name $offer -ResourceGroupName $rg_name -ErrorAction SilentlyContinue
+    $AZSOffer = Get-AzsManagedOffer -Name $offer -ResourceGroupName $rg_name -ErrorAction Stop 
 }
 catch {
-
       Write-Host "$Offer not found in $rg_name, we need to create it"
 }
 if  ($AZSOffer)
