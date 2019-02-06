@@ -6,7 +6,7 @@ param(
     [Parameter(Mandatory = $false)]	
     [switch]$DO_NOT_APPLY,
     [Parameter(Mandatory = $false)]
-    [switch]$configure_azure_DB
+    [switch]$do_not_configure_azure_DB
 )
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/masb.json"
@@ -119,7 +119,7 @@ om --skip-ssl-validation `
     -c "$config_file" -l "$HOME/masb_vars.yaml"
 
 
-if ($configure_azure_DB.ispresent)
+if (!$do_not_configure_azure_DB.ispresent)
     {
         Write-Host "Now Creating Azure SQL Databas / Server for $PRODUCT_NAME"
         $Credential=New-Object -TypeName System.Management.Automation.PSCredential `
