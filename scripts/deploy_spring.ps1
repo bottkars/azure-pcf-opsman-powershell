@@ -50,7 +50,6 @@ if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.Fu
         --pivnet-file-glob $(Split-Path -Leaf $piv_object.aws_object_key) `
         --pivnet-product-slug $slug_id `
         --product-version $PCF_SPRING_VERSION `
-
         --output-directory  "$($output_directory.FullName)"
 }
 
