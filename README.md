@@ -43,7 +43,9 @@ those will create a dashboard view like this one:
 - <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_redis_cf@2x.png" height="16"> Redis 1.14.4
 - <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/metrics-icon.png" height="16"> Pivotal Cloud Foundry Metrics ( APM ) 1.5.1
 - <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_healthwatch@2x.png" height="16"> Pivotal Cloud Foundry Healthwatch 1.4.4
-- <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_microsoft_azure_open_service_broker@2x.png" height="16"> Microsoft Azure Service Broker ( MASB )
+- <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_microsoft_azure_open_service_broker@2x.png" height="16"> Microsoft Azure Service Broker ( MASB )   
+![image](https://user-images.githubusercontent.com/8255007/52365084-f9e32100-2a46-11e9-8281-81ce9456fa8c.png)   
+
 ### requirements
 
    - Windows 10 or Server 2016 Machine with at least 20GB Disk Space (SSD recommended) 
