@@ -6,7 +6,7 @@ param(
 
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [switch]
-    $NO_APPLY
+    $DO_NOT_APPLY
 )
 Push-Location $PSScriptRoot
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
@@ -82,8 +82,9 @@ om --skip-ssl-validation `
 om --skip-ssl-validation `
     configure-director --config "$PSScriptRoot/../templates/director_conf.yaml" --vars-file "$HOME/director_vars.yaml"
 
-
-om --skip-ssl-validation apply-changes
+if (!$DO_NOT_APPLY.IsPresent) {
+    om --skip-ssl-validation apply-changes
+}
 
 om --skip-ssl-validation `
     deployed-products

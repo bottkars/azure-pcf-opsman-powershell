@@ -60,3 +60,5 @@ resource-config:
   router:
     elb_names:
     - ((pcf_web_lb))
+  compute:
+    instances: ((compute_instances))

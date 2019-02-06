@@ -1,7 +1,8 @@
 param(
     [Parameter(Mandatory = $true)]	
     [Validatescript( {Test-Path -Path $_ })]
-    $DIRECTOR_CONF_FILE
+    $DIRECTOR_CONF_FILE,
+    [switch]$showcreds
 )
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $OM_Target = $director_conf.OM_TARGET
@@ -34,8 +35,13 @@ $PCF_ADMIN_USER = om --skip-ssl-validation `
     --path "/api/v0/deployed/products/$($PCF.GUID)/credentials/.uaa.admin_credentials" `
     | ConvertFrom-Json
 
-
+if ($showcreds.IsPresent) {
+    Write-Host $PCF_ADMIN_USER.credential.value.identity
+    Write-Host $PCF_ADMIN_USER.credential.value.password
+}
+else {
 cf login --skip-ssl-validation `
     -u $PCF_ADMIN_USER.credential.value.identity `
     -p $PCF_ADMIN_USER.credential.value.password `
     -a $PCF_API
+}

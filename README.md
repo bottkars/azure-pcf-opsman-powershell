@@ -12,7 +12,8 @@ It features a set of Powershell Scripts to automate beyond what the template can
 - Configure required Storage Accounts  
 - Download the Pivotal Operation Manager Image  
 - Configure Pivotal Operation Manager  
-- Auto Deploy Deploy PCF and add on Tiles  
+- Auto Deploy Deploy PCF and add on Tiles
+- Uses latest Stemcell by initially loading the latest
 ![deploy-pcf](https://user-images.githubusercontent.com/8255007/51845629-2b0d7400-2318-11e9-96dd-d4e3c3ff64b3.gif)   
 
 The Powershell script makes use of:
@@ -34,14 +35,15 @@ those will create a dashboard view like this one:
 ![image](https://user-images.githubusercontent.com/8255007/51927715-7dbc5e00-23f4-11e9-8664-ec5df43eb19e.png)  
 
 ### Initial supported Pivotal Cloudfoundry Tiles and Versions
-- <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_pivotalapplicationservice@2x.png" height="16"> PAS 2.3.5 
+- <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_pivotalapplicationservice@2x.png" height="16"> Pivotal Application Service 2.3.6 
 - <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_pivotal_mysql@2x.png" height="16"> MySQL 2.4.3
 - <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_rabbitmq_cf@2x.png" height="16"> RabbitMQ 1.15.3
 - <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_spring_cloud_services_cf@2x.png" height="16"> Spring Cloud Services 2.0.5
 - <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_scdf@2x.png" height="16"> Spring Cloud Dataflow 1.3.1
 - <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_redis_cf@2x.png" height="16"> Redis 1.14.4
 - <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/metrics-icon.png" height="16"> Pivotal Cloud Foundry Metrics ( APM ) 1.5.1
-
+- <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_healthwatch@2x.png" height="16"> Pivotal Cloud Foundry Healthwatch 1.4.4
+- <img src="https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_microsoft_azure_open_service_broker@2x.png" height="16"> Microsoft Azure Service Broker ( MASB )
 ### requirements
 
    - Windows 10 or Server 2016 Machine with at least 20GB Disk Space (SSD recommended) 

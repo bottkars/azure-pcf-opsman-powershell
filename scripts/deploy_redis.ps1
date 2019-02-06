@@ -49,15 +49,12 @@ if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.Fu
         --pivnet-file-glob $(Split-Path -Leaf $piv_object.aws_object_key) `
         --pivnet-product-slug $slug_id `
         --product-version $PCF_REDIS_VERSION `
-        --stemcell-iaas azure `
-        --download-stemcell `
+
         --output-directory  "$($output_directory.FullName)"
 }
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME = $download_file.product_path
-$STEMCELL_FILENAME = $download_file.stemcell_path
-$STEMCELL_VERSION =  $download_file.stemcell_version
 
 
 
@@ -67,11 +64,6 @@ om --skip-ssl-validation `
   --request-timeout 3600 `
   upload-product `
   --product $TARGET_FILENAME
-Write-Host "importing $STEMCELL_FILENAME into OpsManager"  
-om --skip-ssl-validation `
-    upload-stemcell `
-    --floating=false `
-    --stemcell $STEMCELL_FILENAME
 
 $PRODUCTS=$(om --skip-ssl-validation `
   available-products `
@@ -106,9 +98,11 @@ om --skip-ssl-validation `
   configure-product `
   -c "$config_file" -l "$HOME/redis_vars.yaml"
 
-om --skip-ssl-validation `
-  apply-changes `
-  --product-name $PRODUCT_NAME
+if (!$DO_NOT_APPLY.IsPresent) {
+    om --skip-ssl-validation `
+        apply-changes `
+        --product-name $PRODUCT_NAME
+}
 
 om --skip-ssl-validation `
   deployed-products 

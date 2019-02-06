@@ -28,10 +28,9 @@ product-properties:
     value: ((azure_broker_database_name))
   .properties.azure_broker_database_password:
     value:
-      secret: ((azure_broker_database_password))
-  .properties.azure_broker_database_name:
-    value: ((azure_broker_database_name))    
+      secret: ((azure_broker_database_password))   
   .properties.azure_broker_database_encryption_key:
     value:
       secret: ((azure_broker_database_encryption_key))
-
+  .properties.default_location: 
+      value: ((azure_broker_default_location))

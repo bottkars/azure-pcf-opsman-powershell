@@ -126,7 +126,7 @@
     $PASTYPE = "srt",
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet('mysql', 'rabbitmq', 'spring', 'redis', 'apm', 'dataflow')]
+    [ValidateSet('mysql', 'rabbitmq', 'spring', 'redis', 'apm', 'dataflow', 'healthwatch', 'masb')]
     [string[]]$tiles,
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
@@ -141,7 +141,7 @@
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [switch]
-    $NO_APPLY
+    $DO_NOT_APPLY
 )
 
 if (!(Test-Path $HOME/env.json)) {
@@ -150,6 +150,7 @@ if (!(Test-Path $HOME/env.json)) {
 else {
     $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 }
+
 $DeployTimes = @()
 function get-runningos {
     # backward copatibility for peeps runnin powershell 5
@@ -216,8 +217,7 @@ if ($Environment -eq "AzureStack" -and (get-runningos).OSType -ne "win_x86_64") 
 
 $DIRECTOR_CONF_FILE = "$HOME/director_$($resourceGroup).json"   
 
-Push-Location
-Set-Location $PSScriptRoot
+Push-Location $PSScriptRoot
 if (!$location) {
     $Location = Read-Host "Please enter your Region Name [local for asdk]"
 }
@@ -288,15 +288,39 @@ Write-Host
 
 if ($PsCmdlet.ParameterSetName -eq "install") {
     if ($tiles) {
+        $compute_instances = 1
         [switch]$PAS_AUTOPILOT = $true
         if ($tiles -contains 'spring') {
             $tiles = ('mysql', 'rabbitmq', 'spring') + $tiles
             $tiles = $tiles | Select-Object -Unique
+            $compute_instances = 2
         }
         if ($tiles -contains 'dataflow') {
             $tiles = ('mysql', 'rabbitmq', 'redis', 'dataflow') + $tiles
             $tiles = $tiles | Select-Object -Unique
         }
+        if ($tiles -contains 'masb') {
+            if (!$env_vars.AZURE_CLIENT_ID `
+                    -or !$env_vars.AZURE_CLIENT_SECRET `
+                    -or !$env_vars.AZURE_REGION `
+                    -or !$env_vars.AZURE_SUBSCRIPTION_ID `
+                    -or !$env_vars.AZURE_TENANT_ID `
+                    -or !$env_vars.AZURE_DATABASE_ENCRYPTION_KEY  
+            ) {
+                Write-Host -ForegroundColor White "Microsoft Azure Service Broker needs
+                AZURE_CLIENT_ID 
+                AZURE_CLIENT_SECRET 
+                AZURE_REGION 
+                AZURE_SUBSCRIPTION_ID 
+                AZURE_TENANT_ID
+                AZURE_DATABASE_ENCRYPTION_KEY
+to be set correctly with role `contributor`for the Service Principal at the AZURE subscription level"
+                Pop-Location
+                break
+            }
+
+  
+        } 
         Write-Host -ForegroundColor White -NoNewline "Going to deploy PCF $PASTYPE with the Following Tiles: "
         Write-Host -ForegroundColor Green  "$($tiles -join ",")"
     }
@@ -550,8 +574,8 @@ if (!$OpsmanUpdate) {
             force_product_download   = $force_product_download.IsPresent.ToString()
         } | ConvertTo-Json
         $JSon | Set-Content $DIRECTOR_CONF_FILE
-        if ($NO_APPLY.IsPresent) {
-            $command = "$PSScriptRoot/scripts/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -no_apply"
+        if ($DO_NOT_APPLY.IsPresent) {
+            $command = "$PSScriptRoot/scripts/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -DO_NOT_APPLY"
         }
         else {
             $command = "$PSScriptRoot/scripts/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"    
@@ -563,9 +587,17 @@ if (!$OpsmanUpdate) {
         $DeployTimes += "opsman deployment took $($StopWatch_deploy_opsman.Elapsed.Hours) hours, $($StopWatch_deploy_opsman.Elapsed.Minutes) minutes and  $($StopWatch_deploy_opsman.Elapsed.Seconds) seconds"
         $ScriptHome = $PSScriptRoot
         if ($PAS_AUTOPILOT.IsPresent) {
+            $StopWatch_deploy_stemcells = New-Object System.Diagnostics.Stopwatch
+            $StopWatch_deploy_stemcells.Start()
+            $command = "$PSScriptRoot/scripts/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
+            Write-Host "Calling $command" 
+            Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/stemcells-$(get-date -f yyyyMMddhhmmss).log"
+            $StopWatch_deploy_stemcells.Stop()
+            $DeployTimes += "Stemcell deployment took $($StopWatch_deploy_stemcells.Elapsed.Hours) hours, $($StopWatch_deploy_stemcells.Minutes) minutes and  $($StopWatch_deploy_stemcells.Elapsed.Seconds) seconds"
+            
             $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
             $StopWatch_deploy_pas.Start()
-            $command = "$ScriptHome/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
+            $command = "$ScriptHome/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -compute_instances $compute_instances"
             Write-Host "Calling $command" 
             Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pas-$(get-date -f yyyyMMddhhmmss).log"
             $StopWatch_deploy_pas.Stop()

@@ -59,15 +59,13 @@ if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.Fu
         --pivnet-file-glob $(Split-Path -Leaf $piv_object.aws_object_key) `
         --pivnet-product-slug $slug_id `
         --product-version $PCF_PASW_VERSION `
-        --stemcell-iaas azure `
-        --download-stemcell `
+
         --output-directory  "$($output_directory.FullName)"
 
 }
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME = $download_file.product_path
-$STEMCELL_FILENAME = $download_file.stemcell_path
 $env:Path = "$($env:path);$($output_directory.FullName)"
 Expand-Archive "$($injector_directory.FullName)/*.zip" -DestinationPath $injector_directory.FullName -Force
 $winfs_injector = (Get-ChildItem $injector_directory.FullName -Filter "winfs*.exe").FullName
@@ -83,10 +81,7 @@ om --skip-ssl-validation `
     --request-timeout 3600 `
     upload-product `
     --product $TARGET_FILENAME
-Write-Host "importing $STEMCELL_FILENAME into OpsManager"  
-om --skip-ssl-validation `
-    upload-stemcell `
-    --stemcell $STEMCELL_FILENAME
+
 <#
 $PRODUCTS=$(om --skip-ssl-validation `
   available-products `

@@ -1,26 +1,27 @@
 #requires -module pivposh
 param(
-  [Parameter(Mandatory = $true)]	
-[Validatescript({Test-Path -Path $_ })]
-$DIRECTOR_CONF_FILE
+    [Parameter(Mandatory = $true)]	
+    [Validatescript( {Test-Path -Path $_ })]
+    $DIRECTOR_CONF_FILE,
+    [Parameter(Mandatory = $false)]	
+    [switch]$DO_NOT_APPLY
 )
 Push-Location $PSScriptRoot
-$PRODUCT_FILE = "$($HOME)/spring.json"
+$PRODUCT_FILE = "$($HOME)/healthwatch.json"
 if (!(Test-Path $PRODUCT_FILE))
-{$PRODUCT_FILE = "../examples/spring.json"}
-$spring_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
+{$PRODUCT_FILE = "../examples/healthwatch.json"}
+$healthwatch_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
-$PCF_spring_VERSION = $spring_conf.PCF_spring_VERSION
+$PCF_HEALTHWATCH_VERSION = $healthwatch_conf.PCF_HEALTHWATCH_VERSION
 
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
 $downloaddir = $director_conf.downloaddir
 $PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME
 $domain = $director_conf.domain
-# getting the env
 
-
-$config_file = $spring_conf.CONFIG_FILE
+$config_file = $healthwatch_conf.CONFIG_FILE
 $OM_Target = $director_conf.OM_TARGET
+# setting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $env:OM_Password = $env_vars.OM_Password
 $env:OM_Username = $env_vars.OM_Username
@@ -29,16 +30,16 @@ $env:Path = "$($env:Path);$HOME/OM"
 $GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
-$slug_id = "p-spring-cloud-services"
+$slug_id = "p-healthwatch"
 
-Write-Host "Getting Release for $slug_id $PCF_SPRING_VERSION"
-$piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_SPRING_VERSION | Select-Object -First 1
+Write-Host "Getting Release for $slug_id $PCF_HEALTHWATCH_VERSION"
+$piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_HEALTHWATCH_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
-Write-Host "Accepting EULA for $slug_id $PCF_SPRING_VERSION"
+Write-Host "Accepting EULA for $slug_id $PCF_HEALTHWATCH_VERSION"
 $eula = $piv_release | Confirm-PIVEula -access_token $access_token
 $piv_object = $piv_release_id | Where-Object aws_object_key -Like *$slug_id*.pivotal*
-$output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_SPRING_VERSION)" -Force
+$output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_HEALTHWATCH_VERSION)" -Force
 
 if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
@@ -49,56 +50,52 @@ if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.Fu
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
         --pivnet-file-glob $(Split-Path -Leaf $piv_object.aws_object_key) `
         --pivnet-product-slug $slug_id `
-        --product-version $PCF_SPRING_VERSION `
-
+        --product-version $PCF_HEALTHWATCH_VERSION `
         --output-directory  "$($output_directory.FullName)"
 }
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME = $download_file.product_path
 
-
-
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
 om --skip-ssl-validation `
-  --request-timeout 3600 `
-  upload-product `
-  --product $TARGET_FILENAME
+    --request-timeout 3600 `
+    upload-product `
+    --product $TARGET_FILENAME
 
-$PRODUCTS=$(om --skip-ssl-validation `
-  available-products `
-    --format json) | ConvertFrom-Json
+$PRODUCTS = $(om --skip-ssl-validation `
+        available-products `
+        --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
-$PRODUCT=$PRODUCTS| where name -Match $slug_id
-$PRODUCT_NAME=$PRODUCT.name
-$VERSION=$PRODUCT.version
+$PRODUCT = $PRODUCTS| where name -Match $slug_id
+$PRODUCT_NAME = $PRODUCT.name
+$VERSION = $PRODUCT.version
 
 om --skip-ssl-validation `
-  deployed-products
-  # 2.  Stage using om cli
+    deployed-products
+# 2.  Stage using om cli
 
-  om --skip-ssl-validation `
+om --skip-ssl-validation `
     stage-product `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
 
 om --skip-ssl-validation `
-  assign-stemcell  `
-  --stemcell latest `
-  --product $PRODUCT_NAME
-
-
-
+    assign-stemcell  `
+    --stemcell latest `
+    --product $PRODUCT_NAME
 
 "
 product_name: $PRODUCT_NAME
 pcf_pas_network: pcf-pas-subnet
-" | Set-Content $HOME/spring_vars.yaml
+pcf_service_network: pcf-services-subnet
+opsman_enable_url: $OM_Target
+" | Set-Content $HOME/healthwatch_vars.yaml
 
 om --skip-ssl-validation `
-  configure-product `
-  -c "$config_file" -l "$HOME/spring_vars.yaml"
+    configure-product `
+    -c "$config_file" -l "$HOME/healthwatch_vars.yaml"
 
 if (!$DO_NOT_APPLY.IsPresent) {
     om --skip-ssl-validation `
@@ -107,6 +104,6 @@ if (!$DO_NOT_APPLY.IsPresent) {
 }
 
 om --skip-ssl-validation `
-  deployed-products 
+    deployed-products 
 
 Pop-Location 

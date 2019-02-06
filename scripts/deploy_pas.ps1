@@ -3,12 +3,14 @@ param(
     [Parameter(Mandatory = $true)]	
     [Validatescript( {Test-Path -Path $_ })]
     $DIRECTOR_CONF_FILE,
+    [Parameter(Mandatory = $false)]	
+    [switch]$DO_NOT_APPLY,
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet('cf', 'srt')]
-    $PRODUCT_NAME = "srt"
-
+    $PRODUCT_NAME = "srt",
+    $compute_instances = 1
 )
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/pas_$($PRODUCT_NAME).json"
@@ -44,11 +46,6 @@ $PCF_DOMAIN_NAME = $domain
 $slug_id = "elastic_runtime"
 
 
-Write-Host "Accepting EULA´s for Stemcells"
-$access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
-$eula = Confirm-PIVEula -access_token $access_token -slugid 233 -id 162133
-$eula = Confirm-PIVEula -access_token $access_token -slugid 233 -id 286469
-$eula = Confirm-PIVEula -access_token $access_token -slugid 82 -id 290314
 
 Write-Host "Getting Release for $PRODUCT_NAME $PCF_PAS_VERSION"
 $piv_release = Get-PIVRelease -id elastic-runtime | where version -Match $PCF_PAS_VERSION | Select-Object -First 1
@@ -72,8 +69,6 @@ if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.Fu
         --pivnet-file-glob $(Split-Path -Leaf $piv_object.aws_object_key) `
         --pivnet-product-slug elastic-runtime `
         --product-version $PCF_PAS_VERSION `
-        --stemcell-iaas azure `
-        --download-stemcell `
         --output-directory  "$($output_directory.FullName)"
 
 }
@@ -87,8 +82,6 @@ if ($LASTEXITCODE -ne 0) {
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME = $download_file.product_path
-$STEMCELL_FILENAME = $download_file.stemcell_path
-$STEMCELL_VERSION = $download_file.stemcell_version
 
 om --skip-ssl-validation `
     deployed-products
@@ -99,15 +92,6 @@ om --skip-ssl-validation `
     --request-timeout 3600 `
     upload-product `
     --product $TARGET_FILENAME
-if ($LASTEXITCODE -ne 0) {
-    write-Host  "Error running om, please fix and retry"
-    Pop-Location
-    break
-}
-Write-Host "importing $STEMCELL_FILENAME into OpsManager"  
-om --skip-ssl-validation `
-    upload-stemcell `
-    --stemcell $STEMCELL_FILENAME
 if ($LASTEXITCODE -ne 0) {
     write-Host  "Error running om, please fix and retry"
     Pop-Location
@@ -130,7 +114,7 @@ om --skip-ssl-validation `
 
 om --skip-ssl-validation `
     assign-stemcell  `
-  --stemcell latest `
+    --stemcell latest `
     --product $PRODUCT_NAME
 
 
@@ -159,6 +143,7 @@ smtp_password: `"$smtp_password`"
 smtp_from: $smtp_from
 smtp_port: $smtp_port
 pcf_notifications_email: $pcf_notifications_email
+compute_instances: $compute_instances
 " | Set-Content $HOME/vars.yaml
 
 om --skip-ssl-validation `

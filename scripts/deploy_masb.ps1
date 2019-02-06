@@ -3,7 +3,10 @@ param(
     [Parameter(Mandatory = $true)]	
     [Validatescript( {Test-Path -Path $_ })]
     $DIRECTOR_CONF_FILE,
-    [switch]$do_not_apply
+    [Parameter(Mandatory = $false)]	
+    [switch]$DO_NOT_APPLY,
+    [Parameter(Mandatory = $false)]
+    [switch]$configure_azure_DB
 )
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/masb.json"
@@ -36,6 +39,8 @@ $AZURE_SUBSCRIPTION_ID = $env_vars.AZURE_SUBSCRIPTION_ID
 $AZURE_TENANT_ID = $env_vars.AZURE_TENANT_ID
 $AZURE_CLIENT_ID = $env_vars.AZURE_CLIENT_ID
 $AZURE_CLIENT_SECRET = $env_vars.AZURE_CLIENT_SECRET
+$AZURE_REGION = $env_vars.AZURE_REGION
+$AZURE_DATABASE_ENCRYPTION_KEY = $env_vars.AZURE_DATABASE_ENCRYPTION_KEY
 $ENV_SHORT_NAME = $PCF_SUBDOMAIN_NAME
 ###
 Write-Host "Getting Release for $slug_id $PCF_MASB_VERSION"
@@ -60,16 +65,11 @@ if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.Fu
         --pivnet-file-glob $(Split-Path -Leaf $piv_object.aws_object_key) `
         --pivnet-product-slug $slug_id `
         --product-version $PCF_MASB_VERSION `
-        --stemcell-iaas azure `
-        --download-stemcell `
         --output-directory  "$($output_directory.FullName)"
 }
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME = $download_file.product_path
-$STEMCELL_FILENAME = $download_file.stemcell_path
-$STEMCELL_VERSION =  $download_file.stemcell_version
-
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
@@ -77,12 +77,6 @@ om --skip-ssl-validation `
     --request-timeout 3600 `
     upload-product `
     --product $TARGET_FILENAME
-Write-Host "importing $STEMCELL_FILENAME into OpsManager"  
-om --skip-ssl-validation `
-    upload-stemcell `
-    --floating=false `
-    --stemcell $STEMCELL_FILENAME
-
 $PRODUCTS = $(om --skip-ssl-validation `
         available-products `
         --format json) | ConvertFrom-Json
@@ -100,9 +94,9 @@ om --skip-ssl-validation `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
 
-    om --skip-ssl-validation `
+om --skip-ssl-validation `
     assign-stemcell  `
-  --stemcell latest `
+    --stemcell latest `
     --product $PRODUCT_NAME
 
 "
@@ -115,13 +109,48 @@ azure_client_secret: $AZURE_CLIENT_SECRET
 azure_broker_database_server: masb$($ENV_SHORT_NAME).database.windows.net
 azure_broker_database_name: masb$($ENV_SHORT_NAME)
 azure_broker_database_password: $PCF_PIVNET_UAA_TOKEN
-azure_broker_database_encryption_key: $(-join ((65..90) + (97..122) | Get-Random -Count 32 | % {[char]$_}))
+azure_broker_database_encryption_key: $AZURE_DATABASE_ENCRYPTION_KEY
+azure_broker_default_location: $AZURE_REGION
 " | Set-Content $HOME/masb_vars.yaml
+#azure_broker_database_encryption_key:  $(-join ((65..90) + (97..122) | Get-Random -Count 32 | ForEach-Object {[char]$_}))
 
 om --skip-ssl-validation `
     configure-product `
     -c "$config_file" -l "$HOME/masb_vars.yaml"
+
+
+if ($configure_azure_DB.ispresent)
+    {
+        Write-Host "Now Creating Azure SQL Databas / Server for $PRODUCT_NAME"
+        $Credential=New-Object -TypeName System.Management.Automation.PSCredential `
+        -ArgumentList $AZURE_CLIENT_ID, ($AZURE_CLIENT_SECRET | ConvertTo-SecureString -AsPlainText -Force)
+        $AzureRmContext = Connect-AzureRmAccount -Credential $Credential -Tenant $AZURE_TENANT_ID -ServicePrincipal
+        $resourcegroupname = "$($director_conf.RG).$($PCF_SUBDOMAIN_NAME).$($domain)"
+        $startip = "0.0.0.0"
+        $endip = "255.255.255.0"
+        New-AzureRmResourceGroup -Name $resourcegroupname -Location $AZURE_REGION -Force
+        New-AzureRmSqlServer -ResourceGroupName $resourcegroupname `
+            -ServerName "masb$($ENV_SHORT_NAME)" `
+            -Location $AZURE_REGION `
+            -SqlAdministratorCredentials $(New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList sqladmin, $(ConvertTo-SecureString -String $PCF_PIVNET_UAA_TOKEN -AsPlainText -Force))
+
+        New-AzureRmSqlServerFirewallRule -ResourceGroupName $resourcegroupname `
+            -ServerName "masb$($ENV_SHORT_NAME)" `
+            -FirewallRuleName "All" -StartIpAddress $startip -EndIpAddress $endip
+        New-AzureRmSqlServerFirewallRule -ResourceGroupName $resourcegroupname `
+            -ServerName "masb$($ENV_SHORT_NAME)" `
+            -FirewallRuleName "AllowedIPs" -StartIpAddress $startip -EndIpAddress $startip            
+
+        New-AzureRmSqlDatabase  -ResourceGroupName $resourcegroupname `
+            -ServerName "masb$($ENV_SHORT_NAME)" `
+            -DatabaseName "masb$($ENV_SHORT_NAME)" `
+            -RequestedServiceObjectiveName "Basic" 
+        Get-AzureRmContext| Disconnect-AzureRmAccount  
+    }    
 if (!$do_not_apply.ispresent) {
+    Write-Host "Testing Connection to masb$($ENV_SHORT_NAME).database.windows.net" -NoNewline
+    do {} until ((Test-NetConnection "masb$($ENV_SHORT_NAME).database.windows.net" -Port 1433).TcpTestSucceeded) 
+    Write-Host -ForegroundColor Green "[done]"
     om --skip-ssl-validation `
         apply-changes `
         --product-name $PRODUCT_NAME
