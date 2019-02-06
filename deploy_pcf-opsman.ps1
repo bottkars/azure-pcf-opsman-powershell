@@ -593,7 +593,7 @@ if (!$OpsmanUpdate) {
             Write-Host "Calling $command" 
             Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/stemcells-$(get-date -f yyyyMMddhhmmss).log"
             $StopWatch_deploy_stemcells.Stop()
-            $DeployTimes += "Stemcell deployment took $($StopWatch_deploy_stemcells.Elapsed.Hours) hours, $($StopWatch_deploy_stemcells.Minutes) minutes and  $($StopWatch_deploy_stemcells.Elapsed.Seconds) seconds"
+            $DeployTimes += "Stemcell deployment took $($StopWatch_deploy_stemcells.Elapsed.Hours) hours, $($StopWatch_deploy_stemcells.Elapsed.Minutes) minutes and  $($StopWatch_deploy_stemcells.Elapsed.Seconds) seconds"
             
             $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
             $StopWatch_deploy_pas.Start()
