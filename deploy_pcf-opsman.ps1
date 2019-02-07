@@ -285,10 +285,10 @@ Write-Host "$resourceGroup-virtual-network/$resourceGroup-pas-subnet            
 Write-Host "$($opsManFQDNPrefix)green $Mask.8.4/32"
 Write-Host "$($opsManFQDNPrefix)blue $Mask.8.5/32"
 Write-Host
+$compute_instances = 1
 
 if ($PsCmdlet.ParameterSetName -eq "install") {
     if ($tiles) {
-        $compute_instances = 1
         [switch]$PAS_AUTOPILOT = $true
         if ($tiles -contains 'spring') {
             $tiles = ('mysql', 'rabbitmq', 'spring') + $tiles
