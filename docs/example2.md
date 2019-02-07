@@ -105,7 +105,7 @@ the script create_dashboardtiles.ps1 creates an output to build a customized Das
 5. Paste the script output to the Markdown Edit Pane and give it a Titel and Description
 
 
-<img src="https://user-images.githubusercontent.com/8255007/52396920-ce4a5000-2ab3-11e9-8e1b-e234b370da8e.png" width="400">
+<img src="https://user-images.githubusercontent.com/8255007/52396920-ce4a5000-2ab3-11e9-8e1b-e234b370da8e.png" width="200">
 
 
 
