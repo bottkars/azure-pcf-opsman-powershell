@@ -1,4 +1,4 @@
-# Installing PAS, Azure Service Proker and Spring Cloud Services
+# Installing PAS, Azure Service Broker and Spring Cloud Services
 
 
 ## Desired State
