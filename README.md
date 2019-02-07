@@ -130,10 +130,11 @@ youn can use the deloyment_ scripts in the ./scripts folder to deploy all suppor
 Get-AzureRmResourceGroup pcftest  | Remove-AzureRmResourceGroup -Force
 ```
 this will remove the PCF installation. the pcfopsmanstorage ResourceGroup will remain, as you might want to re-use the images for the next installation  :sunglasses: 
-### Advanced Installation
+## Advanced Installation Examples
 
-- install PCF, Spring Dataflow and Spring Cloud Service
-    this will include required redis, rabbit and mysql
+### Example 1 Install PCF, Spring Dataflow and Spring Cloud Service
+this will include required redis, rabbit and mysql
+
 ```Powershell
 ./deploy_pcf-opsman.ps1 -resourceGroup pcfprod `
  -subnet 10.30.0.0 `
@@ -141,6 +142,11 @@ this will remove the PCF installation. the pcfopsmanstorage ResourceGroup will r
  -downloadpath E:\PCF\ `
  -tiles spring,dataflow
 ``` 
+
+### Example 2
+
+see [example walkthrough](/docs/example2.md)
+
 ### product customizations  
 
 the deployment tool uses product specific .json files that degtermine the Product version, and, in some cases ( e.g. srt or cf for pas) Product Names.  

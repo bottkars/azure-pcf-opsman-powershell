@@ -9,7 +9,8 @@ $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $OM_TARGET_GREEN = $director_conf.OM_TARGET
 $PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME
 $domain = $director_conf.domain
-$OM_TARGET_BLUE = "$($($OM_TARGET_GREEN -split ".")[0] -replace "green","blue").$PCF_SUBDOMAIN_NAME.$domain"
+$OM_BLUE=($OM_TARGET_GREEN -split "green")[0]
+$OM_TARGET_BLUE = "$($OM_BLUE)blue.$PCF_SUBDOMAIN_NAME.$domain"
 
 
 
@@ -22,8 +23,7 @@ $OM_TARGET_BLUE = "$($($OM_TARGET_GREEN -split ".")[0] -replace "green","blue").
 <br>
 <a href='http://pcfsizer.pivotal.io/#!/sizing/azure/2.2/small' target='_blank'>Pivotal PAS Sizer</a>
 <br>
-<a href='https://$OM_TARGET_GREEN'
-target='_blank'>Opsman Green </a>
+<a href='https://$OM_TARGET_GREEN' target='_blank'>Opsman Green </a>
 <br>
 <a href='https://$OM_TARGET_BLUE' target='_blank'>Opsman Blue </a>
 <br>
