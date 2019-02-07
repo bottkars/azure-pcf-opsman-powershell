@@ -116,8 +116,9 @@ You can now click on the *Opsman Green* link to access the PCF Operations Manage
 
 to access the Pivotal Aplications Manager, Click on the *Pivotal Application Service* link on the Dashboard
 
-The Application Sevice Will open:
-the user name is admin and the credentials ...
+The Application Service Dashboard will open.   
+But we need Credentials.  
+the user name is admin and the credentials are ...   
 
 yes, we can use the same script thatb we used to connect to the api service, with -show_creds
 
