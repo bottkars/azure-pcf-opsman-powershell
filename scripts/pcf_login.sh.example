@@ -1,0 +1,25 @@
+export OM_TARGET=pcfopsmangreen.pcfdemo.local.azurestack.external
+export OM_USERNAME=opsman
+export OM_PASSWORD=Password123!
+
+CF_GUID=$(om --skip-ssl-validation \
+    curl \
+    --silent \
+    --path /api/v0/deployed/products \
+     |jq -r --arg PRODUCT_NAME "cf" '.[] | select(.type==$PRODUCT_NAME).guid')
+CF_CREDENTIALS=$( \
+  om \
+    --skip-ssl-validation \
+    curl \
+      --silent \
+      --path /api/v0/deployed/products/${CF_GUID}/credentials/.uaa.admin_credentials | \
+        jq --raw-output '.credential.value' \
+)
+
+CF_USERNAME=$(echo $CF_CREDENTIALS | jq -r '.identity') 
+CF_PASSWORD=$(echo $CF_CREDENTIALS | jq -r '.password') 
+
+
+cf login -a api.sys.pcfdemo.local.azurestack.external \
+-u ${CF_USERNAME} -p ${CF_PASSWORD} \
+--skip-ssl-validation
