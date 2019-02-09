@@ -218,6 +218,7 @@ if ($Environment -eq "AzureStack" -and (get-runningos).OSType -ne "win_x86_64") 
 $DIRECTOR_CONF_FILE = "$HOME/director_$($resourceGroup).json"   
 
 Push-Location $PSScriptRoot
+$ScriptDir="$PSScriptRoot/scripts"
 if (!$location) {
     $Location = Read-Host "Please enter your Region Name [local for asdk]"
 }
@@ -249,7 +250,7 @@ if (!(test-path -Path "$($HOME)/$($dnsZoneName).crt")) {
     write-host "Required$($HOME)/$($dnsZoneName).crt not found. 
     Now Generating Self Signed Certificates
     "
-    $command = "$PSScriptRoot/scripts/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain)"
+    $command = "$ScriptDir/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain)"
     Write-Host "Now running $command"
     Invoke-Expression -Command $command
 }
@@ -258,7 +259,7 @@ if (!(test-path -Path "$($HOME)/$($dnsZoneName).key")) {
     write-host "Required$($HOME)/$($dnsZoneName).key not found. 
     Now Generating Self Signed Certificates
     "
-    $command = "$PSScriptRoot/scripts/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain)"
+    $command = "$ScriptDir/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain)"
     Write-Host "Now running $command"
     Invoke-Expression -Command $command
 }
@@ -575,10 +576,10 @@ if (!$OpsmanUpdate) {
         } | ConvertTo-Json
         $JSon | Set-Content $DIRECTOR_CONF_FILE
         if ($DO_NOT_APPLY.IsPresent) {
-            $command = "$PSScriptRoot/scripts/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -DO_NOT_APPLY"
+            $command = "$ScriptDir/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -DO_NOT_APPLY"
         }
         else {
-            $command = "$PSScriptRoot/scripts/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"    
+            $command = "$ScriptDir/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"    
         }
         
         Write-Host "Calling $command" 
@@ -589,7 +590,7 @@ if (!$OpsmanUpdate) {
         if ($PAS_AUTOPILOT.IsPresent) {
             $StopWatch_deploy_stemcells = New-Object System.Diagnostics.Stopwatch
             $StopWatch_deploy_stemcells.Start()
-            $command = "$PSScriptRoot/scripts/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
+            $command = "$ScriptDir/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
             Write-Host "Calling $command" 
             Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/stemcells-$(get-date -f yyyyMMddhhmmss).log"
             $StopWatch_deploy_stemcells.Stop()
