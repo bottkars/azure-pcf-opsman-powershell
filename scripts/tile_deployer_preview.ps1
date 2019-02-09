@@ -14,6 +14,9 @@ param(
 )
 Push-Location $PSScriptRoot
 
+#$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
+$env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
+
 
 if ($tiles -contains 'spring') {
     $tiles = ('mysql', 'rabbitmq', 'spring') + $tiles
