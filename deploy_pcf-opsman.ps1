@@ -1,4 +1,6 @@
-﻿param(
+﻿#requires -module pivposh
+#requires -module NetTCPIP
+param(
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
@@ -218,7 +220,7 @@ if ($Environment -eq "AzureStack" -and (get-runningos).OSType -ne "win_x86_64") 
 $DIRECTOR_CONF_FILE = "$HOME/director_$($resourceGroup).json"   
 
 Push-Location $PSScriptRoot
-$ScriptDir="$PSScriptRoot/scripts"
+$ScriptDir = "$PSScriptRoot/scripts"
 if (!$location) {
     $Location = Read-Host "Please enter your Region Name [local for asdk]"
 }
@@ -598,21 +600,25 @@ if (!$OpsmanUpdate) {
             
             $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
             $StopWatch_deploy_pas.Start()
-            $command = "$ScriptHome/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -compute_instances $compute_instances"
+            if ($tiles) {
+                $command = "$ScriptHome/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -compute_instances $compute_instances -DO_NOT_APPLY"
+            }
+            else {
+                $command = "$ScriptHome/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -compute_instances $compute_instances"
+            }
             Write-Host "Calling $command" 
             Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pas-$(get-date -f yyyyMMddhhmmss).log"
             $StopWatch_deploy_pas.Stop()
             $DeployTimes += "PAS deployment took $($StopWatch_deploy_pas.Elapsed.Hours) hours, $($StopWatch_deploy_pas.Elapsed.Minutes) minutes and  $($StopWatch_deploy_pas.Elapsed.Seconds) seconds"
 
-            ForEach ($tile in $tiles) {
-                $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
-                $StopWatch_deploy.Start()
-                $command = "$ScriptHome/scripts/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
-                Write-Host "Calling $command" 
-                Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/$($tile)-$(get-date -f yyyyMMddhhmmss).log"
-                $StopWatch_deploy.Stop()
-                $DeployTimes += "$tile deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds"
-            }
+
+            $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
+            $StopWatch_deploy.Start()
+            $command = "$ScriptHome/scripts/tile_deployer.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -tiles $tiles"
+            Write-Host "Calling $command" 
+            Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/deployment-$(get-date -f yyyyMMddhhmmss).log"
+            $StopWatch_deploy.Stop()
+            $DeployTimes += "$tile deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds"
         }    
     }
 }

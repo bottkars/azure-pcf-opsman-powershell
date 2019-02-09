@@ -1,10 +1,12 @@
 #requires -module pivposh
 param(
+    [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
+    [switch]$DO_NOT_APPLY,
+    [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
+    [switch]$APPLY_ALL,    
     [Parameter(Mandatory = $true)]	
     [Validatescript( {Test-Path -Path $_ })]
-    $DIRECTOR_CONF_FILE,
-    [Parameter(Mandatory = $false)]	
-    [switch]$DO_NOT_APPLY
+    $DIRECTOR_CONF_FILE
 )
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/healthwatch.json"
@@ -97,11 +99,22 @@ om --skip-ssl-validation `
     configure-product `
     -c "$config_file" -l "$HOME/healthwatch_vars.yaml"
 
-if (!$DO_NOT_APPLY.IsPresent) {
-    om --skip-ssl-validation `
-        apply-changes `
-        --product-name $PRODUCT_NAME
-}
+switch ($PsCmdlet.ParameterSetName) { 
+    "apply_all" { 
+        Write-Host "Applying Changes to all Products"
+        om --skip-ssl-validation `
+            apply-changes 
+    } 
+    "no_apply" { 
+        Write-Host "Applying Changes to $PRODUCT_NAME skipped"
+    } 
+    default {
+        Write-Host "Applying Changes to $PRODUCT_NAME"
+        om --skip-ssl-validation `
+            apply-changes `
+            --product-name $PRODUCT_NAME
+    }
+} 
 
 om --skip-ssl-validation `
     deployed-products 

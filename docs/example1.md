@@ -2,13 +2,16 @@
 
 ## Desired State
 
+this will install PCF with the following default Parameters:
+
+
 This is the Goal State
 
 
 ## Command to run
 
 ```Powershell
-
+ .\pcf\deploy_pcf-opsman.ps1 -downloadpath E:\PCF\ -PAS_AUTOPILOT
 ```
 
 

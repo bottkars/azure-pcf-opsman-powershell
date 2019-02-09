@@ -1,10 +1,14 @@
 #requires -module pivposh
+#requires -module NetTCPIP
 param(
     [Parameter(Mandatory = $true)]	
     [Validatescript( {Test-Path -Path $_ })]
     $DIRECTOR_CONF_FILE,
-    [Parameter(Mandatory = $false)]	
+
+    [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
     [switch]$DO_NOT_APPLY,
+    [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
+    [switch]$APPLY_ALL,    
     [Parameter(Mandatory = $false)]
     [switch]$do_not_configure_azure_DB
 )
@@ -146,15 +150,32 @@ if (!$do_not_configure_azure_DB.ispresent)
             -DatabaseName "masb$($ENV_SHORT_NAME)" `
             -RequestedServiceObjectiveName "Basic" 
         Get-AzureRmContext| Disconnect-AzureRmAccount  
-    }    
-if (!$do_not_apply.ispresent) {
-    Write-Host "Testing Connection to masb$($ENV_SHORT_NAME).database.windows.net" -NoNewline
-    do {} until ((Test-NetConnection "masb$($ENV_SHORT_NAME).database.windows.net" -Port 1433).TcpTestSucceeded) 
-    Write-Host -ForegroundColor Green "[done]"
-    om --skip-ssl-validation `
-        apply-changes `
-        --product-name $PRODUCT_NAME
-}
+    } 
+    switch ($PsCmdlet.ParameterSetName) { 
+        "apply_all" {
+            Write-Host "Testing Connection to masb$($ENV_SHORT_NAME).database.windows.net" -NoNewline
+            do {} until ((Test-NetConnection "masb$($ENV_SHORT_NAME).database.windows.net" -Port 1433).TcpTestSucceeded) 
+            Write-Host -ForegroundColor Green "[done]" 
+            Write-Host "Applying Changes to all Products"
+            om --skip-ssl-validation `
+                apply-changes 
+        } 
+        "no_apply" {
+            Write-Host "Testing Connection to masb$($ENV_SHORT_NAME).database.windows.net" -NoNewline
+            do {} until ((Test-NetConnection "masb$($ENV_SHORT_NAME).database.windows.net" -Port 1433).TcpTestSucceeded) 
+            Write-Host -ForegroundColor Green "[done]" 
+            Write-Host "Applying Changes to $PRODUCT_NAME skipped"
+        } 
+        default {
+            Write-Host "Testing Connection to masb$($ENV_SHORT_NAME).database.windows.net" -NoNewline
+            do {} until ((Test-NetConnection "masb$($ENV_SHORT_NAME).database.windows.net" -Port 1433).TcpTestSucceeded) 
+            Write-Host -ForegroundColor Green "[done]"
+            Write-Host "Applying Changes to $PRODUCT_NAME"
+            om --skip-ssl-validation `
+                apply-changes `
+                --product-name $PRODUCT_NAME
+        }
+    }        
 
 om --skip-ssl-validation `
     deployed-products 

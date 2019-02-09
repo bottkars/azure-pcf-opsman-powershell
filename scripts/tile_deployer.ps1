@@ -1,4 +1,5 @@
 #requires -module pivposh
+#requires -module NetTCPIP
 param(
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
@@ -12,6 +13,7 @@ param(
     [Parameter(Mandatory = $false)]
     [switch]$do_not_configure_azure_DB
 )
+$ScriptDir="$PSScriptRoot"
 Push-Location $PSScriptRoot
 
 #$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
@@ -58,16 +60,18 @@ ForEach ($tile in $tiles) {
     $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
     $StopWatch_deploy.Start()
     if ($tile -match $tiles[-1]) {
-        $command = "$ScriptHome/scripts/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
+        $command = "$ScriptDir/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -APPLY_ALL"
         Write-Host "Calling $command" 
-        # Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/$($tile)-$(get-date -f yyyyMMddhhmmss).log"
+        Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/$($tile)-$(get-date -f yyyyMMddhhmmss).log"
     }
     else {
-        $command = "$ScriptHome/scripts/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -DO_NOT_APPLY"
+        $command = "$ScriptDir/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -DO_NOT_APPLY"
         Write-Host "Calling $command" 
-        # Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/$($tile)-$(get-date -f yyyyMMddhhmmss).log"
+        Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/$($tile)-$(get-date -f yyyyMMddhhmmss).log"
 
     }    
     $StopWatch_deploy.Stop()
     $DeployTimes += "$tile deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds"
 }
+
+Pop-Location

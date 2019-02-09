@@ -154,8 +154,14 @@ if ($LASTEXITCODE -ne 0) {
     Pop-Location
     break
 }
-om --skip-ssl-validation `
-    apply-changes
+
+
+
+
+if (!$do_not_apply.ispresent) {
+    om --skip-ssl-validation `
+        apply-changes `
+}
 
 om --skip-ssl-validation `
     deployed-products

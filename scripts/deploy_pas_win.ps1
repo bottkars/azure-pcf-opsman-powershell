@@ -1,8 +1,12 @@
 #requires -module pivposh
 param(
-  [Parameter(Mandatory = $true)]	
-[Validatescript({Test-Path -Path $_ })]
-$DIRECTOR_CONF_FILE
+    [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
+    [switch]$DO_NOT_APPLY,
+    [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
+    [switch]$APPLY_ALL,    
+    [Parameter(Mandatory = $true)]	
+    [Validatescript( {Test-Path -Path $_ })]
+    $DIRECTOR_CONF_FILE
 )
 
 $pasw_conf = Get-Content "$($HOME)/pasw.json" | ConvertFrom-Json
