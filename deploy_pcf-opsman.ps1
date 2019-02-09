@@ -614,7 +614,7 @@ if (!$OpsmanUpdate) {
 
             $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
             $StopWatch_deploy.Start()
-            $command = "$ScriptHome/scripts/tile_deployer.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -tiles $tiles"
+            $command = "$ScriptHome/scripts/tile_deployer.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -tiles $($tiles -join ',')"
             Write-Host "Calling $command" 
             Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/deployment-$(get-date -f yyyyMMddhhmmss).log"
             $StopWatch_deploy.Stop()

@@ -1,5 +1,6 @@
 #requires -module pivposh
 #requires -module NetTCPIP
+#requires -module AzureRM.Sql
 param(
     [Parameter(Mandatory = $true)]	
     [Validatescript( {Test-Path -Path $_ })]
