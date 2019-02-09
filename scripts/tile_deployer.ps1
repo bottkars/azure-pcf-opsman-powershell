@@ -57,8 +57,8 @@ Write-Host -ForegroundColor Green  "$($tiles -join ",")"
 
 
 ForEach ($tile in $tiles) {
-    $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
-    $StopWatch_deploy.Start()
+    $StopWatch_Tile_Tile_deploy = New-Object System.Diagnostics.Stopwatch
+    $StopWatch_Tile_Tile_deploy.Start()
     if ($tile -match $tiles[-1]) {
         $command = "$ScriptDir/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -APPLY_ALL"
         Write-Host "Calling $command" 
@@ -68,10 +68,9 @@ ForEach ($tile in $tiles) {
         $command = "$ScriptDir/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -DO_NOT_APPLY"
         Write-Host "Calling $command" 
         Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/$($tile)-$(get-date -f yyyyMMddhhmmss).log"
-
     }    
-    $StopWatch_deploy.Stop()
-    $DeployTimes += "$tile deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds"
+    $StopWatch_Tile_deploy.Stop()
+    $DeployTimes += "$tile deployment took $($StopWatch_Tile_deploy.Elapsed.Hours) hours, $($StopWatch_Tile_deploy.Elapsed.Minutes) minutes and  $($StopWatch_Tile_deploy.Elapsed.Seconds) seconds"
 }
 
 Pop-Location
