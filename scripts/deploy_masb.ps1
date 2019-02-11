@@ -126,6 +126,7 @@ om --skip-ssl-validation `
 
 if (!$do_not_configure_azure_DB.ispresent)
     {
+        $context = Get-AzureRmContext
         Write-Host "Now Creating Azure SQL Databas / Server for $PRODUCT_NAME"
         $Credential=New-Object -TypeName System.Management.Automation.PSCredential `
         -ArgumentList $AZURE_CLIENT_ID, ($AZURE_CLIENT_SECRET | ConvertTo-SecureString -AsPlainText -Force)
@@ -150,7 +151,8 @@ if (!$do_not_configure_azure_DB.ispresent)
             -ServerName "masb$($ENV_SHORT_NAME)" `
             -DatabaseName "masb$($ENV_SHORT_NAME)" `
             -RequestedServiceObjectiveName "Basic" 
-        Get-AzureRmContext| Disconnect-AzureRmAccount  
+        Get-AzureRmContext | Disconnect-AzureRmAccount  
+        $context  | Set-AzureRmContext
     } 
     switch ($PsCmdlet.ParameterSetName) { 
         "apply_all" {

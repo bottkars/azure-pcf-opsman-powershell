@@ -61,12 +61,11 @@ ForEach ($tile in $tiles) {
     $StopWatch_Tile_deploy.Start()
     if ($tile -match $tiles[-1]) {
         $command = "$ScriptDir/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -APPLY_ALL"
-        Write-Host "Calling $command" 
     }
     else {
         $command = "$ScriptDir/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -DO_NOT_APPLY"
-        Write-Host "Calling $command" 
     }
+    Write-Host "Calling $command" 
     Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/$($tile)-$(get-date -f yyyyMMddhhmmss).log"
     $StopWatch_Tile_deploy.Stop()
     $DeployTimes += "$tile deployment took $($StopWatch_Tile_deploy.Elapsed.Hours) hours, $($StopWatch_Tile_deploy.Elapsed.Minutes) minutes and  $($StopWatch_Tile_deploy.Elapsed.Seconds) seconds"
