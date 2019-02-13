@@ -4,7 +4,9 @@ param(
     [switch]$DO_NOT_APPLY,
     [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
     [switch]$APPLY_ALL,    
-    [Parameter(Mandatory = $true)]	
+    [Parameter(ParameterSetName = "applyme",Mandatory = $true)]
+    [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
+    [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
     [Validatescript( {Test-Path -Path $_ })]
     $DIRECTOR_CONF_FILE
 )

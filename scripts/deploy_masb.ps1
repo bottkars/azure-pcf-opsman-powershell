@@ -2,7 +2,9 @@
 #requires -module NetTCPIP
 #requires -module AzureRM.Sql
 param(
-    [Parameter(Mandatory = $true)]	
+    [Parameter(ParameterSetName = "applyme",Mandatory = $true)]
+    [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
+    [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
     [Validatescript( {Test-Path -Path $_ })]
     $DIRECTOR_CONF_FILE,
 
@@ -10,7 +12,9 @@ param(
     [switch]$DO_NOT_APPLY,
     [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
     [switch]$APPLY_ALL,    
-    [Parameter(Mandatory = $false)]
+    [Parameter(ParameterSetName = "applyme",Mandatory = $false)]
+    [Parameter(ParameterSetName = "no_apply", Mandatory = $false)]
+    [Parameter(ParameterSetName = "apply_all", Mandatory = $false)]
     [switch]$do_not_configure_azure_DB
 )
 Push-Location $PSScriptRoot
