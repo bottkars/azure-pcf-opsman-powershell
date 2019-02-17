@@ -7,7 +7,6 @@ param(
     [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
     [Validatescript( {Test-Path -Path $_ })]
     $DIRECTOR_CONF_FILE,
-
     [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
     [switch]$DO_NOT_APPLY,
     [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
@@ -180,7 +179,7 @@ if (!$do_not_configure_azure_DB.ispresent)
             Write-Host "Applying Changes to $PRODUCT_NAME"
             om --skip-ssl-validation `
                 apply-changes `
-                --product-name $PRODUCT_NAME
+                --product-name $PRODUCT_NAME 
         }
     }        
 

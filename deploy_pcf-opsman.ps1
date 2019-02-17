@@ -52,12 +52,16 @@ param(
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.224.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.237.vhd',        
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.244.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.250.vhd',
         ## 2.4 starts here
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.117.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.131.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.142.vhd',
-        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.145.vhd'
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.145.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.152.vhd',
+
         ## 2.5 start here
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.5.0-build.128.vhd'
     )]
     $opsmanager_uri = 'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.244.vhd',
     # The name of the Ressource Group we want to Deploy to.
@@ -348,7 +352,7 @@ $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
 $StopWatch_prepare.Start()
 if (!$OpsmanUpdate) {
     Write-Host "==>Creating ResourceGroups $resourceGroup" -nonewline   
-    $new_rg = New-AzureRmResourceGroup -Name $resourceGroup -Location $location -Force
+    $new_rg = New-AzureRmResourceGroup -Name $resourceGroup -Location $location -Force -ErrorAction SilentlyContinue
     Write-Host -ForegroundColor green "[done]"
     Write-Host "==>Assigning Contributer Role for /subscriptions/$((Get-AzureRmContext).Subscription.Id) to client_id $($env_vars.client_id)" -nonewline   
     New-AzureRmRoleAssignment -Scope "/subscriptions/$((Get-AzureRmContext).Subscription.Id)" `
@@ -356,7 +360,7 @@ if (!$OpsmanUpdate) {
         -RoleDefinitionName Contributor -ErrorAction SilentlyContinue | Out-Null
     Write-Host -ForegroundColor green "[done]"
     if ((get-runningos).OSType -eq 'win_x86_64' -or $Environment -ne 'AzureStack') {
-        $account_available = Get-AzureRmStorageAccountNameAvailability -Name $ImageStorageAccount 
+        $account_available = Get-AzureRmStorageAccountNameAvailability -Name $ImageStorageAccount -ErrorAction SilentlyContinue
         $account_free = $account_available.NameAvailable
     }
     else {
