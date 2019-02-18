@@ -1,6 +1,7 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
+  "apiProfile": "2018-03-01-hybrid",
   "parameters": {
     "boshstorageaccountname": {
       "type": "string",
@@ -18,7 +19,7 @@
     },
     "OpsManImageURI": {
       "type": "string",
-      "defaultValue": "https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.237.vhd",
+      "defaultValue": "https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.250.vhd",
       "metadata": {
         "description": "Uri of the Operations Manager VHD"
       }
@@ -1435,7 +1436,7 @@
       }
     },
     {
-      "apiVersion": "2017-03-30",
+      "apiVersion": "2017-12-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('opsManVMName')]",
       "location": "[variables('location')]",

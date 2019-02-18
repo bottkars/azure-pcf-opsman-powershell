@@ -63,7 +63,7 @@ param(
         ## 2.5 start here
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.5.0-build.128.vhd'
     )]
-    $opsmanager_uri = 'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.244.vhd',
+    $opsmanager_uri = 'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.250.vhd',
     # The name of the Ressource Group we want to Deploy to.
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
@@ -147,7 +147,11 @@ param(
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [switch]
-    $DO_NOT_APPLY
+    $DO_NOT_APPLY,
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [switch]
+    $DO_NOT_DOWNLOAD
 )
 
 if (!(Test-Path $HOME/env.json)) {
@@ -418,7 +422,7 @@ if ($Environment -eq 'AzureStack') {
     Write-Host -ForegroundColor Green "[using $transfer_type for transfer]"
     $file = split-path -Leaf $opsmanager_uri
     $localPath = "$Downloadpath/$file"
-    if (!(Test-Path $localPath)) {
+    if (!(Test-Path $localPath) -and !($DO_NOT_DOWNLOAD.IsPresent)) {
         switch ($transfer_type) {
             ".Net" {  
                 Start-BitsTransfer -Source $opsmanager_uri -Destination $localPath -DisplayName OpsManager
