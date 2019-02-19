@@ -74,7 +74,7 @@ $PRODUCTS=$(om --skip-ssl-validation `
   available-products `
     --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
-$PRODUCT=$PRODUCTS| where name -Match $slug_id
+$PRODUCT=$PRODUCTS | where name -Match $slug_id | Sort-Object -Descending -Property version | Select-Object -First 1
 $PRODUCT_NAME=$PRODUCT.name
 $VERSION=$PRODUCT.version
 

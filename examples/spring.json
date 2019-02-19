@@ -1,4 +1,4 @@
 {
-    "PCF_SPRING_VERSION": "2.0.5",
-    "CONFIG_FILE": "../templates/spring/2.0.5/spring.yaml"
+    "PCF_SPRING_VERSION": "2.0.6",
+    "CONFIG_FILE": "../templates/spring/2.0.6/spring.yaml"
 }
