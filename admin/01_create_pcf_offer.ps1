@@ -44,8 +44,8 @@ if  ($AZSOffer)
 if (!($ComputeQuota = Get-AzsComputeQuota -Name pcf-compute))
     {
     $ComputeQuota = New-AzsComputeQuota -Name pcf-compute `
-    -Location local -VirtualMachineCount 200 `
-    -AvailabilitySetCount 50 -CoresLimit 200 -VmScaleSetCount 10    
+    -Location local -VirtualMachineCount 5000 `
+    -AvailabilitySetCount 60 -CoresCount 5000 -VmScaleSetCount 10     
     }
 if (!($NetworkQuota = Get-AzsNetworkQuota -Name pcf-network))
     {

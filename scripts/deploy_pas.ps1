@@ -2,16 +2,21 @@
 param(
     [Parameter(ParameterSetName = "applyme",Mandatory = $true)]
     [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
-    [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
     [Validatescript( {Test-Path -Path $_ })]
     $DIRECTOR_CONF_FILE,
-    [Parameter(Mandatory = $false)]	
+
+    [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
     [switch]$DO_NOT_APPLY,
 
-    [Parameter(Mandatory = $false)]
+    [Parameter(ParameterSetName = "applyme",Mandatory = $true)]
+    [Parameter(ParameterSetName = "no_apply", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet('cf', 'srt')]
     $PRODUCT_NAME = "srt",
+
+    [Parameter(ParameterSetName = "applyme",Mandatory = $false)]
+    [Parameter(ParameterSetName = "no_apply", Mandatory = $false)]
+
     $compute_instances = 1
 )
 Push-Location $PSScriptRoot
