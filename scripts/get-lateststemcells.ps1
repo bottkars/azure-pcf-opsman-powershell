@@ -43,7 +43,7 @@ cp $STEMCELL_FILENAME "$($output_directory.FullName)/$stemmcell_real_filename"
 om --skip-ssl-validation `
     upload-stemcell `
     --floating=false `
-    --stemcell $STEMCELL_FILENAME
+    --stemcell "$($output_directory.FullName)/$stemmcell_real_filename"
 }
 
 Pop-Location 
