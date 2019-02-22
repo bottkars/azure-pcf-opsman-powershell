@@ -40,7 +40,7 @@ download-product `
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $STEMCELL_FILENAME = $download_file.product_path
-Copy-Item  -Path "$STEMCELL_FILENAME" -Destination "$($output_directory.FullName)/$stemcell_real_filename" -Verbose
+Copy-Item  -Path "$STEMCELL_FILENAME" -Destination "$($output_directory.FullName)/$stemcell_real_filename"
 om --skip-ssl-validation `
     upload-stemcell `
     --floating=false `
