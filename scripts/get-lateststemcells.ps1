@@ -32,7 +32,7 @@ om --skip-ssl-validation `
 --request-timeout 7200 `
 download-product `
 --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
---pivnet-file-glob $stemmcell_real_filename `
+--pivnet-file-glob "bosh-stemcell-$($Release.Version)-azure-hyperv-*-go_agent.tgz" `
 --pivnet-product-slug $Release.slugid `
 --product-version $Release.version `
 --output-directory $output_directory.FullName
@@ -43,7 +43,7 @@ cp $STEMCELL_FILENAME "$($output_directory.FullName)/$stemmcell_real_filename"
 om --skip-ssl-validation `
     upload-stemcell `
     --floating=false `
-    --stemcell "$($output_directory.FullName)/$stemmcell_real_filename"
+    --stemcell $STEMCELL_FILENAME
 }
 
 Pop-Location 
