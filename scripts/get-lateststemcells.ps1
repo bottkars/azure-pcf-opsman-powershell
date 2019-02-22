@@ -26,22 +26,24 @@ $Releases += Get-PIVRelease -id 233 | where version -Match 97. | Select-Object -
 $Releases += Get-PIVRelease -id 82 | where version -Match 3586. | Select-Object -First 1
 foreach ($Release in $Releases) {
 $output_directory = New-Item -ItemType Directory -Path "$downloaddir/stemcells/$($Release.version)" -Force 
+$aws_object_key = ($Releases | Get-PIVFileReleaseId | where aws_object_key -match "hyperv").aws_object_key
+$stemmcell_real_filename = Split-Path -Leaf $aws_object_key
 om --skip-ssl-validation `
 --request-timeout 7200 `
 download-product `
 --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
---pivnet-file-glob "bosh-stemcell-$($Release.Version)-azure-hyperv-*-go_agent.tgz" `
+--pivnet-file-glob $stemmcell_real_filename `
 --pivnet-product-slug $Release.slugid `
 --product-version $Release.version `
 --output-directory $output_directory.FullName
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $STEMCELL_FILENAME = $download_file.product_path
-
+cp $STEMCELL_FILENAME "$($output_directory.FullName)/$stemmcell_real_filename"
 om --skip-ssl-validation `
     upload-stemcell `
     --floating=false `
-    --stemcell $STEMCELL_FILENAME
+    --stemcell "$($output_directory.FullName)/$stemmcell_real_filename"
 }
 
 Pop-Location 
