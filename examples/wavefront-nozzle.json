@@ -1,0 +1,4 @@
+{
+    "PCF_VERSION": "0.9.3",
+    "CONFIG_FILE": "../templates/wavefront-nozzle/0.9.3/wavefront-nozzle.yaml"
+}

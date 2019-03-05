@@ -1,0 +1,23 @@
+product-name: ((product_name))
+network-properties:
+  network:
+    name: ((pcf_pas_network))
+  other_availability_zones:
+  - name: 'null'
+  singleton_availability_zone:
+    name: 'null'
+product-properties:
+  .properties.mysql.internal.plan_name: 
+    value: db-small 
+  .properties.smtp_selector: 
+    value: Enabled
+  .properties.smtp_selector.enabled.smtp_from:
+    value: ((smtp_from))
+  .properties.smtp_selector.enabled.smtp_address: 
+    value: ((smtp_address))
+  .properties.smtp_selector.enabled.smtp_port: 
+    value: ((smtp_port))
+  .properties.smtp_selector.enabled.smtp_credentials: 
+    value: 
+      identity: ((smtp_identity))
+      password: ((smtp_password))

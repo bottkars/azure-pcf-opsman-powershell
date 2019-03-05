@@ -1,0 +1,4 @@
+{
+    "PCF_VERSION":  "1.8.0",
+    "CONFIG_FILE": "../templates/pivotal_single_sign-on_service/1.8.0/pivotal_single_sign-on_service.yaml"
+}

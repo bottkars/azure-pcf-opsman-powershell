@@ -2,7 +2,9 @@
 param(
     [Parameter(Mandatory = $true)]	
     [Validatescript( {Test-Path -Path $_ })]
-    $DIRECTOR_CONF_FILE
+    $DIRECTOR_CONF_FILE,
+    [Parameter(Mandatory = $false)]
+    [switch]$apply
 )
 Push-Location $PSScriptRoot
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
@@ -24,6 +26,14 @@ $eula = Confirm-PIVEula -access_token $access_token -slugid 82 -id 290314
 $Releases = @()
 $Releases += Get-PIVRelease -id 233 | where version -Match 97. | Select-Object -First 1
 $Releases += Get-PIVRelease -id 82 | where version -Match 3586. | Select-Object -First 1
+$Releases += Get-PIVRelease -id 82 | where version -Match 3541. | Select-Object -First 1
+if ($apply.IsPresent)
+    {
+        $floating = "true"
+    }
+else {
+    $floating = "false"
+}    
 foreach ($Release in $Releases) {
 $output_directory = New-Item -ItemType Directory -Path "$downloaddir/stemcells/$($Release.version)" -Force 
 $aws_object_key = ($Release | Get-PIVFileReleaseId | where aws_object_key -match "hyperv").aws_object_key
@@ -43,8 +53,14 @@ $STEMCELL_FILENAME = $download_file.product_path
 Copy-Item  -Path "$STEMCELL_FILENAME" -Destination "$($output_directory.FullName)/$stemcell_real_filename"
 om --skip-ssl-validation `
     upload-stemcell `
-    --floating=false `
+    --floating=$floating `
     --stemcell "$($output_directory.FullName)/$stemcell_real_filename"
 }
+if ($apply.IsPresent)
+    {
+    om --skip-ssl-validation `
+    apply-changes `
+    --skip-unchanged-products
+    }
 
 Pop-Location 

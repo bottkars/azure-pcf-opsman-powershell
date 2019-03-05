@@ -11,7 +11,10 @@ param(
 Push-Location $PSScriptRoot
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $OM_Target = $director_conf.OM_TARGET
-$domain = $director_conf.domain  
+$domain = $director_conf.domain
+$PCF_DOMAIN_NAME = $domain
+$PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME
+
 $boshstorageaccountname = $director_conf.boshstorageaccountname
 $RG = $director_conf.RG
 $deploymentstorageaccount = $director_conf.deploymentstorageaccount
@@ -43,6 +46,10 @@ $ssh_private_key = Get-Content $HOME/opsman
 $ssh_private_key = $ssh_private_key -join "\r\n"
 $ca_cert = Get-Content $HOME/root.pem
 $ca_cert = $ca_cert -join "\r\n"
+
+$fullchain = get-content "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($PCF_DOMAIN_NAME).crt"
+$fullchain = $fullchain -join "\r\n"
+
 $content = get-content "../templates/director_vars.yaml"
 $content += "default_security_group: $RG-bosh-deployed-vms-security-group"
 $content += "subscription_id: $((Get-AzureRmContext).Subscription.Id)"
@@ -50,6 +57,7 @@ $content += "tenant_id: $((Get-AzureRmContext).Tenant.Id)"
 $content += "client_id: $($env_vars.client_id)"
 $content += "client_secret: $($env_vars.client_secret)"
 $content += "domain: $domain"
+$content += "fullchain: `"$fullchain`""
 $content += "deployments_storage_account_name: `"$deploymentstorageaccount`""
 $content += "resource_group_name: $RG"
 $content += "bosh_storage_account_name: $boshstorageaccountname"

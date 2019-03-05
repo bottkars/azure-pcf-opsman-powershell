@@ -1,22 +1,34 @@
 #requires -module pivposh
 param(
-    [Parameter(ParameterSetName = "applyme",Mandatory = $true)]
     [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
+    [Parameter(ParameterSetName = "apply_changed", Mandatory = $true)]
+    [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
+    [Parameter(ParameterSetName = "apply_product", Mandatory = $true)]
     [Validatescript( {Test-Path -Path $_ })]
     $DIRECTOR_CONF_FILE,
 
     [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
     [switch]$DO_NOT_APPLY,
 
-    [Parameter(ParameterSetName = "applyme",Mandatory = $true)]
+    [Parameter(ParameterSetName = "apply_changed", Mandatory = $true)]
+    [switch]$APPLY_CHANGED,
+
+    [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
+    [switch]$APPLY_ALL,   
+
     [Parameter(ParameterSetName = "no_apply", Mandatory = $false)]
+    [Parameter(ParameterSetName = "apply_changed", Mandatory = $false)]
+    [Parameter(ParameterSetName = "apply_all", Mandatory = $false)]
+    [Parameter(ParameterSetName = "apply_product", Mandatory = $false)]    
     [ValidateNotNullOrEmpty()]
     [ValidateSet('cf', 'srt')]
     $PRODUCT_NAME = "srt",
 
-    [Parameter(ParameterSetName = "applyme",Mandatory = $false)]
-    [Parameter(ParameterSetName = "no_apply", Mandatory = $false)]
 
+    [Parameter(ParameterSetName = "no_apply", Mandatory = $false)]
+    [Parameter(ParameterSetName = "apply_changed", Mandatory = $false)]
+    [Parameter(ParameterSetName = "apply_all", Mandatory = $false)]
+    [Parameter(ParameterSetName = "apply_product", Mandatory = $false)]    
     $compute_instances = 1
 )
 Push-Location $PSScriptRoot
@@ -70,14 +82,13 @@ if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.Fu
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
 
     om --skip-ssl-validation `
-        --request-timeout 7200 `
+        --request-timeout 21600 `
         download-product `
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
         --pivnet-file-glob $(Split-Path -Leaf $piv_object.aws_object_key) `
         --pivnet-product-slug elastic-runtime `
         --product-version $PCF_PAS_VERSION `
         --output-directory  "$($output_directory.FullName)"
-
 }
 
 if ($LASTEXITCODE -ne 0) {
@@ -110,8 +121,9 @@ $PRODUCTS = $(om --skip-ssl-validation `
         available-products `
         --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
-$VERSION = $PRODUCTS.version
-$PRODUCT_NAME = $PRODUCTS.name
+$PRODUCT = $PRODUCTS | where name -eq cf | Sort-Object -Property version -Descending | select -first 1
+$VERSION = $PRODUCT.version
+$PRODUCT_NAME = $PRODUCT.name
 # 2.  Stage using om cli
 
 om --skip-ssl-validation `
@@ -163,12 +175,31 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 
+switch ($PsCmdlet.ParameterSetName) { 
+    "apply_all" { 
+        Write-Host "Applying Changes to all Products"
+        om --skip-ssl-validation `
+            apply-changes 
+    } 
+    "no_apply" { 
+        Write-Host "Applying Changes to $PRODUCT_NAME skipped"
+    } 
+    "apply_changed" {
+        om --skip-ssl-validation `
+            apply-changes `
+            --skip-unchanged-products
+    }    
+    default {
+        Write-Host "Applying Changes to $PRODUCT_NAME"
+        om --skip-ssl-validation `
+            apply-changes `
+            --product-name $PRODUCT_NAME
+    }
+
+} 
 
 
-if (!$do_not_apply.ispresent) {
-    om --skip-ssl-validation `
-        apply-changes `
-}
+
 
 om --skip-ssl-validation `
     deployed-products

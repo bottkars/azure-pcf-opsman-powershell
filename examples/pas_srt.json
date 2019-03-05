@@ -1,4 +1,4 @@
 {
-    "PCF_PAS_VERSION":  "2.3.6",
-    "CONFIG_FILE": "../templates/pas/2.3.6/pas_srt.yaml"
+    "PCF_PAS_VERSION":  "2.3.8",
+    "CONFIG_FILE": "../templates/pas/2.3.8/pas_srt.yaml"
 }

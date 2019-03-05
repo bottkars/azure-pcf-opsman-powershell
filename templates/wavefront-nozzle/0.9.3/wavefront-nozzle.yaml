@@ -1,0 +1,29 @@
+product-name: ((product_name))
+network-properties:
+  network:
+    name: ((pcf_pas_network))
+  other_availability_zones:
+  - name: 'null'
+  singleton_availability_zone:
+    name: 'null'  
+product-properties:
+  .properties.wavefront_url:
+    value: ((wavefront_url))
+  .properties.wavefront_token:
+    value: ((wavefront_token))
+  .properties.friendly_hostname:
+    value: ((wavefront_proxy))
+  .properties.pcf_host:
+    value: ((api_hostname))
+  .properties.pcf_user:
+    value: ((uaa_user))
+  .properties.pcf_password:
+    value:
+      secret: ((uaa_password))
+  .properties.custom_tag_foundation:
+    value: ((tag_foundation))
+  .properties.pcf_skipsslvalidation:
+    value: true
+  .properties.cf_quota_name:
+    value: runaway
+  

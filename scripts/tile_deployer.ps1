@@ -3,7 +3,7 @@
 param(
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet('mysql', 'rabbitmq', 'spring', 'redis', 'apm', 'dataflow', 'healthwatch', 'masb')]
+    [ValidateSet('mysql', 'rabbitmq', 'spring', 'redis', 'apm', 'dataflow', 'healthwatch', 'masb','wavefront')]
     [string[]]$tiles,
     [Parameter(Mandatory = $true)]	
     [Validatescript( {Test-Path -Path $_ })]
