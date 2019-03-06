@@ -158,7 +158,7 @@ switch ($PsCmdlet.ParameterSetName) {
         Write-Host "Applying Changes to $PRODUCT_NAME"
         om --skip-ssl-validation `
             apply-changes `
-            --product-name $PRODUCT_NAME
+            --skip-unchanged-products
     }
 } 
 

@@ -641,12 +641,14 @@ if (!$OpsmanUpdate) {
 
 
             $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
-            $StopWatch_deploy.Start()
-            $command = "$ScriptHome/scripts/tile_deployer.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -tiles $($tiles -join ',')"
-            Write-Host "Calling $command" 
-            Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/deployment-$(get-date -f yyyyMMddhhmmss).log"
-            $StopWatch_deploy.Stop()
-            $DeployTimes += "$tile deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds"
+            if ($tiles) {            
+                $StopWatch_deploy.Start()
+                $command = "$ScriptHome/scripts/tile_deployer.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -tiles $($tiles -join ',')"
+                Write-Host "Calling $command" 
+                Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/deployment-$(get-date -f yyyyMMddhhmmss).log"
+                $StopWatch_deploy.Stop()
+                $DeployTimes += "$tile deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds"
+            }
         }    
     }
 }

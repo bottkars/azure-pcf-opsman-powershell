@@ -3,7 +3,18 @@
 param(
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet('mysql', 'rabbitmq', 'spring', 'redis', 'apm', 'dataflow', 'healthwatch', 'masb','wavefront')]
+    [ValidateSet('mysql',
+        'rabbitmq',
+        'spring',
+        'redis', 
+        'apm', 
+        'dataflow',
+        'healthwatch', 
+        'masb',
+        'wavefront-nozzle',
+        'pivotal_single_sign-on_service',
+        'p-compliance-scanner',
+        'p-event-alerts')]    
     [string[]]$tiles,
     [Parameter(Mandatory = $true)]	
     [Validatescript( {Test-Path -Path $_ })]
@@ -29,6 +40,11 @@ if ($tiles -contains 'dataflow') {
     $tiles = ('mysql', 'rabbitmq', 'redis', 'dataflow') + $tiles
     $tiles = $tiles | Select-Object -Unique
 }
+if ($tiles -contains 'p-event-alerts') {
+    $tiles = ('mysql', 'p-event-alerts') + $tiles
+    $tiles = $tiles | Select-Object -Unique
+}
+
 if ($tiles -contains 'masb') {
     if (!$env_vars.AZURE_CLIENT_ID `
             -or !$env_vars.AZURE_CLIENT_SECRET `
@@ -60,7 +76,7 @@ ForEach ($tile in $tiles) {
     $StopWatch_Tile_deploy = New-Object System.Diagnostics.Stopwatch
     $StopWatch_Tile_deploy.Start()
     if ($tile -match $tiles[-1]) {
-        $command = "$ScriptDir/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -APPLY_ALL"
+        $command = "$ScriptDir/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
     }
     else {
         $command = "$ScriptDir/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -DO_NOT_APPLY"
