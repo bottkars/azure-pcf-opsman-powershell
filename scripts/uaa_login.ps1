@@ -34,5 +34,4 @@ if ($showcreds.IsPresent) {
 else {
     uaac target $UAA_API --skip-ssl-validation
     uaac token client get admin -s $UAA_ADMIN_USER.credential.value.password 
-
 }
