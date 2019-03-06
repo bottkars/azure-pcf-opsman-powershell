@@ -245,7 +245,15 @@ if (!(test-path -Path "$($HOME)/opsman.pub")) {
     }
     else {    
         write-host "ssh-keygen not found and no Required $($HOME)/opsman.pub key installed
-        not found. you may want to install ssh-kegen using `"install-script install-gitscm -scope currentuser;install-gitscm.ps1`""
+        not found. you may want to:
+         - use ssh-keygen from git-bash
+         - on Windows 10 / Server 2019 use openssh client
+         - Use WSL to Create the keypair
+        
+
+        create a key:
+        ssh-keygen -t rsa -f $HOME/opsman -C ubuntu
+        "
         Pop-Location
         Break
     }
