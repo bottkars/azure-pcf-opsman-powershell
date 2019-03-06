@@ -240,8 +240,13 @@ if (!$dnsdomain) {
 }
 
 if (!(test-path -Path "$($HOME)/opsman.pub")) {
-    if (Get-Command ssh-keygen.exe -ErrorAction SilentlyContinue) {
+    if ($openSSH = (Get-Command ssh-keygen.exe -ErrorAction SilentlyContinue).source) {
+        Write-Host "Using $openSSH to create OpsManager VM SSH keypair"
         ssh-keygen.exe -t rsa -f $HOME/opsman -C ubuntu -N """" -Q
+    }
+    elseif ($openSSH = (Get-Command 'C:\Program Files\Git\usr\bin\ssh-keygen.exe' -ErrorAction SilentlyContinue).source) {
+        Write-Host "Using $openSSH to create OpsManager VM SSH keypair"
+        .$OpenSSH -t rsa -f $HOME/opsman -C ubuntu -N """" -Q
     }
     else {    
         write-host "ssh-keygen not found and no Required $($HOME)/opsman.pub key installed
@@ -447,7 +452,7 @@ if ($Environment -eq 'AzureStack') {
         $new_arm_vhd = Add-AzureRmVhd -ResourceGroupName $image_rg -Destination $urlOfUploadedImageVhd `
             -LocalFilePath $localPath -OverWrite:$false -ErrorAction Stop
     }
-    catch [InvalidOperationException]{
+    catch [InvalidOperationException] {
         Write-Warning "Image already exists for $opsManVHD, not overwriting"
     }
     catch {
