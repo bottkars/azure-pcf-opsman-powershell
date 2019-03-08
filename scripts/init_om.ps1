@@ -44,9 +44,8 @@ $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $ssh_public_key = Get-Content $HOME/opsman.pub
 $ssh_private_key = Get-Content $HOME/opsman
 $ssh_private_key = $ssh_private_key -join "\r\n"
-if ($domain -eq "azurestack.external"){
 $ca_cert = Get-Content $HOME/root.pem
-$ca_cert = $ca_cert -join "\r\n"}
+$ca_cert = $ca_cert -join "\r\n"
 
 $fullchain = get-content "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($PCF_DOMAIN_NAME).crt"
 $fullchain = $fullchain -join "\r\n"
