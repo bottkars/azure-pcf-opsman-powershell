@@ -19,9 +19,9 @@ $env:Path = "$($env:Path);$HOME/OM"
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
-$eula = Confirm-PIVEula -access_token $access_token -slugid 233 -id 162133
-$eula = Confirm-PIVEula -access_token $access_token -slugid 233 -id 286469
-$eula = Confirm-PIVEula -access_token $access_token -slugid 82 -id 290314
+Confirm-PIVEula -access_token $access_token -slugid 233 -id 162133
+Confirm-PIVEula -access_token $access_token -slugid 233 -id 286469
+Confirm-PIVEula -access_token $access_token -slugid 82 -id 290314
 
 $Releases = @()
 $Releases += Get-PIVRelease -id 233 | where version -Match 97. | Select-Object -First 1
@@ -38,6 +38,7 @@ foreach ($Release in $Releases) {
 $output_directory = New-Item -ItemType Directory -Path "$downloaddir/stemcells/$($Release.version)" -Force 
 $aws_object_key = ($Release | Get-PIVFileReleaseId | where aws_object_key -match "hyperv").aws_object_key
 $stemcell_real_filename = Split-Path -Leaf $aws_object_key
+
 Write-Host " Stemcell filename $stemcell_real_filename"
 om --skip-ssl-validation `
 --request-timeout 7200 `
