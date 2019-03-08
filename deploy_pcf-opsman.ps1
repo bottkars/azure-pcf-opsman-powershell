@@ -246,7 +246,7 @@ if (!(test-path -Path "$($HOME)/opsman.pub")) {
     }
     elseif ($openSSH = (Get-Command 'C:\Program Files\Git\usr\bin\ssh-keygen.exe' -ErrorAction SilentlyContinue).source) {
         Write-Host "Using $openSSH to create OpsManager VM SSH keypair"
-        .$OpenSSH -t rsa -f $HOME/opsman -C ubuntu -N """" -Q
+        .$OpenSSH -t rsa -f $HOME/opsman -C ubuntu -N "" -q
     }
     else {    
         write-host "ssh-keygen not found and no Required $($HOME)/opsman.pub key installed
