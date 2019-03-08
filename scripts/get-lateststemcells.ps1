@@ -21,7 +21,7 @@ $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 Confirm-PIVEula -access_token $access_token -slugid 233 -id 162133
 Confirm-PIVEula -access_token $access_token -slugid 233 -id 286469
-Confirm-PIVEula -access_token $access_token -slugid 82 -id 290314
+Confirm-PIVEula -access_token $access_token -slugid 82 -id 316747
 
 $Releases = @()
 $Releases += Get-PIVRelease -id 233 | where version -Match 97. | Select-Object -First 1
