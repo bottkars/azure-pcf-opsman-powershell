@@ -1436,7 +1436,7 @@
       }
     },
     {
-      "apiVersion": "2017-12-01",
+      "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('opsManVMName')]",
       "location": "[variables('location')]",
