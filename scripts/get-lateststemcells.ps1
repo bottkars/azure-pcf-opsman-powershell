@@ -33,7 +33,7 @@ else {
     $floating = "false"
 }    
 foreach ($Release in $Releases) {
-Write-Host  "Accepting EULA for $($Release.slugid) "
+Write-Host  "Accepting EULA for Slug $($Release.slugid) Release $($Release.id)"
 $eula =    $Release | Confirm-PIVEula -access_token $access_token
 $output_directory = New-Item -ItemType Directory -Path "$downloaddir/stemcells/$($Release.version)" -Force 
 $aws_object_key = ($Release | Get-PIVFileReleaseId | where aws_object_key -match "hyperv").aws_object_key
