@@ -263,8 +263,8 @@ if (!(test-path -Path "$($HOME)/opsman.pub")) {
         Break
     }
 }
-if (!(test-path -Path "$($HOME)/root.pem")) {
-    write-host "Required $($HOME)/root.pem not found.
+if (!(test-path -Path "$($HOME)/root.pem") -and $dnsdomain -eq "azurestack.external") {
+    write-host "Assuming ASDK, Required $($HOME)/root.pem for ASDK not found.
     We need the Azurestack Root CA in pem format as root.pem. If on ASDK, please export from ESRC, otherwise see your Admin"
     Pop-Location
     Break
