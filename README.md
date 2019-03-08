@@ -87,10 +87,13 @@ If you do not have git installed, i recommend
 
  *to update the repo, just `run git pull` at any time
 
-2. Azure Stack CA root certificate for ASDK
+2. Azure Stack CA root certificate for ASDK /Azure Stack
+the azurestack root ca file must be located in $HOME/root.pem in pem format.
+In case of ASDK, see [AzureStack Documentation](https://docs.microsoft.com/en-us/azure/azure-stack/azure-stack-cli-admin#export-the-azure-stack-ca-root-certificate) on how to obtain
 
-In Casde of ASDK, the azurestack root ca file must be located in $HOME/root.pem in pem format.  
-Please consult [AzureStack Documentation](https://docs.microsoft.com/en-us/azure/azure-stack/azure-stack-cli-admin#export-the-azure-stack-ca-root-certificate) on how to obtain
+On Integrated Systems, please put  the root Cert of the Enterprise PKI / Public Certifiaction Autority used to create the Azurestack Certificate into $HOME/root.pem
+
+! DO NOT USE /var/lib/waagent/Certificates.pem, as this my contan WRONG DATA !
 
 3. run the helper utility to install omcli, openssh and thge pivposh powershell module
 
