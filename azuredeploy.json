@@ -361,7 +361,7 @@
     },
     {
       "type": "Microsoft.Network/dnszones/A",
-      "condition": "[and(equals(parameters('Environment'),'AzureStack'),equals(parameters('pcflbconnection'),'private'))]",
+      "condition": "[equals(parameters('pcflbconnection'),'private')]",
       "tags": {
         "provisioner": "pcf_opsman_template"
       },
@@ -384,7 +384,7 @@
   
     {
       "type": "Microsoft.Network/dnszones/A",
-      "condition": "[and(equals(parameters('Environment'),'AzureStack'),equals(parameters('pcflbconnection'),'public'))]",
+      "condition": "[equals(parameters('pcflbconnection'),'public')]",
 
       "tags": {
         "provisioner": "pcf_opsman_template"
