@@ -50,6 +50,12 @@ $ca_cert = $ca_cert -join "\r\n"
 $fullchain = get-content "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($PCF_DOMAIN_NAME).crt"
 $fullchain = $fullchain -join "\r\n"
 
+$om_cert = Get-Content "$($HOME)/$($OM_Target).crt"
+$om_cert = $om_cert -join "\r\n"
+
+$om_key = get-content "$($HOME)/$($OM_Target).key"
+$om_key = $om_key -join "\r\n"
+
 $content = get-content "../templates/director_vars.yaml"
 $content += "default_security_group: $RG-bosh-deployed-vms-security-group"
 $content += "subscription_id: $((Get-AzureRmContext).Subscription.Id)"
@@ -83,6 +89,12 @@ $content | Set-Content $HOME/director_vars.yaml
 om --skip-ssl-validation `
     configure-authentication `
     --decryption-passphrase $PCF_PIVNET_UAA_TOKEN
+Write-Host "Now Uploading OM Certs"
+
+om --skip-ssl-validation `
+    configure-authentication `
+    --certificate-pem  $om_cert `
+    --private-key-pem  $om_key 
 
 om --skip-ssl-validation `
     deployed-products

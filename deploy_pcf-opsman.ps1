@@ -279,7 +279,7 @@ if (!(test-path -Path "$($HOME)/$($dnsZoneName).crt")) {
     write-host "Required$($HOME)/$($dnsZoneName).crt not found. 
     Now Generating Self Signed Certificates
     "
-    $command = "$ScriptDir/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain)"
+    $command = "$ScriptDir/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain) -OM_TARGET $OM_TARGET"
     Write-Host "Now running $command"
     Invoke-Expression -Command $command
 }
@@ -288,10 +288,29 @@ if (!(test-path -Path "$($HOME)/$($dnsZoneName).key")) {
     write-host "Required$($HOME)/$($dnsZoneName).key not found. 
     Now Generating Self Signed Certificates
     "
-    $command = "$ScriptDir/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain)"
+    $command = "$ScriptDir/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain) -OM_TARGET $OM_TARGET"
     Write-Host "Now running $command"
     Invoke-Expression -Command $command
 }
+
+if (!(test-path -Path "$($HOME)/$($OM_TARGET).key")) {
+    write-host "Required$($HOME)/$($OM_TARGET).key not found. 
+    Now Generating Self Signed Certificates
+    "
+    $command = "$ScriptDir/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain) -OM_TARGET $OM_TARGET"
+    Write-Host "Now running $command"
+    Invoke-Expression -Command $command
+}
+
+if (!(test-path -Path "$($HOME)/$($OM_TARGET).crt")) {
+    write-host "Required$($HOME)/$($OM_TARGET).crt not found. 
+    Now Generating Self Signed Certificates
+    "
+    $command = "$ScriptDir/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain) -OM_TARGET $OM_TARGET"
+    Write-Host "Now running $command"
+    Invoke-Expression -Command $command
+}
+
 # The SSH Key for OpsManager
 $OPSMAN_SSHKEY = Get-Content "$HOME/opsman.pub"
 $dnsZoneName = "$PCF_SUBDOMAIN_NAME.$Location.$dnsdomain"
