@@ -106,6 +106,10 @@ param(
     $PCF_SUBDOMAIN_NAME = "pcfdemo",
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
+    [ValidateSet('public', 'private')]
+    $PCFlbType = "public",
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
     [switch]$RegisterProviders,
     [Parameter(ParameterSetName = "update", Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
@@ -129,7 +133,6 @@ param(
     [ValidateNotNullOrEmpty()]
     [switch]$PAS_AUTOPILOT,
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
-    [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet('cf', 'srt')]
     $PASTYPE = "srt",
@@ -314,6 +317,7 @@ Write-Host "$resourceGroup-virtual-network/$resourceGroup-services-subnet       
 Write-Host "$resourceGroup-virtual-network/$resourceGroup-pas-subnet             : cidr $pas_cidr,range $pas_range,gateway $pas_gateway"
 Write-Host "$($opsManFQDNPrefix)green $Mask.8.4/32"
 Write-Host "$($opsManFQDNPrefix)blue $Mask.8.5/32"
+Write-Host "Selected loadbalancer type is $PCFlbType"
 Write-Host
 $compute_instances = 1
 
@@ -539,6 +543,7 @@ $parameters.Add("storageEndpoint", "blob.$blobbaseuri")
 $parameters.Add("useManagedDisks", $ManagedDisks)
 $parameters.Add("OpsManImageURI", $urlOfUploadedImageVhd)
 $parameters.Add("Environment", $Environment)
+$parameters.Add("pcflbConnection", $PCFlbType)
 
 $StopWatch_deploy.Start()
 
