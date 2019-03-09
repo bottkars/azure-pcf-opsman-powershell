@@ -92,7 +92,7 @@ om --skip-ssl-validation `
 Write-Host "Now Uploading OM Certs"
 
 om --skip-ssl-validation `
-    configure-authentication `
+    update-ssl-certificate `
     --certificate-pem  $om_cert `
     --private-key-pem  $om_key 
 
