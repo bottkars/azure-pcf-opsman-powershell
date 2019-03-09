@@ -178,6 +178,7 @@
     "bosh_deployed_vms_security_group_name": "[concat(resourceGroup().name,'-bosh-deployed-vms-security-group')]",
     "pcf-lb-ip-name": "web-lb-public-ip",
     "pcflbPrivateIP": "[concat(parameters('mask'),'.8.73')]",
+    "pcflbPulicIPID": "[resourceId('Microsoft.Network/publicIPAddresses','web-lb-public-ip')]",
     "pcflbFrontendIPConfig": "[if(equals(parameters('pcflbConnection'),'public'), variables('pcflbpublicFrontendIPConfig'), variables('pcflbprivateFrontendIPConfig'))]",
     "pcflbpublicFrontendIPConfig": [
       {
@@ -988,7 +989,9 @@
       "tags": {
         "provisioner": "pcf_opsman_template"
       },
-      "dependsOn": [],
+      "dependsOn": [
+      "[if(equals(parameters('pcflbConnection'),'public'), variables('pcflbPulicIPID'),json('null'))]"
+      ],
       "properties": {
         "frontendIPConfigurations": "[variables('pcflbFrontendIPConfig')]",
         "backendAddressPools": [
