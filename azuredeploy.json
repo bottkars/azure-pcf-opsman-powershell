@@ -361,7 +361,6 @@
     },
     {
       "type": "Microsoft.Network/dnszones/A",
-      "condition": "[equals(parameters('pcflbConnection'),'private')]",
       "tags": {
         "provisioner": "pcf_opsman_template"
       },
@@ -370,66 +369,19 @@
       "location": "[variables('location')]",
       "dependsOn": [
         "[parameters('dnsZoneName')]",
-        "[variables('pcflbID')]"
+        "[if(equals(parameters('pcflbConnection'),'public'),'Microsoft.Network/publicIPAddresses/web-lb-public-ip',variables('pcflbPrivateIP'))]"
       ],
       "properties": {
         "TTL": 3600,
         "ARecords": [
           {
-            "ipv4Address": "[variables('pcflbPrivateIP')]"
-          }
-        ]
-      }
-    },
-  
-    {
-      "type": "Microsoft.Network/dnszones/A",
-      "condition": "[equals(parameters('pcflbConnection'),'public')]",
-      "tags": {
-        "provisioner": "pcf_opsman_template"
-      },
-      "name": "[concat(parameters('dnsZoneName'), '/*.sys')]",
-      "apiVersion": "2016-04-01",
-      "location": "[variables('location')]",
-      "dependsOn": [
-        "[parameters('dnsZoneName')]",
-        "Microsoft.Network/publicIPAddresses/web-lb-public-ip"
-      ],
-      "properties": {
-        "TTL": 3600,
-        "ARecords": [
-          {
-            "ipv4Address": "[reference('Microsoft.Network/publicIPAddresses/web-lb-public-ip').IpAddress]"
+            "ipv4Address": "[if(equals(parameters('pcflbConnection'),'public'),reference('Microsoft.Network/publicIPAddresses/web-lb-public-ip').IpAddress,variables('pcflbPrivateIP'))]"
           }
         ]
       }
     },
     {
       "type": "Microsoft.Network/dnszones/A",
-      "condition": "[and(equals(parameters('Environment'),'AzureStack'),equals(parameters('pcflbConnection'),'private'))]",
-      "tags": {
-        "provisioner": "pcf_opsman_template"
-      },
-      "name": "[concat(parameters('dnsZoneName'), '/*.apps')]",
-      "apiVersion": "2016-04-01",
-      "location": "[variables('location')]",
-      "dependsOn": [
-        "[parameters('dnsZoneName')]",
-        "[variables('pcflbID')]"
-      ],
-      "properties": {
-        "TTL": 3600,
-        "ARecords": [
-          {
-            "ipv4Address": "[variables('pcflbPrivateIP')]"
-          }
-        ]
-      }
-    },
-
-    {
-      "type": "Microsoft.Network/dnszones/A",
-      "condition": "[and(equals(parameters('Environment'),'AzureStack'),equals(parameters('pcflbConnection'),'public'))]",
       "name": "[concat(parameters('dnsZoneName'), '/*.apps')]",
       "apiVersion": "2016-04-01",
       "location": "[variables('location')]",
@@ -438,13 +390,13 @@
       },
       "dependsOn": [
         "[parameters('dnsZoneName')]",
-        "Microsoft.Network/publicIPAddresses/web-lb-public-ip"
+        "[if(equals(parameters('pcflbConnection'),'public'),'Microsoft.Network/publicIPAddresses/web-lb-public-ip',variables('pcflbPrivateIP'))]"
       ],
       "properties": {
         "TTL": 3600,
         "ARecords": [
           {
-            "ipv4Address": "[reference('Microsoft.Network/publicIPAddresses/web-lb-public-ip').IpAddress]"
+            "ipv4Address": "[if(equals(parameters('pcflbConnection'),'public'),reference('Microsoft.Network/publicIPAddresses/web-lb-public-ip').IpAddress,variables('pcflbPrivateIP'))]"
           }
         ]
       }
