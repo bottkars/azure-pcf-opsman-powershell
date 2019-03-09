@@ -990,7 +990,7 @@
         "provisioner": "pcf_opsman_template"
       },
       "dependsOn": [
-      "[if(equals(parameters('pcflbConnection'),'public'), variables('pcflbPulicIPID'),variables('internallb_subnetID'))]"
+      "[if(equals(parameters('pcflbConnection'),'public'), variables('pcflbPulicIPID'),variables('pcfVNetID'))]"
       ],
       "properties": {
         "frontendIPConfigurations": "[variables('pcflbFrontendIPConfig')]",
@@ -1085,7 +1085,9 @@
       "tags": {
         "provisioner": "pcf_opsman_template"
       },
-      "dependsOn": [],
+      "dependsOn": [
+        "variables('pcfVNetID')"
+      ],
       "properties": {
         "frontendIPConfigurations": [
           {
@@ -1260,8 +1262,7 @@
         "provisioner": "pcf_opsman_template"
       },
       "dependsOn": [
-        "[variables('pcfVNetID')]",
-        "[variables('internallb_subnetID')]" 
+        "[variables('pcfVNetID')]"
       ],
       "properties": {
         "frontendIPConfigurations": [
@@ -1343,9 +1344,7 @@
         "provisioner": "pcf_opsman_template"
       },
       "dependsOn": [
-        "[variables('pcfVNetID')]",
-        "[variables('internallb_subnetID')]" 
-
+        "[variables('pcfVNetID')]"
       ],
       "properties": {
         "frontendIPConfigurations": [
