@@ -190,19 +190,19 @@
         }
       }
     ],
-  "pcflbprivateFrontendIPConfig": [
-    {
-      "name": "pcf-fe-ip",
-      "properties": {
-        "subnet": {
-          "id": "[variables('internallb_subnetID')]"
-        },
-        "privateIPAddress": "[variables('pcflbPrivateIP')]",
-        "privateIPAllocationMethod": "Static"
+    "pcflbprivateFrontendIPConfig": [
+      {
+        "name": "pcf-fe-ip",
+        "properties": {
+          "subnet": {
+            "id": "[variables('internallb_subnetID')]"
+          },
+          "privateIPAddress": "[variables('pcflbPrivateIP')]",
+          "privateIPAllocationMethod": "Static"
+        }
       }
-    }
-  ]
-},
+    ]
+  },
   "resources": [
     {
       "type": "Microsoft.Compute/images",
@@ -990,7 +990,7 @@
         "provisioner": "pcf_opsman_template"
       },
       "dependsOn": [
-      "[if(equals(parameters('pcflbConnection'),'public'), variables('pcflbPulicIPID'),variables('pcfVNetID'))]"
+        "[if(equals(parameters('pcflbConnection'),'public'), variables('pcflbPulicIPID'),variables('pcfVNetID'))]"
       ],
       "properties": {
         "frontendIPConfigurations": "[variables('pcflbFrontendIPConfig')]",
