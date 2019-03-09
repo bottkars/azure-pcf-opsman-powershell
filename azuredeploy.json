@@ -1184,7 +1184,7 @@
             "name": "tcp-fe-ip",
             "properties": {
               "subnet": {
-                "id": "variables('internallb_subnetID')]"
+                "id": "[variables('internallb_subnetID')]"
               },
               "privateIPAddress": "[variables('tcplbPrivateIP')]",
               "privateIPAllocationMethod": "Static"
