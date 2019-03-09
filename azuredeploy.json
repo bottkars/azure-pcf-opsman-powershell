@@ -369,7 +369,7 @@
       "location": "[variables('location')]",
       "dependsOn": [
         "[parameters('dnsZoneName')]",
-        "[if(equals(parameters('pcflbConnection'),'public'),'Microsoft.Network/publicIPAddresses/web-lb-public-ip',variables('pcflbPrivateIP'))]"
+        "[if(equals(parameters('pcflbConnection'),'public'),reference('Microsoft.Network/publicIPAddresses/web-lb-public-ip'),reference(concat('Microsoft.Network/loadBalancers/'),variables('pcflbName')))]"
       ],
       "properties": {
         "TTL": 3600,
@@ -390,7 +390,7 @@
       },
       "dependsOn": [
         "[parameters('dnsZoneName')]",
-        "[if(equals(parameters('pcflbConnection'),'public'),'Microsoft.Network/publicIPAddresses/web-lb-public-ip',variables('pcflbPrivateIP'))]"
+        "[if(equals(parameters('pcflbConnection'),'public'),reference('Microsoft.Network/publicIPAddresses/web-lb-public-ip'),reference(concat('Microsoft.Network/loadBalancers/'),variables('pcflbName')))]"
       ],
       "properties": {
         "TTL": 3600,
