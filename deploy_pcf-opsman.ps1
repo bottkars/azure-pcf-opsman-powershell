@@ -312,9 +312,10 @@ $services_range = "$mask.4.1-$mask.4.10"
 $services_gateway = "$mask.4.1"
 
 Write-Host "Using the following Network Assignments:" -ForegroundColor Magenta
-Write-Host "$resourceGroup-virtual-network/$resourceGroup-infrastructure-subnet  : cidr $infrastructure_cidr,range $infrastructure_range,gateway $infrastructure_gateway"
-Write-Host "$resourceGroup-virtual-network/$resourceGroup-services-subnet        : cidr $services_cidr,range $services_range,gateway $services_gateway"
-Write-Host "$resourceGroup-virtual-network/$resourceGroup-pas-subnet             : cidr $pas_cidr,range $pas_range,gateway $pas_gateway"
+Write-Host "$resourceGroup-virtual-network/$resourceGroup-infrastructure-subnet  : cidr $infrastructure_cidr,exclude_range $infrastructure_range,gateway $infrastructure_gateway"
+Write-Host "$resourceGroup-virtual-network/$resourceGroup-services-subnet        : cidr $services_cidr,exclude_range $services_range,gateway $services_gateway"
+Write-Host "$resourceGroup-virtual-network/$resourceGroup-pas-subnet             : cidr $pas_cidr,exclude_range $pas_range,gateway $pas_gateway"
+Write-Host "$resourceGroup-virtual-network/$resourceGroup-lb-subnet              : cidr $internal_lb_cidr,exclude_range $internal_lb_range,gateway $internal_lb_gateway"
 Write-Host "$($opsManFQDNPrefix)green $Mask.8.4/32"
 Write-Host "$($opsManFQDNPrefix)blue $Mask.8.5/32"
 Write-Host "Selected loadbalancer type is $PCFlbType"
