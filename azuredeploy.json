@@ -134,7 +134,7 @@
     "infrastructure_subnet_name": "[concat(resourceGroup().name,'-infrastructure-subnet')]",
     "internallb_subnet_name": "[concat(resourceGroup().name,'-lb-subnet')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
-    "pcfVNetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
+    "pcfVNetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "opsManNicName": "[concat('OPSMANNIC_',parameters('deploymentcolor'))]",
     "addressSpace": "[concat(parameters('mask'),'.0.0/16')]",
     "infrastructureaddressPrefix": "[concat(parameters('mask'),'.8.0/26')]",
