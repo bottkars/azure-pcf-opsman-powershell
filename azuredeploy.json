@@ -134,7 +134,6 @@
     "infrastructure_subnet_name": "[concat(resourceGroup().name,'-infrastructure-subnet')]",
     "internallb_subnet_name": "[concat(resourceGroup().name,'-lb-subnet')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
-    "pcfVNetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "opsManNicName": "[concat('OPSMANNIC_',parameters('deploymentcolor'))]",
     "addressSpace": "[concat(parameters('mask'),'.0.0/16')]",
     "infrastructureaddressPrefix": "[concat(parameters('mask'),'.8.0/26')]",
@@ -990,7 +989,7 @@
         "provisioner": "pcf_opsman_template"
       },
       "dependsOn": [
-        "[if(equals(parameters('pcflbConnection'),'public'), variables('pcflbPulicIPID'),variables('pcfVNetID'))]"
+        "[if(equals(parameters('pcflbConnection'),'public'), variables('pcflbPulicIPID'),resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName')))]"
       ],
       "properties": {
         "frontendIPConfigurations": "[variables('pcflbFrontendIPConfig')]",
@@ -1086,8 +1085,7 @@
         "provisioner": "pcf_opsman_template"
       },
       "dependsOn": [
-        "variables('pcfVNetID')"
-      ],
+        "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]"      ],
       "properties": {
         "frontendIPConfigurations": [
           {
@@ -1262,8 +1260,7 @@
         "provisioner": "pcf_opsman_template"
       },
       "dependsOn": [
-        "[variables('pcfVNetID')]"
-      ],
+        "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]"      ],
       "properties": {
         "frontendIPConfigurations": [
           {
@@ -1344,8 +1341,7 @@
         "provisioner": "pcf_opsman_template"
       },
       "dependsOn": [
-        "[variables('pcfVNetID')]"
-      ],
+        "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]"      ],
       "properties": {
         "frontendIPConfigurations": [
           {
