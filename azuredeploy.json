@@ -202,10 +202,9 @@
       }
     }
   ],
-  "pcflbPrivateDep": [
-    "[variables('pcfVNetID')]",
-    "[variables('internallb_subnetID')]" 
-  ]
+  "pcflbPrivateDep": "variables('pcfVNetID'),variables('internallb_subnetID')"
+
+
 },
   "resources": [
     {
