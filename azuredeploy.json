@@ -24,6 +24,17 @@
         "description": "Uri of the Operations Manager VHD"
       }
     },
+    "pcflbConnection": {
+      "type": "string",
+      "defaultValue": "private",
+      "allowedValues": [
+        "private",
+        "public"
+      ],
+      "metadata": {
+        "description": "Use managed disks, otherwise, storageaccounts will be created"
+      }
+    },
     "useManagedDisks": {
       "type": "string",
       "defaultValue": "no",
@@ -79,7 +90,7 @@
       "allowedValues": [
         "Standard_F4s_v2",
         "Standard_DS2_v2"
-    ],
+      ],
       "metadata": {
         "description": "Size of vm"
       }
@@ -121,11 +132,13 @@
     "pas_subnet_name": "[concat(resourceGroup().name,'-pas-subnet')]",
     "services_subnet_name": "[concat(resourceGroup().name,'-services-subnet')]",
     "infrastructure_subnet_name": "[concat(resourceGroup().name,'-infrastructure-subnet')]",
+    "internallb_subnet_name": "[concat(resourceGroup().name,'-infrastructure-subnet')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
     "pcfVNetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
     "opsManNicName": "[concat('OPSMANNIC_',parameters('deploymentcolor'))]",
     "addressSpace": "[concat(parameters('mask'),'.0.0/16')]",
     "infrastructureaddressPrefix": "[concat(parameters('mask'),'.8.0/26')]",
+    "internallbaddressPrefix": "[concat(parameters('mask'),'.8.64/28')]",
     "servicesaddressPrefix": "[concat(parameters('mask'),'.4.0/22')]",
     "pasaddressPrefix": "[concat(parameters('mask'),'.0.0/22')]",
     "OpsManGreenIP": "[concat(parameters('mask'),'.8.4')]",
@@ -142,16 +155,19 @@
     "diegosshfrontEndIPConfigID": "[concat(variables('diegosshlbID'),'/frontendIPConfigurations/diegossh-fe-ip')]",
     "diegosshlbPoolID": "[concat(variables('diegosshlbID'),'/backendAddressPools/diegossh-backend-pool')]",
     "diegosshlbProbeID": "[concat(variables('diegosshlbID'),'/probes/tcp2222')]",
+    "diegolbPrivateIP": "[concat(parameters('mask'),'.8.72')]",
     "tcplbName": "[concat(resourceGroup().name,'-tcp-lb')]",
     "tcplbID": "[resourceId('Microsoft.Network/loadBalancers',variables('tcplbName'))]",
     "tcpfrontEndIPConfigID": "[concat(variables('tcplbID'),'/frontendIPConfigurations/tcp-fe-ip')]",
     "tcplbPoolID": "[concat(variables('tcplbID'),'/backendAddressPools/tcp-backend-pool')]",
     "tcplbProbeID": "[concat(variables('tcplbID'),'/probes/tcp1024')]",
+    "tcplbPrivateIP": "[concat(parameters('mask'),'.8.70')]",
     "mysqllbName": "[concat(resourceGroup().name,'-mysql-lb')]",
     "mysqllbID": "[resourceId('Microsoft.Network/loadBalancers',variables('mysqllbName'))]",
     "mysqlfrontEndIPConfigID": "[concat(variables('mysqllbID'),'/frontendIPConfigurations/mysql-fe-ip')]",
     "mysqllbPoolID": "[concat(variables('mysqllbID'),'/backendAddressPools/mysql-backend-pool')]",
     "mysqllbProbeID": "[concat(variables('mysqllbID'),'/probes/tcp1936')]",
+    "mysqllbPrivateIP": "[concat(parameters('mask'),'.8.71')]",
     "diagnosticsStorageAccountName": "[concat('diag', uniquestring(resourceGroup().id))]",
     "diagnosticsStorageAccountType": "Standard_LRS",
     "OpsManPublicIPName": "[concat('OpsManPublicIP_', parameters('deploymentcolor'))]",
@@ -160,8 +176,7 @@
     "ops_manager_security_group_name": "[concat(resourceGroup().name,'-ops-manager-security-group')]",
     "bosh_deployed_vms_security_group_name": "[concat(resourceGroup().name,'-bosh-deployed-vms-security-group')]",
     "pcf-lb-ip-name": "web-lb-public-ip",
-    "diego-ssh-lb-ip-name": "diego-ssh-lb-public-ip",
-    "tcp-lb-ip-name": "tcp-lb-public-ip"
+    "pcflbPrivateIP": "[concat(parameters('mask'),'.8.73')]"
   },
   "resources": [
     {
@@ -212,7 +227,7 @@
       },
       "kind": "Storage",
       "properties": {}
-    },    
+    },
     {
       "type": "Microsoft.Storage/storageAccounts",
       "condition": "[equals(parameters('usemanageddisks'),'no')]",
@@ -331,22 +346,47 @@
       "name": "[concat(parameters('dnsZoneName'),'/', parameters('opsManFQDNPrefix'))]",
       "apiVersion": "2016-04-01",
       "properties": {
-          "TTL": 60,
-          "ARecords": [
-              {
-                "ipv4Address": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('OpsManPublicIPName'))).IpAddress]"
-              }
-          ],
-          "targetResource": {}
+        "TTL": 60,
+        "ARecords": [
+          {
+            "ipv4Address": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('OpsManPublicIPName'))).IpAddress]"
+          }
+        ],
+        "targetResource": {}
       },
       "dependsOn": [
         "[parameters('dnsZoneName')]",
         "[concat('Microsoft.Network/publicIPAddresses/',variables('OpsManPublicIPName'))]"
       ]
-  },
+    },
     {
       "type": "Microsoft.Network/dnszones/A",
-      "condition": "[equals(parameters('Environment'),'AzureStack')]",
+      "condition": "[and(equals(parameters('Environment'),'AzureStack'),equals(parameters('pcflbconnection'),'private'))]",
+
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
+      "name": "[concat(parameters('dnsZoneName'), '/*.sys')]",
+      "apiVersion": "2016-04-01",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[parameters('dnsZoneName')]",
+        "[concat('Microsoft.Network/loadBalancers',variables('pcflbName'))]"
+      ],
+      "properties": {
+        "TTL": 3600,
+        "ARecords": [
+          {
+            "ipv4Address": "[variables('pcflbPrivateIP')]"
+          }
+        ]
+      }
+    },
+  
+    {
+      "type": "Microsoft.Network/dnszones/A",
+      "condition": "[and(equals(parameters('Environment'),'AzureStack'),equals(parameters('pcflbconnection'),'public'))]",
+
       "tags": {
         "provisioner": "pcf_opsman_template"
       },
@@ -366,6 +406,30 @@
         ]
       }
     },
+    {
+      "type": "Microsoft.Network/dnszones/A",
+      "condition": "[and(equals(parameters('Environment'),'AzureStack'),equals(parameters('pcflbconnection'),'private'))]",
+
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
+      "name": "[concat(parameters('dnsZoneName'), '/*.apps')]",
+      "apiVersion": "2016-04-01",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[parameters('dnsZoneName')]",
+        "[concat('Microsoft.Network/loadBalancers',variables('pcflbName'))]"
+      ],
+      "properties": {
+        "TTL": 3600,
+        "ARecords": [
+          {
+            "ipv4Address": "[variables('pcflbPrivateIP')]"
+          }
+        ]
+      }
+    },
+
     {
       "type": "Microsoft.Network/dnszones/A",
       "condition": "[equals(parameters('Environment'),'AzureStack')]",
@@ -392,30 +456,6 @@
       "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('pcf-lb-ip-name')]",
-      "location": "[variables('location')]",
-      "tags": {
-        "provisioner": "pcf_opsman_template"
-      },
-      "properties": {
-        "publicIPAllocationMethod": "Static"
-      }
-    },
-    {
-      "apiVersion": "2017-10-01",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('tcp-lb-ip-name')]",
-      "location": "[variables('location')]",
-      "tags": {
-        "provisioner": "pcf_opsman_template"
-      },
-      "properties": {
-        "publicIPAllocationMethod": "Static"
-      }
-    },
-    {
-      "apiVersion": "2017-10-01",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('diego-ssh-lb-ip-name')]",
       "location": "[variables('location')]",
       "tags": {
         "provisioner": "pcf_opsman_template"
@@ -948,6 +988,12 @@
             }
           },
           {
+            "name": "[variables('internallb_subnet_name')]",
+            "properties": {
+              "addressPrefix": "[variables('internallbaddressPrefix')]"
+            }
+          },
+          {
             "name": "[variables('services_subnet_name')]",
             "properties": {
               "addressPrefix": "[variables('servicesaddressPrefix')]"
@@ -964,6 +1010,113 @@
     },
     {
       "apiVersion": "2017-10-01",
+      "condition": "[equals(parameters('pcflbconnection'),'private')]",
+      "name": "[variables('pcflbName')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
+      "dependsOn": [],
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "pcf-fe-ip",
+            "properties": {
+              "subnet": {
+                "id": "[variables('internallb_subnet_name')]"
+              },
+              "privateIPAddress": "[variables('pcflbPrivateIP')]",
+              "privateIPAllocationMethod": "Static"
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "pcf-backend-pool"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "web-https-rule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('pcffrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('pcflbPoolID')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 443,
+              "backendPort": 443,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "probe": {
+                "id": "[variables('pcflbProbeID443')]"
+              }
+            }
+          },
+          {
+            "name": "web-http-rule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('pcffrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('pcflbPoolID')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 80,
+              "backendPort": 80,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "probe": {
+                "id": "[variables('pcflbProbeID80')]"
+              }
+            }
+          },
+          {
+            "name": "web-ntp-rule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('pcffrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('pcflbPoolID')]"
+              },
+              "protocol": "Udp",
+              "frontendPort": 123,
+              "backendPort": 123,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "tcp80",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 80,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          },
+          {
+            "name": "tcp443",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 443,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2017-10-01",
+      "condition": "[equals(parameters('pcflbconnection'),'public')]",
       "name": "[variables('pcflbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
@@ -1063,7 +1216,7 @@
               "intervalInSeconds": 5,
               "numberOfProbes": 2
             }
-          }  
+          }
         ]
       }
     },
@@ -1075,17 +1228,17 @@
       "tags": {
         "provisioner": "pcf_opsman_template"
       },
-      "dependsOn": [
-        "Microsoft.Network/publicIPAddresses/tcp-lb-public-ip"
-      ],
+      "dependsOn": [],
       "properties": {
         "frontendIPConfigurations": [
           {
             "name": "tcp-fe-ip",
             "properties": {
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','tcp-lb-public-ip')]"
-              }
+              "subnet": {
+                "id": "[variables('internallb_subnet_name')]"
+              },
+              "privateIPAddress": "[variables('tcplbPrivateIP')]",
+              "privateIPAllocationMethod": "Static"
             }
           }
         ],
@@ -1249,17 +1402,17 @@
       "tags": {
         "provisioner": "pcf_opsman_template"
       },
-      "dependsOn": [
-        "Microsoft.Network/publicIPAddresses/diego-ssh-lb-public-ip"
-      ],
+      "dependsOn": [],
       "properties": {
         "frontendIPConfigurations": [
           {
             "name": "diegossh-fe-ip",
             "properties": {
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','diego-ssh-lb-public-ip')]"
-              }
+              "subnet": {
+                "id": "[variables('internallb_subnet_name')]"
+              },
+              "privateIPAddress": "[variables('diegolbPrivateIP')]",
+              "privateIPAllocationMethod": "Static"
             }
           }
         ],
@@ -1269,7 +1422,6 @@
           }
         ],
         "loadBalancingRules": [
-
           {
             "name": "diego-ssh-ntp-rule",
             "properties": {
@@ -1335,10 +1487,11 @@
           {
             "name": "mysql-fe-ip",
             "properties": {
-              "privateIPAllocationMethod": "Dynamic",
               "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('pas_subnet_name'))]"
-              }
+                "id": "[variables('internallb_subnet_name')]"
+              },
+              "privateIPAddress": "[variables('mysqllbPrivateIP')]",
+              "privateIPAllocationMethod": "Static"
             }
           }
         ],
@@ -1396,7 +1549,9 @@
           }
         ]
       },
-      "dependsOn": ["[variables('pcfVNetID')]"]
+      "dependsOn": [
+        "[variables('pcfVNetID')]"
+      ]
     },
     {
       "apiVersion": "2017-10-01",
