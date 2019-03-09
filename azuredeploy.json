@@ -418,7 +418,7 @@
       "location": "[variables('location')]",
       "dependsOn": [
         "[parameters('dnsZoneName')]",
-        "[concat('Microsoft.Network/loadBalancers',variables('pcflbName'))]"
+        "[variables('pcflbID')]"
       ],
       "properties": {
         "TTL": 3600,
