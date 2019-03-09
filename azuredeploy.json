@@ -361,7 +361,7 @@
     },
     {
       "type": "Microsoft.Network/dnszones/A",
-      "condition": "[equals(parameters('pcflbconnection'),'private')]",
+      "condition": "[equals(parameters('pcflbConnection'),'private')]",
       "tags": {
         "provisioner": "pcf_opsman_template"
       },
@@ -384,8 +384,7 @@
   
     {
       "type": "Microsoft.Network/dnszones/A",
-      "condition": "[equals(parameters('pcflbconnection'),'public')]",
-
+      "condition": "[equals(parameters('pcflbConnection'),'public')]",
       "tags": {
         "provisioner": "pcf_opsman_template"
       },
@@ -407,7 +406,7 @@
     },
     {
       "type": "Microsoft.Network/dnszones/A",
-      "condition": "[and(equals(parameters('Environment'),'AzureStack'),equals(parameters('pcflbconnection'),'private'))]",
+      "condition": "[and(equals(parameters('Environment'),'AzureStack'),equals(parameters('pcflbConnection'),'private'))]",
       "tags": {
         "provisioner": "pcf_opsman_template"
       },
@@ -430,7 +429,7 @@
 
     {
       "type": "Microsoft.Network/dnszones/A",
-      "condition": "[and(equals(parameters('Environment'),'AzureStack'),equals(parameters('pcflbconnection'),'public'))]",
+      "condition": "[and(equals(parameters('Environment'),'AzureStack'),equals(parameters('pcflbConnection'),'public'))]",
       "name": "[concat(parameters('dnsZoneName'), '/*.apps')]",
       "apiVersion": "2016-04-01",
       "location": "[variables('location')]",
@@ -1008,7 +1007,7 @@
     },
     {
       "apiVersion": "2017-10-01",
-      "condition": "[equals(parameters('pcflbconnection'),'private')]",
+      "condition": "[equals(parameters('pcflbConnection'),'private')]",
       "name": "[variables('pcflbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
@@ -1114,7 +1113,7 @@
     },
     {
       "apiVersion": "2017-10-01",
-      "condition": "[equals(parameters('pcflbconnection'),'public')]",
+      "condition": "[equals(parameters('pcflbConnection'),'public')]",
       "name": "[variables('pcflbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
