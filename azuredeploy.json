@@ -1064,7 +1064,7 @@
     {
       "apiVersion": "2017-10-01",
       "condition": "[equals(parameters('pcflbConnection'),'public')]",
-      "name": "[variables('pcflbName')]",
+      "name": "web-lb-public",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
       "tags": {
