@@ -388,8 +388,7 @@
         "provisioner": "pcf_opsman_template"
       },
       "dependsOn": [
-        "[parameters('dnsZoneName')]",
-        "[if(equals(parameters('pcflbConnection'),'public'),reference('Microsoft.Network/publicIPAddresses/web-lb-public-ip'),reference(concat('Microsoft.Network/loadBalancers/'),variables('pcflbName')))]"
+        "[parameters('dnsZoneName')]"
       ],
       "properties": {
         "TTL": 3600,
