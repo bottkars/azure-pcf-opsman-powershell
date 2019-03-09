@@ -1089,10 +1089,7 @@
       "tags": {
         "provisioner": "pcf_opsman_template"
       },
-      "dependsOn": [
-        "[variables('pcfVNetID')]",
-        "[variables('internallb_subnetID')]" 
-      ],      
+      "dependsOn":"[variables('pcflbPrivateDep')]",
       "properties": {
         "frontendIPConfigurations": [
           {
@@ -1266,10 +1263,7 @@
       "tags": {
         "provisioner": "pcf_opsman_template"
       },
-      "dependsOn": [
-        "[variables('pcfVNetID')]",
-        "[variables('internallb_subnetID')]" 
-      ],
+      "dependsOn":"[variables('pcflbPrivateDep')]",
       "properties": {
         "frontendIPConfigurations": [
           {
@@ -1349,11 +1343,7 @@
       "tags": {
         "provisioner": "pcf_opsman_template"
       },
-      "dependsOn": [
-        "[variables('pcfVNetID')]",
-        "[variables('internallb_subnetID')]" 
-
-      ],
+      "dependsOn":"[variables('pcflbPrivateDep')]",
       "properties": {
         "frontendIPConfigurations": [
           {
