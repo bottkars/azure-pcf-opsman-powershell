@@ -61,8 +61,9 @@ C:\OpenSSL-Win64\bin\openssl x509 -req -in "$($HOME)/$($DOMAIN).csr" `
 ## and now we go for OM_TARGET
 $OM_TARGET_GREEN= $OM_TARGET
 $OM_TARGET_BLUE=$OM_TARGET -replace "green","blue"
-foreach ($OM_TARGET in ($OM_TARGET_GREEN,$OM_TARGET_BLUE))
+foreach ($TARGET in ($OM_TARGET_GREEN,$OM_TARGET_BLUE))
 {  
+Write-Host "Creating Cert for $TARGET"  
 "
   [ req ]
   prompt = no
@@ -71,26 +72,26 @@ foreach ($OM_TARGET in ($OM_TARGET_GREEN,$OM_TARGET_BLUE))
   [ dn ]
   C  = DE
   O = labbuildr
-  CN = $($OM_TARGET)
+  CN = $($TARGET)
   [ v3_req ]
-  subjectAltName = DNS:$($OM_TARGET)
+  subjectAltName = DNS:$($TARGET)
 " | set-content  "$HOME/config.csr"
 
 C:\OpenSSL-Win64\bin\openssl req `
   -nodes -sha256 -newkey rsa:$KEY_BITS -days $DAYS `
-  -keyout "$($HOME)/$($OM_TARGET).key" -out "$($HOME)/$($OM_TARGET).csr" -config "$HOME/config.csr"
+  -keyout "$($HOME)/$($TARGET).key" -out "$($HOME)/$($TARGET).csr" -config "$HOME/config.csr"
 
 "
   basicConstraints = CA:FALSE
-  subjectAltName = DNS:$($OM_TARGET)
+  subjectAltName = DNS:$($TARGET)
   subjectKeyIdentifier = hash
 " | set-content "$HOME/extfile.txt"
 
 C:\OpenSSL-Win64\bin\openssl x509 -req `
--in "$($HOME)/$($OM_TARGET).csr" `
+-in "$($HOME)/$($TARGET).csr" `
 -CA "$($HOME)/$($DOMAIN).ca.crt" `
 -CAkey "$($HOME)/$($DOMAIN).ca.key.pkcs8" `
--CAcreateserial -out "$($HOME)/$($OM_TARGET).crt" -days $DAYS -sha256 -extfile $extfile "$($HOME)/extfile.txt"
+-CAcreateserial -out "$($HOME)/$($TARGET).crt" -days $DAYS -sha256 -extfile $extfile "$($HOME)/extfile.txt"
 
 }
 $content = Get-Content "$($HOME)/$($DOMAIN).host.crt"
