@@ -157,7 +157,9 @@ param(
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [switch]
-    $DO_NOT_DOWNLOAD
+    $DO_NOT_DOWNLOAD,
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    $compute_instances=1
 )
 
 if (!(Test-Path $HOME/env.json)) {
@@ -340,7 +342,6 @@ Write-Host "$($opsManFQDNPrefix)green $Mask.8.4/32"
 Write-Host "$($opsManFQDNPrefix)blue $Mask.8.5/32"
 Write-Host "Selected loadbalancer type is $PCFlbType"
 Write-Host
-$compute_instances = 1
 
 if ($PsCmdlet.ParameterSetName -eq "install") {
     if ($tiles) {
@@ -348,7 +349,9 @@ if ($PsCmdlet.ParameterSetName -eq "install") {
         if ($tiles -contains 'spring') {
             $tiles = ('mysql', 'rabbitmq', 'spring') + $tiles
             $tiles = $tiles | Select-Object -Unique
-            $compute_instances = 2
+            if ($compute_instances -lt 2) {
+                $compute_instances = 2
+            }
         }
         if ($tiles -contains 'dataflow') {
             $tiles = ('mysql', 'rabbitmq', 'redis', 'dataflow') + $tiles
@@ -483,7 +486,7 @@ if ($Environment -eq 'AzureStack') {
     catch [InvalidOperationException] {
         Write-Warning "Image already exists for $opsManVHD, not overwriting"
     }
-<#
+    <#
     catch [CloudException] {
         Write-Warning " we make and educated guess that we use in-region copy"
     }#>
