@@ -63,7 +63,7 @@ $OM_TARGET_GREEN= $OM_TARGET
 $OM_TARGET_BLUE=$OM_TARGET -replace "green","blue"
 foreach ($TARGET in ($OM_TARGET_GREEN,$OM_TARGET_BLUE))
 {  
-Write-Host "Creating Cert for $TARGET"  
+ 
 "
   [ req ]
   prompt = no
@@ -76,6 +76,7 @@ Write-Host "Creating Cert for $TARGET"
   [ v3_req ]
   subjectAltName = DNS:$($TARGET)
 " | set-content  "$HOME/config.csr"
+Write-Host "Creating KEY for $TARGET" 
 
 C:\OpenSSL-Win64\bin\openssl req `
   -nodes -sha256 -newkey rsa:$KEY_BITS -days $DAYS `
@@ -86,6 +87,8 @@ C:\OpenSSL-Win64\bin\openssl req `
   subjectAltName = DNS:$($TARGET)
   subjectKeyIdentifier = hash
 " | set-content "$HOME/extfile.txt"
+
+Write-Host "Creating Cert for $TARGET" 
 
 C:\OpenSSL-Win64\bin\openssl x509 -req `
 -in "$($HOME)/$($TARGET).csr" `
