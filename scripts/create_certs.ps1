@@ -1,8 +1,8 @@
 param(
 [Parameter(Mandatory = $true)]
-$PCF_SUBDOMAIN_NAME = "pcfdemo",
+$PCF_SUBDOMAIN_NAME,
 [Parameter(Mandatory = $true)]
-$PCF_DOMAIN_NAME = "local.azurestack.external",
+$PCF_DOMAIN_NAME,
 [Parameter(Mandatory = $true)]
 $OM_TARGET
 )

@@ -168,6 +168,9 @@ else {
 }
 New-Item -ItemType Directory -Path "$($HOME)/pcfdeployer/logs" -Force | out-null
 $DeployTimes = @()
+$dnsZoneName = "$PCF_SUBDOMAIN_NAME.$Location.$dnsdomain"
+$OM_TARGET = "$($opsManFQDNPrefix)$($deploymentcolor).$($dnszonename)"
+Write-Verbose $OM_TARGET
 function get-runningos {
     # backward copatibility for peeps runnin powershell 5
     write-verbose "trying to get os type ... "
@@ -273,8 +276,6 @@ if (!(test-path -Path "$($HOME)/root.pem") -and $dnsdomain -eq "azurestack.exter
     Break
 }
 
-$dnsZoneName = "$PCF_SUBDOMAIN_NAME.$Location.$dnsdomain"
-$OM_TARGET = "$($opsManFQDNPrefix)$($deploymentcolor).$($dnszonename)"
 if (!(test-path -Path "$($HOME)/$($dnsZoneName).crt")) {
     write-host "Required$($HOME)/$($dnsZoneName).crt not found. 
     Now Generating Self Signed Certificates
