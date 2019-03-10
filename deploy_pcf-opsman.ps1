@@ -166,7 +166,7 @@ if (!(Test-Path $HOME/env.json)) {
 else {
     $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 }
-
+New-Item -ItemType Directory -Path "$($HOME)/pcfdeployer/logs" -Force | out-null
 $DeployTimes = @()
 function get-runningos {
     # backward copatibility for peeps runnin powershell 5
@@ -274,7 +274,7 @@ if (!(test-path -Path "$($HOME)/root.pem") -and $dnsdomain -eq "azurestack.exter
 }
 
 $dnsZoneName = "$PCF_SUBDOMAIN_NAME.$Location.$dnsdomain"
-
+$OM_TARGET = "$($opsManFQDNPrefix)$($deploymentcolor).$($dnszonename)"
 if (!(test-path -Path "$($HOME)/$($dnsZoneName).crt")) {
     write-host "Required$($HOME)/$($dnsZoneName).crt not found. 
     Now Generating Self Signed Certificates
@@ -567,7 +567,7 @@ $parameters.Add("pcflbConnection", $PCFlbType)
 
 $StopWatch_deploy.Start()
 
-Write-host "Starting $deploymentcolor Deployment of $opsManFQDNPrefix $opsmanVersion" -ForegroundColor $deploymentcolor
+Write-host "Starting deployment of PCF Control Plane using ARM template and  $deploymentcolor deployment of $opsManFQDNPrefix $opsmanVersion" -ForegroundColor $deploymentcolor
 if (!$OpsmanUpdate) {
     $parameters.Add("dnsZoneName", $dnsZoneName)
     $parameters.Add("boshStorageAccountName", $boshstorageaccount)
@@ -612,7 +612,7 @@ if (!$OpsmanUpdate) {
         $StopWatch_deploy_opsman.Start()
         # will create director.json for future
         $JSon = [ordered]@{
-            OM_TARGET                = "$($opsManFQDNPrefix).$($dnszonename)"
+            OM_TARGET                = "$OM_TARGET"
             domain                   = "$($location).$($dnsdomain)"
             PCF_SUBDOMAIN_NAME       = $PCF_SUBDOMAIN_NAME
             boshstorageaccountname   = $boshstorageaccount 
@@ -641,7 +641,7 @@ if (!$OpsmanUpdate) {
         }
         
         Write-Host "Calling $command" 
-        Invoke-Expression -Command $Command
+        Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/init-om-$(get-date -f yyyyMMddhhmmss).log"
         $StopWatch_deploy_opsman.Stop()
         $DeployTimes += "opsman deployment took $($StopWatch_deploy_opsman.Elapsed.Hours) hours, $($StopWatch_deploy_opsman.Elapsed.Minutes) minutes and  $($StopWatch_deploy_opsman.Elapsed.Seconds) seconds"
         $ScriptHome = $PSScriptRoot
@@ -650,7 +650,7 @@ if (!$OpsmanUpdate) {
             $StopWatch_deploy_stemcells.Start()
             $command = "$ScriptDir/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
             Write-Host "Calling $command" 
-            Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/stemcells-$(get-date -f yyyyMMddhhmmss).log"
+            Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/stemcells-$(get-date -f yyyyMMddhhmmss).log"
             $StopWatch_deploy_stemcells.Stop()
             $DeployTimes += "Stemcell deployment took $($StopWatch_deploy_stemcells.Elapsed.Hours) hours, $($StopWatch_deploy_stemcells.Elapsed.Minutes) minutes and  $($StopWatch_deploy_stemcells.Elapsed.Seconds) seconds"
             
@@ -663,7 +663,7 @@ if (!$OpsmanUpdate) {
                 $command = "$ScriptHome/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -compute_instances $compute_instances"
             }
             Write-Host "Calling $command" 
-            Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pas-$(get-date -f yyyyMMddhhmmss).log"
+            Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/pas-$(get-date -f yyyyMMddhhmmss).log"
             $StopWatch_deploy_pas.Stop()
             $DeployTimes += "PAS deployment took $($StopWatch_deploy_pas.Elapsed.Hours) hours, $($StopWatch_deploy_pas.Elapsed.Minutes) minutes and  $($StopWatch_deploy_pas.Elapsed.Seconds) seconds"
 
@@ -673,7 +673,7 @@ if (!$OpsmanUpdate) {
                 $StopWatch_deploy.Start()
                 $command = "$ScriptHome/scripts/tile_deployer.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -tiles $($tiles -join ',')"
                 Write-Host "Calling $command" 
-                Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/deployment-$(get-date -f yyyyMMddhhmmss).log"
+                Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/deployment-$(get-date -f yyyyMMddhhmmss).log"
                 $StopWatch_deploy.Stop()
                 $DeployTimes += "$tile deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds"
             }

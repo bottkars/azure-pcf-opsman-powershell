@@ -59,8 +59,11 @@ C:\OpenSSL-Win64\bin\openssl x509 -req -in "$($HOME)/$($DOMAIN).csr" `
 
 
 ## and now we go for OM_TARGET
-
-  "
+$OM_TARGET_GREEN= $OM_TARGET
+$OM_TARGET_BLUE=$OM_TARGET -replace "green","blue"
+foreach ($OM_TARGET in ($OM_TARGET_GREEN,$OM_TARGET_BLUE))
+{  
+"
   [ req ]
   prompt = no
   distinguished_name = dn
@@ -89,7 +92,7 @@ C:\OpenSSL-Win64\bin\openssl x509 -req `
 -CAkey "$($HOME)/$($DOMAIN).ca.key.pkcs8" `
 -CAcreateserial -out "$($HOME)/$($OM_TARGET).crt" -days $DAYS -sha256 -extfile $extfile "$($HOME)/extfile.txt"
 
-
+}
 $content = Get-Content "$($HOME)/$($DOMAIN).host.crt"
 $content += Get-Content "$($HOME)/$($DOMAIN).ca.crt"
 $content | Set-Content "$($HOME)/$($DOMAIN).crt"

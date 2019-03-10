@@ -26,7 +26,7 @@ param(
 )
 $ScriptDir = "$PSScriptRoot"
 Push-Location $PSScriptRoot
-
+New-Item -ItemType Directory -Path "$($HOME)/pcfdeployer/logs" -Force | out-null
 #$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 
@@ -82,7 +82,7 @@ ForEach ($tile in $tiles) {
         $command = "$ScriptDir/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -DO_NOT_APPLY"
     }
     Write-Host "Calling $command" 
-    Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/$($tile)-$(get-date -f yyyyMMddhhmmss).log"
+    Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/$($tile)-$(get-date -f yyyyMMddhhmmss).log"
     $StopWatch_Tile_deploy.Stop()
     $DeployTimes += "$tile deployment took $($StopWatch_Tile_deploy.Elapsed.Hours) hours, $($StopWatch_Tile_deploy.Elapsed.Minutes) minutes and  $($StopWatch_Tile_deploy.Elapsed.Seconds) seconds"
 }
