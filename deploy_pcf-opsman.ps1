@@ -483,9 +483,10 @@ if ($Environment -eq 'AzureStack') {
     catch [InvalidOperationException] {
         Write-Warning "Image already exists for $opsManVHD, not overwriting"
     }
+<#
     catch [CloudException] {
         Write-Warning " we make and educated guess that we use in-region copy"
-    }
+    }#>
     catch {
         Write-Warning "Unknown Exception"
         break
