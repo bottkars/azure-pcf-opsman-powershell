@@ -22,6 +22,7 @@ param(
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.361.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.372.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.377.vhd',
+        ##>
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.1-build.389.vhd',
         ## 2.2 starts here ##>
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.2-build.292.vhd',
