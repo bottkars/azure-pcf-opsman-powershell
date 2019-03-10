@@ -34,7 +34,6 @@ $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 if ($tiles -contains 'spring') {
     $tiles = ('mysql', 'rabbitmq', 'spring') + $tiles
     $tiles = $tiles | Select-Object -Unique
-    $compute_instances = 2
 }
 if ($tiles -contains 'dataflow') {
     $tiles = ('mysql', 'rabbitmq', 'redis', 'dataflow') + $tiles
