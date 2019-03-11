@@ -19,6 +19,10 @@ $BOSH_CREDENTIALS= om --skip-ssl-validation `
       --silent `
       --path /api/v0/deployed/director/credentials/bosh_commandline_credentials
 #>
+if (!(get-command cf.exe)){
+    install-script install-cf-cli
+    install-cf-cli.ps1
+}
 Write-Host "Reading deployed Products from OpsManager" 
 $DEPLOYED_PRODUCTS = om --skip-ssl-validation `
     curl `
