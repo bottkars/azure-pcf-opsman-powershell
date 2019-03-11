@@ -6,7 +6,14 @@ param(
 
     [Parameter(ParameterSetName = "1", Mandatory = $false)]
     [switch]
-    $DO_NOT_APPLY
+    $DO_NOT_APPLY,
+
+    [Parameter(ParameterSetName = "1l", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [switch]
+    $USE_MINIO
+
+
 )
 Push-Location $PSScriptRoot
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
@@ -109,4 +116,14 @@ if (!$DO_NOT_APPLY.IsPresent) {
 
 om --skip-ssl-validation `
     deployed-products
+
+if ($USE_MINIO.IsPresent)
+    {
+        ./deploy_minio-internal-blobstore.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE
+
+    }
+
+
 Pop-Location
+
+    

@@ -22,8 +22,13 @@ param(
         'wavefront-nozzle',
         'pivotal_single_sign-on_service',
         'p-compliance-scanner',
-        'p-event-alerts')]
-    [string]$tile
+        'p-event-alerts',
+        'minio-internal-blobstore')]
+    [string]$tile,
+    [Parameter(ParameterSetName = "applyme", Mandatory = $false)]
+    [Parameter(ParameterSetName = "no_apply", Mandatory = $false)]
+    [Parameter(ParameterSetName = "apply_all", Mandatory = $false)]
+    [switch]$update_stemcells
 )
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/$($tile).json"
@@ -70,7 +75,7 @@ Write-Host "getting Access Token"
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 Write-Host "Accepting EULA for $tile $PCF_VERSION"
 $eula = $piv_release | Confirm-PIVEula -access_token $access_token
-$piv_object = $piv_release_id | Where-Object aws_object_key -Like *$PRODUCT_TILE*.pivotal*
+$piv_object = $piv_release_id | Where-Object aws_object_key -Like "*$PRODUCT_TILE*.pivotal*"
 $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($tile)_$($PCF_VERSION)" -Force
 
 if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.FullName)/download-file.json"))) {
@@ -116,6 +121,12 @@ om --skip-ssl-validation `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
 
+if ($update_stemcells.ispresent)
+    {
+        $command = "$PSScriptRoot/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE  $DIRECTOR_CONF_FILE"
+        Write-Host "no starting $command"
+        Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/get-stemcells-$(get-date -f yyyyMMddhhmmss).log"
+    }
 om --skip-ssl-validation `
     assign-stemcell  `
     --stemcell latest `
@@ -145,6 +156,7 @@ switch ($tile) {
             -c "$config_file"  -l "$HOME/$($tile)_vars.yaml"
     }
 }
+
 switch ($PsCmdlet.ParameterSetName) { 
     "apply_all" { 
         Write-Host "Applying Changes to all Products"

@@ -160,6 +160,10 @@ param(
     [switch]
     $DO_NOT_DOWNLOAD,
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [switch]
+    $USE_MINIO,
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
     $compute_instances=1
 )
 
@@ -457,10 +461,6 @@ if (!$OpsmanUpdate) {
     else {
         Write-Host "$ImageStorageAccount already exists, operations might fail if not owner in same location" 
     }  
-    
-    
-
-   
 }
 $urlOfUploadedImageVhd = ('https://' + $ImageStorageAccount + '.blob.' + $blobbaseuri + '/' + $image_containername + '/' + $opsManVHD)
 Write-Host "Starting upload Procedure for $opsManVHD into storageaccount $ImageStorageAccount, this may take a while"
@@ -645,6 +645,9 @@ if (!$OpsmanUpdate) {
         $JSon | Set-Content $DIRECTOR_CONF_FILE
         if ($DO_NOT_APPLY.IsPresent) {
             $command = "$ScriptDir/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -DO_NOT_APPLY"
+        }
+        elseif ($USE_MINIO.IsPresent) {
+            $command = "$ScriptDir/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -USE_MINIO"    
         }
         else {
             $command = "$ScriptDir/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"    
