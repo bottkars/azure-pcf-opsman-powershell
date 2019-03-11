@@ -19,7 +19,7 @@ $BOSH_CREDENTIALS= om --skip-ssl-validation `
       --silent `
       --path /api/v0/deployed/director/credentials/bosh_commandline_credentials
 #>
-if (!(get-command cf.exe)){
+if (!(get-command cf.exe -ErrorAction SilentlyContinue)){
     install-script install-cf-cli
     install-cf-cli.ps1
 }
