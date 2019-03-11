@@ -62,4 +62,3 @@ resource-config:
     - ((pcf_web_lb))
   compute:
     instances: ((compute_instances))
-    instance_type_id: Standard_DS4_v2
