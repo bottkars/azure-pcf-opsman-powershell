@@ -168,10 +168,19 @@ compute_instances: $compute_instances
 om --skip-ssl-validation `
     configure-product `
     -c "$config_file" -l $HOME/vars.yaml
+
+
+
 if ($LASTEXITCODE -ne 0) {
     write-Host  "Error running om, please fix and retry"
     Pop-Location
     break
+}
+
+if ($USE_MINIO.ispresent){
+    Write-Host "Minio is enabled, checking vor Loadbalancer "
+
+    
 }
 
 

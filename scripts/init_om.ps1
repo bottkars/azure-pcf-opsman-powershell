@@ -4,11 +4,11 @@ param(
     [Validatescript( {Test-Path -Path $_ })]
     $DIRECTOR_CONF_FILE,
 
-    [Parameter(ParameterSetName = "1", Mandatory = $false)]
+    [Parameter(Mandatory = $false)]
     [switch]
     $DO_NOT_APPLY,
 
-    [Parameter(ParameterSetName = "1l", Mandatory = $false)]
+    [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [switch]
     $USE_MINIO

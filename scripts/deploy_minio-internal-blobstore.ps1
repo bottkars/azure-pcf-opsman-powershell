@@ -23,6 +23,9 @@ secret_key: $($env.PCF_PIVNET_UAA_TOKEN)
 " | Set-Content "$HOME/$($PivSlug)_vars.yaml"
 
 
+
+
+
 switch ($PsCmdlet.ParameterSetName) { 
     "apply_all" { 
         .$PSScriptRoot/deploy_tile.ps1 -tile $($PivSlug) -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -APPLY_ALL -update_stemcells
@@ -32,7 +35,23 @@ switch ($PsCmdlet.ParameterSetName) {
     } 
     default {
         .$PSScriptRoot/deploy_tile.ps1 -tile $($PivSlug) -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -update_stemcells
+    
     }
 } 
+
+if (!$DO_NOT_APPLY.IsPresent)
+{
+    $deployed = om --skip-ssl-validation `
+    curl --path /api/v0/staged/products 2>$null | ConvertFrom-Json
+    $MINIO_LB_IP = ((om.exe --skip-ssl-validation `
+        curl --path "/api/v0/deployed/products/$(($deployed | where type -eq minio-internal-blobstore).Installation_Name)/status" 2>$null `
+    | ConvertFrom-Json).status  | Where-Object job-name -Match load-balancer).ips 
+    
+    "
+    minio_ip: $($MINIO_LB_IP)
+    " | Set-Content "$HOME/$($PivSlug)_pas_vars.yaml"
+
+}
+
 
 Pop-Location 
