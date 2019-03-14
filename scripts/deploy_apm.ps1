@@ -13,7 +13,7 @@ param(
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/apm.json"
 if (!(Test-Path $PRODUCT_FILE))
-{$PRODUCT_FILE = "../examples/apm.json"}
+{$PRODUCT_FILE = "../examples/2.4/apm.json"}
 $apm_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $PCF_APM_VERSION = $apm_conf.PCF_APM_VERSION

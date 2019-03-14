@@ -13,7 +13,7 @@ param(
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/redis.json"
 if (!(Test-Path $PRODUCT_FILE))
-{$PRODUCT_FILE = "../examples/redis.json"}
+{$PRODUCT_FILE = "../examples/2.4/redis.json"}
 $redis_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $PCF_REDIS_VERSION = $redis_conf.PCF_REDIS_VERSION

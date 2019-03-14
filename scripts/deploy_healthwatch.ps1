@@ -13,7 +13,7 @@ param(
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/healthwatch.json"
 if (!(Test-Path $PRODUCT_FILE))
-{$PRODUCT_FILE = "../examples/healthwatch.json"}
+{$PRODUCT_FILE = "../examples/2.4/healthwatch.json"}
 $healthwatch_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $PCF_HEALTHWATCH_VERSION = $healthwatch_conf.PCF_HEALTHWATCH_VERSION
