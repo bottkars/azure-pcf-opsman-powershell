@@ -33,7 +33,7 @@ param(
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/$($tile).json"
 if (!(Test-Path $PRODUCT_FILE))
-{$PRODUCT_FILE = "../examples/$($tile).json"}
+{$PRODUCT_FILE = "../examples/2.4/$($tile).json"}
 $tile_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $PCF_VERSION = $tile_conf.PCF_VERSION

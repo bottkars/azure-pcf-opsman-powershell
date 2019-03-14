@@ -13,7 +13,7 @@ param(
 Push-Location $PSScriptRoot
 $PRODUCT_FILE = "$($HOME)/spring.json"
 if (!(Test-Path $PRODUCT_FILE))
-{$PRODUCT_FILE = "../examples/spring.json"}
+{$PRODUCT_FILE = "../examples/2.4/spring.json"}
 $spring_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $PCF_spring_VERSION = $spring_conf.PCF_spring_VERSION
