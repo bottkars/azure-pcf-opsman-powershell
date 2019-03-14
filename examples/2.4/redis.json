@@ -1,0 +1,4 @@
+{
+    "PCF_REDIS_VERSION":  "2.0.1",
+    "CONFIG_FILE": "../templates/redis/2.0.1/redis.yaml"
+}
