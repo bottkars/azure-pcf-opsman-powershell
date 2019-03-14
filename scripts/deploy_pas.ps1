@@ -89,13 +89,15 @@ if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.Fu
         --pivnet-product-slug elastic-runtime `
         --product-version $PCF_PAS_VERSION `
         --output-directory  "$($output_directory.FullName)"
+
+    if ($LASTEXITCODE -ne 0) {
+        write-Host  "Error running om, please fix"
+        Pop-Location
+        break
+    }
 }
 
-if ($LASTEXITCODE -ne 0) {
-    write-Host  "Error running om, please fix"
-    Pop-Location
-    break
-}
+
 
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
@@ -177,7 +179,7 @@ if ($LASTEXITCODE -ne 0) {
     break
 }
 
-if ($USE_MINIO.ispresent){
+if ($USE_MINIO.ispresent) {
     Write-Host "Minio is enabled, checking vor Loadbalancer "
 
     
