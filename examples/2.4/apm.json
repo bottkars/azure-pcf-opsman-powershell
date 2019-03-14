@@ -1,0 +1,4 @@
+{
+    "PCF_APM_VERSION":  "1.6.0",
+    "CONFIG_FILE": "../templates/apm/1.6.0/apm.yaml"
+}
