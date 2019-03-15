@@ -19,7 +19,7 @@ $BOSH_CREDENTIALS= om --skip-ssl-validation `
       --silent `
       --path /api/v0/deployed/director/credentials/bosh_commandline_credentials
 #>
-if (!(get-command cf.exe -ErrorAction  | out-null )){
+if (!(get-command cf.exe -ErrorAction SilentlyContinue | out-null )){
     install-script install-cf-cli -MinimumVersion 1.6 -Scope CurrentUser -Force
     install-cf-cli.ps1 -CLIRelease '6.43.0' -DownloadDir $HOME/Downloads
 }
