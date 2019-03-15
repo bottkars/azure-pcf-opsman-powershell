@@ -10,13 +10,6 @@
         "description": "Name of storage account for bosh jobs"
       }
     },
-    "storageEndpoint": {
-      "type": "string",
-      "defaultValue": "blob.local.azurestack.external",
-      "metadata": {
-        "description": "Domain prefix for storaged based on the chosen Azure cloud i.e. Commercial, Germany, etc."
-      }
-    },
     "OpsManImageURI": {
       "type": "string",
       "defaultValue": "https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.250.vhd",
