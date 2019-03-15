@@ -56,6 +56,7 @@ param(
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.244.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.250.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.258.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.268.vhd',        
 
         ## 2.4 starts here
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.117.vhd',
@@ -63,6 +64,7 @@ param(
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.142.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.145.vhd',
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.152.vhd',
+        'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.4-build.163.vhd',
 
         ## 2.5 start here
         'https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.5.0-build.128.vhd'
