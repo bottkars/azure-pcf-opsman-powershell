@@ -74,7 +74,7 @@ switch ($tile) {
     }
     "p-dataflow" {
         "
-        product_name: $PRODUCT_TILE
+        product_name: $PRODUCT_NAME
         pcf_pas_network: pcf-pas-subnet
         pcf_service_network: pcf-services-subnet
         server_admin_password: $PCF_PIVNET_UAA_TOKEN 
