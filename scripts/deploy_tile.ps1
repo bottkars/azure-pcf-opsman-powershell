@@ -71,9 +71,8 @@ $PRODUCT_TILE = $tile
 
 switch ($tile) {
     "azure-service-broker" {
-        $MASB_ENV = "$($director_conf.PCF_SUBDOMAIN_NAME).$($director_conf.domain)" -replace ".","-"
+        $MASB_ENV = "masb-$($director_conf.PCF_SUBDOMAIN_NAME).$($director_conf.domain)" -replace "\.","-"
         write-verbose $MASB_ENV
-        pause
         "
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
@@ -81,8 +80,8 @@ switch ($tile) {
         azure_tenant_id: $($env_vars.AZURE_TENANT_ID)
         azure_client_id: $($env_vars.AZURE_CLIENT_ID)
         azure_client_secret: $($env_vars.AZURE_CLIENT_SECRET)
-        azure_broker_database_server: masb$($ENV_SHORT_NAME).database.windows.net
-        azure_broker_database_name: masb$($ENV_SHORT_NAME)
+        azure_broker_database_server: $($MASB_ENV).database.windows.net
+        azure_broker_database_name: $($MASB_ENV)-db
         azure_broker_database_password: $PCF_PIVNET_UAA_TOKEN
         azure_broker_database_encryption_key: $($env_vars.AZURE_DATABASE_ENCRYPTION_KEY)
         azure_broker_default_location: $($env_vars.AZURE_REGION)
