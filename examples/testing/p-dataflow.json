@@ -1,4 +1,4 @@
 {
     "PCF_VERSION":  "1.3.2",
-    "CONFIG_FILE": "../templates/dataflow/1.3.2/dataflow.yaml"
+    "CONFIG_FILE": "../templates/p-dataflow/1.3.2/dataflow.yaml"
 }
