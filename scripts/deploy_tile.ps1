@@ -89,6 +89,16 @@ switch ($tile) {
         opsman_enable_url: $OM_Target
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"
     }
+    "pivotal-mysql"{
+        "
+        product_name: $PRODUCT_NAME
+        pcf_pas_network: pcf-pas-subnet `
+        pcf_service_network: pcf-services-subnet `
+        azure_storage_access_key: $($tile_conf.mysql_storage_key) `
+        azure_account: $($tile_conf.mysqlstorageaccountname)  `
+        global_recipient_email: $GLOBAL_RECIPIENT_EMAIL`
+        blob_store_base_url: $domain
+        " | Set-Content "$($HOME)/$($tile)_vars.yaml"    }
     Default {
         $PRODUCT_NAME = $tile
         write-verbose "writing config for $($HOME)/$($tile)_vars.yaml"
