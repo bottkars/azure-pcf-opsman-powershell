@@ -159,7 +159,7 @@ om --skip-ssl-validation `
 
 om --skip-ssl-validation `
     stage-product `
-    --product-name $PRODUCT `
+    --product-name $PRODUCT_NAME `
     --product-version $VERSION
 
 if ($update_stemcells.ispresent) {
@@ -170,7 +170,7 @@ if ($update_stemcells.ispresent) {
 om --skip-ssl-validation `
     assign-stemcell  `
     --stemcell latest `
-    --product $PRODUCT
+    --product $PRODUCT_NAME
 
 switch ($tile) {
     "p-event-alerts" {
