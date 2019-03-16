@@ -67,6 +67,7 @@ $env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 $GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
+$PRODUCT_NAME = $tile
 
 switch ($tile) {
     "p-compliance-scanner" { 
