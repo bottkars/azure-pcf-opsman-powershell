@@ -73,7 +73,7 @@ switch ($tile) {
     "azure-service-broker" {
         $MASB_ENV = ("$($director_conf.PCF_SUBDOMAIN_NAME).$($director_conf.domain)" -replace ".","-")
         write-verbose $MASB_ENV
-        break
+        pause
         "
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
