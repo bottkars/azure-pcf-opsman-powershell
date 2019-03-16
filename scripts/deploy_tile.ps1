@@ -95,7 +95,7 @@ switch ($tile) {
         if (!$do_not_configure_azure_DB.ispresent)
         {
             $context = Get-AzureRmContext
-            Write-Host "Now Creating Azure SQL Databas / Server for $PRODUCT_NAME"
+            Write-Host "Now Creating Azure SQL Databas / Server for $PRODUCT_TILE"
             $Credential=New-Object -TypeName System.Management.Automation.PSCredential `
             -ArgumentList "$($env_vars.AZURE_CLIENT_ID)", ("$($env_vars.AZURE_CLIENT_SECRET)" | ConvertTo-SecureString -AsPlainText -Force)
             $AzureRmContext = Connect-AzureRmAccount -Credential $Credential -Tenant "$($env_vars.AZURE_TENANT_ID)" -ServicePrincipal
@@ -105,7 +105,7 @@ switch ($tile) {
             New-AzureRmResourceGroup -Name $resourcegroupname -Location "$($env_vars.AZURE_REGION)" -Force
             New-AzureRmSqlServer -ResourceGroupName $resourcegroupname `
                 -ServerName "$($MASB_ENV)" `
-                -Location "$($director_conf.$AZURE_REGION)" `
+                -Location "$($director_conf.AZURE_REGION)" `
                 -SqlAdministratorCredentials $(New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList sqladmin, $(ConvertTo-SecureString -String $PCF_PIVNET_UAA_TOKEN -AsPlainText -Force))
     
             New-AzureRmSqlServerFirewallRule -ResourceGroupName $resourcegroupname `
