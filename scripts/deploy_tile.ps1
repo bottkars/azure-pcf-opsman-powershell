@@ -92,7 +92,7 @@ switch ($tile) {
     }
     "pivotal-mysql"{
         "
-        product_name: $PRODUCT_NAME
+        product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet `
         pcf_service_network: pcf-services-subnet `
         azure_storage_access_key: $($tile_conf.mysql_storage_key) `
