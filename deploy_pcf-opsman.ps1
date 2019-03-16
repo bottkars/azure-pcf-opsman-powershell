@@ -88,6 +88,7 @@ param(
     [ValidateNotNullOrEmpty()]
     $location = $GLOBAL:AZS_Location,
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     $dnsdomain = $Global:dnsdomain,
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
@@ -203,6 +204,9 @@ if (!(Test-Path $HOME/env.json)) {
 else {
     $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 }
+if (!$dnsdomain) {
+    $dnsdomain = Read-Host "Please enter your DNS Domain [azurestack.external for asdk]"
+}
 New-Item -ItemType Directory -Path "$($HOME)/pcfdeployer/logs" -Force | out-null
 $DeployTimes = @()
 $dnsZoneName = "$PCF_SUBDOMAIN_NAME.$Location.$dnsdomain"
@@ -278,9 +282,7 @@ $ScriptDir = "$PSScriptRoot/scripts"
 if (!$location) {
     $Location = Read-Host "Please enter your Region Name [local for asdk]"
 }
-if (!$dnsdomain) {
-    $dnsdomain = Read-Host "Please enter your DNS Domain [azurestack.external for asdk]"
-}
+
 
 if (!(test-path -Path "$($HOME)/opsman.pub")) {
     if ($openSSH = (Get-Command ssh-keygen.exe -ErrorAction SilentlyContinue).source) {
