@@ -10,7 +10,7 @@ network-properties:
     name: "null"
 product-properties:
   .properties.plan1_selector.single_node.description: 
-    value": "This plan provides a small, single node, dedicated MySQL instance."
+    value: "This plan provides a small, single node, dedicated MySQL instance."
   .properties.plan1_selector.lsingle_node.instance_limit:
     value: 10
   .properties.plan1_selector:
@@ -20,7 +20,7 @@ product-properties:
     value:
     - 'null'
   .properties.plan1_selector.leader_follower.description: 
-    value": "This plan provides a medium, leader-follower MySQL instance."   
+    value: "This plan provides a medium, leader-follower MySQL instance."   
   .properties.plan2_selector.leader_follower.instance_limit:
     value: 5
   .properties.plan2_selector:
