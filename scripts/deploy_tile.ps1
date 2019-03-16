@@ -14,7 +14,7 @@ param(
     [ValidateSet(
         'pivotal-mysql',
         'rabbitmq',
-        'spring',
+        'p-spring-cloud-services',
         'redis', 
         'apm', 
         'p-dataflow',
