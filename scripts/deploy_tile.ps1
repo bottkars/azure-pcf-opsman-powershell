@@ -21,7 +21,7 @@ param(
         'p-healthwatch', 
         'masb',
         'wavefront-nozzle',
-        'pivotal_single_sign-on_service',
+        'Pivotal_Single_Sign-On_Service',
         'p-compliance-scanner',
         'p-event-alerts',
         'minio-internal-blobstore')]
