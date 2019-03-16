@@ -15,7 +15,7 @@ param(
         'pivotal-mysql',
         'rabbitmq',
         'p-spring-cloud-services',
-        'redis', 
+        'p-redis', 
         'apm', 
         'p-dataflow',
         'p-healthwatch', 
@@ -117,6 +117,14 @@ switch ($tile) {
         smtp_port: $($env_vars.SMTP_PORT)
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
 
+    }
+    "p-redis" {
+        "
+        product_name: $PRODUCT_TILE
+        pcf_pas_network: pcf-pas-subnet `
+        pcf_service_network: pcf-services-subnet `
+        server_admin_password: $PCF_PIVNET_UAA_TOKEN 
+        " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
     }
     Default {
         $PRODUCT_NAME = $tile
