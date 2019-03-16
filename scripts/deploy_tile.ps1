@@ -99,7 +99,20 @@ switch ($tile) {
         azure_account: $($director_conf.mysqlstorageaccountname)  `
         global_recipient_email: $GLOBAL_RECIPIENT_EMAIL`
         blob_store_base_url: $domain
-        " | Set-Content "$($HOME)/$($tile)_vars.yaml"    }
+        " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
+    }
+    "p-event-alerts" {
+                "
+        product_name: $PRODUCT_TILE
+        pcf_pas_network: pcf-pas-subnet
+        smtp_address: $($env_vars.SMTP_ADDRESS)
+        smtp_identity: $($env_vars.SMTP_IDENTITY)
+        smtp_password: `"$($env_vars.SMTP_PASSWORD)`"
+        smtp_from: $($env_vars.SMTP_FROM)
+        smtp_port: $($env_vars.SMTP_PORT)
+        " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
+
+    }
     Default {
         $PRODUCT_NAME = $tile
         write-verbose "writing config for $($HOME)/$($tile)_vars.yaml"
