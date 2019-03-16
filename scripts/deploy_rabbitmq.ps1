@@ -11,17 +11,22 @@ param(
     $DIRECTOR_CONF_FILE
 )
 Push-Location $PSScriptRoot
+$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
+if ($director_conf.release)
+  {
+    $release = $director_conf.release
+  }
+else {
+  $release = "release"
+}
 $PRODUCT_FILE = "$($HOME)/rabbitmq.json"
 if (!(Test-Path $PRODUCT_FILE))
-{$PRODUCT_FILE = "../examples/2.4/rabbitmq.json"}
+{$PRODUCT_FILE = "../examples/$($release)/elease}/rabbitmq.json"}
 $rabbitmq_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
-$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $PCF_RABBITMQ_VERSION = $rabbitmq_conf.PCF_RABBITMQ_VERSION
 
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
 $downloaddir = $director_conf.downloaddir
-$PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME
-$domain = $director_conf.domain
 
 $config_file = $rabbitmq_conf.CONFIG_FILE
 $OM_Target = $director_conf.OM_TARGET
@@ -31,13 +36,12 @@ $env:OM_Password = $env_vars.OM_Password
 $env:OM_Username = $env_vars.OM_Username
 $env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
-$GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $slug_id = "p-rabbitmq"
 
 Write-Host "Getting Release for $slug_id $PCF_RABBITMQ_VERSION"
-$piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_RABBITMQ_VERSION | Select-Object -First 1
+$piv_release = Get-PIVRelease -id $slug_id | Where-Object version -Match $PCF_RABBITMQ_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 Write-Host "Accepting EULA for $slug_id $PCF_RABBITMQ_VERSION"
@@ -74,7 +78,7 @@ $PRODUCTS=$(om --skip-ssl-validation `
   available-products `
     --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
-$PRODUCT=$PRODUCTS | where name -Match $slug_id | Sort-Object -Descending -Property version | Select-Object -First 1
+$PRODUCT=$PRODUCTS | where-o name -Match $slug_id | Sort-Object -Descending -Property version | Select-Object -First 1
 $PRODUCT_NAME=$PRODUCT.name
 $VERSION=$PRODUCT.version
 

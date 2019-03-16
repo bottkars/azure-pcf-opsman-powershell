@@ -19,7 +19,7 @@ $DEPLOYED_PRODUCTS = om --skip-ssl-validation `
     --silent `
     --path /api/v0/deployed/products | ConvertFrom-Json
 
-$PCF = $DEPLOYED_PRODUCTS | Select-Object | where type -eq cf      
+$PCF = $DEPLOYED_PRODUCTS | Select-Object | where-object object type -eq cf      
 Write-Host "Getting UAA from OpsManger"
 $UAA_ADMIN_USER = om --skip-ssl-validation `
     curl `

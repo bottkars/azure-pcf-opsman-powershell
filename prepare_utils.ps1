@@ -51,7 +51,7 @@ catch
 try 
 	{
 	Write-Host -ForegroundColor Gray " ==>Trying to Parse OpenSSL Site $OpenSSL_URL"
-	$Parse = $Req.Links | where {$_ -Match "Win64OpenSSL_Light-$OpenSSL_Ver"}
+	$Parse = $Req.Links | where-object {$_ -Match "Win64OpenSSL_Light-$OpenSSL_Ver"}
 	#https://slproweb.com/download/Win32OpenSSL_Light-1_0_1t.exe
 	} 
 catch
@@ -62,7 +62,7 @@ catch
 	}
 
 $File = ($Parse | Select-Object -First 1).outerHTML
-$link = $File.Split('"') | where {$_ -Match "/download"}
+$link = $File.Split('"') | where-object {$_ -Match "/download"}
 $URL = "https://slproweb.com" + $($link)
 Write-Verbose " ==>got $URL"
     $FileName = Split-Path -Leaf -Path $Url

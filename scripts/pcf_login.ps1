@@ -35,7 +35,7 @@ $DEPLOYED_PRODUCTS = om --skip-ssl-validation `
 
 
 
-$PCF = $DEPLOYED_PRODUCTS | Select-Object | where type -eq cf      
+$PCF = $DEPLOYED_PRODUCTS | Select-Object | where-object type -eq cf      
 Write-Host "Getting cf Credentials from OpsManger"
 $PCF_ADMIN_USER = om --skip-ssl-validation `
     curl `

@@ -10,9 +10,15 @@ param(
     [Validatescript( {Test-Path -Path $_ })]
     $DIRECTOR_CONF_FILE
 )
-
-$pasw_conf = Get-Content "$($HOME)/pasw.json" | ConvertFrom-Json
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
+if ($director_conf.release)
+  {
+    $release = $director_conf.release
+  }
+else {
+  $release = "release"
+}
+$pasw_conf = Get-Content "$($HOME)/pasw.json" | ConvertFrom-Json
 
 $PCF_PASW_VERSION = $pasw_conf.PCF_PAS_VERSION
 $PRODUCT_NAME = $pasw_conf.PRODUCT_NAME
@@ -35,7 +41,7 @@ $slug_id = "pas-windows"
 
 
 Write-Host "Getting Release for $slug_id $PCF_PASW_VERSION"
-$piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_PASW_VERSION | Select-Object -First 1
+$piv_release = Get-PIVRelease -id $slug_id | where-object version -Match $PCF_PASW_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 Write-Host "Accepting EULA for $slug_id $PCF_PASW_VERSION"

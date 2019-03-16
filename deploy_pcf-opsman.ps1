@@ -171,8 +171,12 @@ param(
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet('westeurope', 'eastus','westus','southeastasia')]
-    $OpsManSeedLocation = "westeurope"
+    $OpsManSeedLocation = "westeurope",
     # The Azure Location to Download Opsman from
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('testing', 'release')]
+    $branch = "release"
 
 )
 
@@ -409,7 +413,6 @@ if (!$boshstorageaccount) {
     $boshstorageaccount = ($resourceGroup + $boshStorageaccount) -Replace '[^a-zA-Z0-9]', ''
     $boshstorageaccount = ($boshStorageaccount.subString(0, [System.Math]::Min(23, $boshstorageaccount.Length))).tolower()
 }
-$OpsManBaseUri = Split-Path  $opsmanager_uri  
 $opsManVHD = Split-Path -Leaf $opsmanager_uri
 $opsmanVersion = $opsManVHD -replace ".vhd", ""
 Write-host "Preparing to deploy OpsMan $opsmanVersion for $deploymentcolor deployment" -ForegroundColor $deploymentcolor
@@ -419,7 +422,7 @@ $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
 $StopWatch_prepare.Start()
 if (!$OpsmanUpdate) {
     Write-Host "==>Creating ResourceGroups $resourceGroup" -nonewline   
-    $new_rg = New-AzureRmResourceGroup -Name $resourceGroup -Location $location -Force -ErrorAction SilentlyContinue
+   New-AzureRmResourceGroup -Name $resourceGroup -Location $location -Force -ErrorAction SilentlyContinue | Out-Null
     Write-Host -ForegroundColor green "[done]"
     Write-Host "==>Assigning Contributer Role for /subscriptions/$((Get-AzureRmContext).Subscription.Id) to client_id $($env_vars.client_id)" -nonewline   
     New-AzureRmRoleAssignment -Scope "/subscriptions/$((Get-AzureRmContext).Subscription.Id)" `
@@ -580,11 +583,7 @@ $parameters.Add("opsManVHD", $opsManVHD)
 $parameters.Add("deploymentcolor", $deploymentcolor)
 $parameters.Add("mask", $mask)
 $parameters.Add("location", $location)
-$parameters.Add("storageEndpoint", "blob.$blobbaseuri")
-$parameters.Add("useManagedDisks", $ManagedDisks)
 $parameters.Add("OpsManImageURI", $urlOfUploadedImageVhd)
-$parameters.Add("Environment", $Environment)
-$parameters.Add("pcflbConnection", $PCFlbType)
 
 
 $StopWatch_deploy.Start()
@@ -593,6 +592,11 @@ Write-host "Starting deployment of PCF Control Plane using ARM template and  $de
 if (!$OpsmanUpdate) {
     $parameters.Add("dnsZoneName", $dnsZoneName)
     $parameters.Add("boshStorageAccountName", $boshstorageaccount)
+    $parameters.Add("Environment", $Environment)
+    $parameters.Add("pcflbConnection", $PCFlbType)
+    $parameters.Add("storageEndpoint", "blob.$blobbaseuri")
+    $parameters.Add("useManagedDisks", $ManagedDisks)
+    
  
     if ($TESTONLY.IsPresent) {
         Test-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroup -Mode Incremental -TemplateFile $PSScriptRoot/azuredeploy.json -TemplateParameterObject $parameters
@@ -653,6 +657,7 @@ if (!$OpsmanUpdate) {
             services_range           = $services_range
             downloaddir              = $downloadpath
             force_product_download   = $force_product_download.IsPresent.ToString()
+            release                  = $release
         } | ConvertTo-Json
         $JSon | Set-Content $DIRECTOR_CONF_FILE
         if ($DO_NOT_APPLY.IsPresent) {

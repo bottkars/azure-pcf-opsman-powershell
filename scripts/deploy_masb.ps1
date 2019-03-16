@@ -17,11 +17,18 @@ param(
     [switch]$do_not_configure_azure_DB
 )
 Push-Location $PSScriptRoot
+$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
+if ($director_conf.release)
+  {
+    $release = $director_conf.release
+  }
+else {
+  $release = "release"
+}
 $PRODUCT_FILE = "$($HOME)/masb.json"
 if (!(Test-Path $PRODUCT_FILE))
-{$PRODUCT_FILE = "../examples/2.4/masb.json"}
+{$PRODUCT_FILE = "../examples/$($release)/masb.json"}
 $masb_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
-$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $PCF_masb_VERSION = $masb_conf.PCF_masb_VERSION
 
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
@@ -52,7 +59,7 @@ $AZURE_DATABASE_ENCRYPTION_KEY = $env_vars.AZURE_DATABASE_ENCRYPTION_KEY
 $ENV_SHORT_NAME = $PCF_SUBDOMAIN_NAME
 ###
 Write-Host "Getting Release for $slug_id $PCF_MASB_VERSION"
-$piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_MASB_VERSION | Select-Object -First 1
+$piv_release = Get-PIVRelease -id $slug_id | where-object version -Match $PCF_MASB_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 $eula = Confirm-PIVEula -access_token $access_token -slugid 82 -id 290314
@@ -89,7 +96,7 @@ $PRODUCTS = $(om --skip-ssl-validation `
         available-products `
         --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
-$PRODUCT=$PRODUCTS | where name -Match $slug_id | Sort-Object -Descending -Property version | Select-Object -First 1
+$PRODUCT=$PRODUCTS | where-object name -Match $slug_id | Sort-Object -Descending -Property version | Select-Object -First 1
 $PRODUCT_NAME = $PRODUCT.name
 $VERSION = $PRODUCT.version
 

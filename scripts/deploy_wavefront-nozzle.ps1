@@ -12,6 +12,13 @@ param(
 )
 Push-Location $PSScriptRoot
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
+if ($director_conf.release)
+  {
+    $release = $director_conf.release
+  }
+else {
+  $release = "release"
+}
 $downloaddir = $director_conf.downloaddir
 $PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME
 $domain = $director_conf.domain
@@ -41,7 +48,7 @@ if (!(get-command uaac -ErrorAction SilentlyContinue )) {
 $users = uaac curl -k /Users  | Select-String "RESPONSE BODY:" -Context 0, 10000000
 $Userlist = ($USERS -replace "RESPONSE BODY:" -replace ">" |  ConvertFrom-Json).resources
 
-$Wavefront_user = ($Userlist | where userName -match wavefront-nozzle)
+$Wavefront_user = ($Userlist | where-object object userName -match wavefront-nozzle)
 
 if ( !$Wavefront_user ) {
     Write-Host "Creating user wavefront-nozzle"

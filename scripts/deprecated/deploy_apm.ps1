@@ -11,19 +11,27 @@ param(
     $DIRECTOR_CONF_FILE
 )
 Push-Location $PSScriptRoot
-$PRODUCT_FILE = "$($HOME)/dataflow.json"
-if (!(Test-Path $PRODUCT_FILE))
-{$PRODUCT_FILE = "../examples/dataflow.json"}
-$dataflow_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
-$PCF_DATAFLOW_VERSION = $dataflow_conf.PCF_DATAFLOW_VERSION
+if ($director_conf.release)
+  {
+    $release = $director_conf.release
+  }
+else {
+  $release = "release"
+}  
+$PRODUCT_FILE = "$($HOME)/apm.json"
+if (!(Test-Path $PRODUCT_FILE))
+{$PRODUCT_FILE = "../examples/$($release)/apm.json"}
+$apm_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
+
+$PCF_VERSION = $apm_conf.PCF_VERSION
 
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
 $downloaddir = $director_conf.downloaddir
 $PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME
 $domain = $director_conf.domain
 
-$config_file = $dataflow_conf.CONFIG_FILE
+$config_file = $apm_conf.CONFIG_FILE
 $OM_Target = $director_conf.OM_TARGET
 # setting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
@@ -34,16 +42,16 @@ $env:Path = "$($env:Path);$HOME/OM"
 $GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
-$slug_id = "p-dataflow"
+$slug_id = "apm"
 
-Write-Host "Getting Release for $slug_id $PCF_DATAFLOW_VERSION"
-$piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_DATAFLOW_VERSION | Select-Object -First 1
+Write-Host "Getting Release for $slug_id $PCF_VERSION"
+$piv_release = Get-PIVRelease -id $slug_id | where-object version -Match $PCF_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
-Write-Host "Accepting EULA for $slug_id $PCF_DATAFLOW_VERSION"
+Write-Host "Accepting EULA for $slug_id $PCF_VERSION"
 $eula = $piv_release | Confirm-PIVEula -access_token $access_token
 $piv_object = $piv_release_id | Where-Object aws_object_key -Like *$slug_id*.pivotal*
-$output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_DATAFLOW_VERSION)" -Force
+$output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_VERSION)" -Force
 
 if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
@@ -54,52 +62,53 @@ if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.Fu
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
         --pivnet-file-glob $(Split-Path -Leaf $piv_object.aws_object_key) `
         --pivnet-product-slug $slug_id `
-        --product-version $PCF_DATAFLOW_VERSION `
+        --product-version $PCF_VERSION `
         --output-directory  "$($output_directory.FullName)"
 }
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME = $download_file.product_path
 
+
+
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
 om --skip-ssl-validation `
-    --request-timeout 3600 `
-    upload-product `
-    --product $TARGET_FILENAME
+  --request-timeout 3600 `
+  upload-product `
+  --product $TARGET_FILENAME
 
-$PRODUCTS = $(om --skip-ssl-validation `
-        available-products `
-        --format json) | ConvertFrom-Json
+$PRODUCTS=$(om --skip-ssl-validation `
+  available-products `
+    --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
-$PRODUCT=$PRODUCTS | where name -Match $slug_id | Sort-Object -Descending -Property version | Select-Object -First 1
+$PRODUCT=$PRODUCTS | where-object name -Match $slug_id | Sort-Object -Descending -Property version | Select-Object -First 1
 $PRODUCT_NAME = $PRODUCT.name
-$VERSION = $PRODUCT.version
+$VERSION=$PRODUCT.version
 
 om --skip-ssl-validation `
-    deployed-products
-# 2.  Stage using om cli
+  deployed-products
+  # 2.  Stage using om cli
 
 om --skip-ssl-validation `
-    stage-product `
-    --product-name $PRODUCT_NAME `
-    --product-version $VERSION
+  stage-product `
+  --product-name $PRODUCT_NAME `
+  --product-version $VERSION
 
 om --skip-ssl-validation `
   assign-stemcell  `
   --stemcell latest `
   --product $PRODUCT_NAME
 
-  "
+"
 product_name: $PRODUCT_NAME
-pcf_pas_network: pcf-pas-subnet `
-pcf_service_network: pcf-services-subnet `
-server_admin_password: $PCF_PIVNET_UAA_TOKEN 
-" | Set-Content $HOME/dataflow_vars.yaml
+pcf_pas_network: pcf-pas-subnet
+" | Set-Content $HOME/apm_vars.yaml
+
 
 om --skip-ssl-validation `
-    configure-product `
-    -c "$config_file" -l "$HOME/dataflow_vars.yaml"
+  configure-product `
+  -c "$config_file" -l "$HOME/apm_vars.yaml"
 
 switch ($PsCmdlet.ParameterSetName) { 
     "apply_all" { 
@@ -119,6 +128,6 @@ switch ($PsCmdlet.ParameterSetName) {
 } 
 
 om --skip-ssl-validation `
-    deployed-products 
+  deployed-products 
 
 Pop-Location 

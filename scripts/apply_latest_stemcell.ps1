@@ -6,8 +6,14 @@ param(
     [Parameter(Mandatory = $false)]
     [switch]$apply
 )
-Push-Location $PSScriptRoot
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
+if ($director_conf.release)
+  {
+    $release = $director_conf.release
+  }
+else {
+  $release = "release"
+}
 $OM_Target = $director_conf.OM_TARGET
 $downloaddir = $director_conf.downloaddir
 # getting the env

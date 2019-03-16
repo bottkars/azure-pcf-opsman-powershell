@@ -32,11 +32,18 @@ param(
     $compute_instances = 1
 )
 Push-Location $PSScriptRoot
+$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
+if ($director_conf.release)
+  {
+    $release = $director_conf.release
+  }
+else {
+  $release = "release"
+}
 $PRODUCT_FILE = "$($HOME)/pas_$($PRODUCT_NAME).json"
 if (!(Test-Path $PRODUCT_FILE))
-{$PRODUCT_FILE = "../examples/2.4/pas_$($PRODUCT_NAME).json"}
+{$PRODUCT_FILE = "../examples/$($release)/pas_$($PRODUCT_NAME).json"}
 $pas_conf = Get-Content $PRODUCT_FILE | ConvertFrom-Json
-$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $PCF_PAS_VERSION = $pas_conf.PCF_PAS_VERSION
 $config_file = $pas_conf.CONFIG_FILE
 $OM_Target = $director_conf.OM_TARGET
@@ -67,7 +74,7 @@ $slug_id = "elastic_runtime"
 
 
 Write-Host "Getting Release for $PRODUCT_NAME $PCF_PAS_VERSION"
-$piv_release = Get-PIVRelease -id elastic-runtime | where version -Match $PCF_PAS_VERSION | Select-Object -First 1
+$piv_release = Get-PIVRelease -id elastic-runtime | where-object version -Match $PCF_PAS_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 Write-Host "Accepting EULA for $slug_id $PRODUCT_NAME $PCF_PAS_VERSION"
@@ -123,7 +130,7 @@ $PRODUCTS = $(om --skip-ssl-validation `
         available-products `
         --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
-$PRODUCT = $PRODUCTS | where name -eq cf | Sort-Object -Property version -Descending | select -first 1
+$PRODUCT = $PRODUCTS | where-object name -eq cf | Sort-Object -Property version -Descending | select -first 1
 $VERSION = $PRODUCT.version
 $PRODUCT_NAME = $PRODUCT.name
 # 2.  Stage using om cli

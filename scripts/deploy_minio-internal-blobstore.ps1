@@ -44,7 +44,7 @@ if (!$DO_NOT_APPLY.IsPresent)
     $deployed = om --skip-ssl-validation `
     curl --path /api/v0/staged/products 2>$null | ConvertFrom-Json
     $MINIO_LB_IP = ((om.exe --skip-ssl-validation `
-        curl --path "/api/v0/deployed/products/$(($deployed | where type -eq minio-internal-blobstore).Installation_Name)/status" 2>$null `
+        curl --path "/api/v0/deployed/products/$(($deployed | where-object type -eq minio-internal-blobstore).Installation_Name)/status" 2>$null `
     | ConvertFrom-Json).status  | Where-Object job-name -Match load-balancer).ips 
     
     "

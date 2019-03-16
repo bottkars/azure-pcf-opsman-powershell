@@ -11,11 +11,18 @@ param(
     $DIRECTOR_CONF_FILE
 )
 Push-Location $PSScriptRoot
+$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
+if ($director_conf.release)
+  {
+    $release = $director_conf.release
+  }
+else {
+  $release = "release"
+}
 $PRODUCT_FILE = "$($HOME)/healthwatch.json"
 if (!(Test-Path $PRODUCT_FILE))
-{$PRODUCT_FILE = "../examples/2.4/healthwatch.json"}
+{$PRODUCT_FILE = "../examples/$($release)/healthwatch.json"}
 $healthwatch_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
-$director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $PCF_HEALTHWATCH_VERSION = $healthwatch_conf.PCF_HEALTHWATCH_VERSION
 
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
@@ -37,7 +44,7 @@ $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $slug_id = "p-healthwatch"
 
 Write-Host "Getting Release for $slug_id $PCF_HEALTHWATCH_VERSION"
-$piv_release = Get-PIVRelease -id $slug_id | where version -Match $PCF_HEALTHWATCH_VERSION | Select-Object -First 1
+$piv_release = Get-PIVRelease -id $slug_id | where-object version -Match $PCF_HEALTHWATCH_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 Write-Host "Accepting EULA for $slug_id $PCF_HEALTHWATCH_VERSION"
@@ -72,7 +79,7 @@ $PRODUCTS = $(om --skip-ssl-validation `
         available-products `
         --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
-$PRODUCT=$PRODUCTS | where name -Match $slug_id | Sort-Object -Descending -Property version | Select-Object -First 1
+$PRODUCT=$PRODUCTS | where-object name -Match $slug_id | Sort-Object -Descending -Property version | Select-Object -First 1
 $PRODUCT_NAME = $PRODUCT.name
 $VERSION = $PRODUCT.version
 

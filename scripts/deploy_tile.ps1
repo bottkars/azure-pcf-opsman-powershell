@@ -16,7 +16,7 @@ param(
         'spring',
         'redis', 
         'apm', 
-        'dataflow',
+        'p-dataflow',
         'healthwatch', 
         'masb',
         'wavefront-nozzle',
@@ -31,11 +31,21 @@ param(
     [switch]$update_stemcells
 )
 Push-Location $PSScriptRoot
-$PRODUCT_FILE = "$($HOME)/$($tile).json"
-if (!(Test-Path $PRODUCT_FILE))
-{$PRODUCT_FILE = "../examples/2.4/$($tile).json"}
-$tile_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
+if ($director_conf.release) {
+    $release = $director_conf.release
+}
+else {
+    $release = "release"
+}
+Write-Verbose "Release: $Release"
+$PRODUCT_FILE = "$($HOME)/$($tile).json"
+if (!(Test-Path $PRODUCT_FILE)) {
+
+    $PRODUCT_FILE = "../examples/$($release)/$($tile).json"
+    Write-Verbose "using $PRODUCT_FILE"
+}
+$tile_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $PCF_VERSION = $tile_conf.PCF_VERSION
 $config_file = $tile_conf.CONFIG_FILE
 
@@ -43,8 +53,7 @@ $config_file = $tile_conf.CONFIG_FILE
 $OM_Target = $director_conf.OM_TARGET
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
 $downloaddir = $director_conf.downloaddir
-$PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME
-$domain = $director_conf.domain
+Write-Verbose $downloaddir
 # getting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $smtp_address = $env_vars.SMTP_ADDRESS
@@ -63,16 +72,39 @@ switch ($tile) {
     "p-compliance-scanner" { 
         $PRODUCT_TILE = "scanner"
     }
-    Default {$PRODUCT_TILE = $tile}
+    "p-dataflow" {
+        "
+        product_name: $PRODUCT_NAME
+        pcf_pas_network: pcf-pas-subnet `
+        pcf_service_network: pcf-services-subnet `
+        server_admin_password: $PCF_PIVNET_UAA_TOKEN 
+        " | Set-Content "$($HOME)/$($tile)_vars.yaml"
+    }
+    Default {
+        $PRODUCT_TILE = $tile
+        write-verbose "writing config for $($HOME)/$($tile)_vars.yaml"
+        "
+        product_name: $PRODUCT_NAME
+        pcf_pas_network: pcf-pas-subnet
+        " | Set-Content "$($HOME)/$($tile)_vars.yaml"
+
+    }
 }
 
 
 Write-Host "Getting Release for $tile $PCF_VERSION"
-$piv_release = Get-PIVRelease -id $tile | where version -Match $PCF_VERSION | Select-Object -First 1
+$piv_release = Get-PIVRelease -id $tile | where-object version -Match $PCF_VERSION | Select-Object -First 1
 Write-Host "Getting Release ID for $PCF_VERSION"
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 Write-Host "getting Access Token"
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
+if ($LASTEXITCODE -ne 0) {
+    Write-Warning "Error getting token"
+    break
+}
+else {
+    Write-Verbose $access_token
+}
 Write-Host "Accepting EULA for $tile $PCF_VERSION"
 $eula = $piv_release | Confirm-PIVEula -access_token $access_token
 $piv_object = $piv_release_id | Where-Object aws_object_key -Like "*$PRODUCT_TILE*.pivotal*"
@@ -108,7 +140,7 @@ $PRODUCTS = $(om --skip-ssl-validation `
 
 
 
-$PRODUCT = $PRODUCTS | where name -Match $PRODUCT_TILE | Sort-Object -Descending -Property version | Select-Object -First 1
+$PRODUCT = $PRODUCTS | where-object name -Match $PRODUCT_TILE | Sort-Object -Descending -Property version | Select-Object -First 1
 $PRODUCT_NAME = $PRODUCT.name
 $VERSION = $PRODUCT.version
 
@@ -121,12 +153,11 @@ om --skip-ssl-validation `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
 
-if ($update_stemcells.ispresent)
-    {
-        $command = "$PSScriptRoot/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE  $DIRECTOR_CONF_FILE"
-        Write-Host "no starting $command"
-        Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/get-stemcells-$(get-date -f yyyyMMddhhmmss).log"
-    }
+if ($update_stemcells.ispresent) {
+    $command = "$PSScriptRoot/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE  $DIRECTOR_CONF_FILE"
+    Write-Host "no starting $command"
+    Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/get-stemcells-$(get-date -f yyyyMMddhhmmss).log"
+}
 om --skip-ssl-validation `
     assign-stemcell  `
     --stemcell latest `

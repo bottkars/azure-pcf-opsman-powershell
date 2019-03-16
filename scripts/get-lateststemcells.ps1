@@ -22,9 +22,9 @@ $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 
 
 $Releases = @()
-$Releases += Get-PIVRelease -id 233 | where version -Match 97. | Select-Object -First 1
-$Releases += Get-PIVRelease -id 82 | where version -Match 3586. | Select-Object -First 1
-$Releases += Get-PIVRelease -id 82 | where version -Match 3541. | Select-Object -First 1
+$Releases += Get-PIVRelease -id 233 | where-object version -Match 97. | Select-Object -First 1
+$Releases += Get-PIVRelease -id 82 | where-object version -Match 3586. | Select-Object -First 1
+$Releases += Get-PIVRelease -id 82 | where-object object object version -Match 3541. | Select-Object -First 1
 if ($apply.IsPresent)
     {
         $floating = "true"
@@ -36,7 +36,7 @@ foreach ($Release in $Releases) {
 Write-Host  "Accepting EULA for Slug $($Release.slugid) Release $($Release.id)"
 $eula =    $Release | Confirm-PIVEula -access_token $access_token
 $output_directory = New-Item -ItemType Directory -Path "$downloaddir/stemcells/$($Release.version)" -Force 
-$aws_object_key = ($Release | Get-PIVFileReleaseId | where aws_object_key -match "hyperv").aws_object_key
+$aws_object_key = ($Release | Get-PIVFileReleaseId | where-object aws_object_key -match "hyperv").aws_object_key
 $stemcell_real_filename = Split-Path -Leaf $aws_object_key
 
 Write-Host " Stemcell filename $stemcell_real_filename"

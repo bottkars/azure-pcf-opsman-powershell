@@ -13,7 +13,7 @@ param(
 $users = uaac curl -k /Users  | Select-String "RESPONSE BODY:" -Context 0, 10000000
 $Userlist = ($USERS -replace "RESPONSE BODY:" -replace ">" |  ConvertFrom-Json).resources
 
-$Wavefront_user = ($Userlist | where userName -match wavefront-nozzle)
+$Wavefront_user = ($Userlist | where-object userName -match wavefront-nozzle)
 #>
 $assignment = $assignment.tolower()
 switch ($space)
