@@ -75,7 +75,7 @@ switch ($tile) {
         "
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
-        secret_key: $($env.PCF_PIVNET_UAA_TOKEN)
+        secret_key: $PCF_PIVNET_UAA_TOKEN
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
 }
     "p-compliance-scanner" { 
@@ -279,7 +279,7 @@ if ($applied)
     " | Set-Content "$HOME/$($PivSlug)_pas_vars.yaml"
         }
     default {
-        
+
     }    
     }    
 }
