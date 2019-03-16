@@ -1,0 +1,4 @@
+{
+    "PCF_VERSION":  "1.15.6",
+    "CONFIG_FILE": "../templates/p-rabbitmq/1.15.6/p-rabbitmq.yaml"
+}

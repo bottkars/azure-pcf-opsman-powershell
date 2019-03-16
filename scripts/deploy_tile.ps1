@@ -13,7 +13,7 @@ param(
     [ValidateNotNullOrEmpty()]
     [ValidateSet(
         'pivotal-mysql',
-        'rabbitmq',
+        'p-rabbitmq',
         'p-spring-cloud-services',
         'p-redis', 
         'apm', 
@@ -119,6 +119,14 @@ switch ($tile) {
 
     }
     "p-redis" {
+        "
+        product_name: $PRODUCT_TILE
+        pcf_pas_network: pcf-pas-subnet `
+        pcf_service_network: pcf-services-subnet `
+        server_admin_password: $PCF_PIVNET_UAA_TOKEN 
+        " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
+    }
+    "p-rabbitmq" {
         "
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet `
