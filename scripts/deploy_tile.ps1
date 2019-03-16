@@ -152,7 +152,7 @@ $PRODUCTS = $(om --skip-ssl-validation `
 $PRODUCT = $PRODUCTS | where-object name -Match $PRODUCT_NAME | Sort-Object -Descending -Property version | Select-Object -First 1
 $PRODUCT_NAME = $PRODUCT.name
 $VERSION = $PRODUCT.version
-Write-Verbose "we now have $PRODUCT_NAME $PCF_VERSION"
+Write-Verbose "we now have $PRODUCT_NAME VERSION"
 om --skip-ssl-validation `
     deployed-products
 # 2.  Stage using om cli
