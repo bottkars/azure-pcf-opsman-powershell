@@ -58,6 +58,7 @@ param(
         '2.3-build.250',
         '2.3-build.258',
         '2.3-build.268',        
+        '2.3-build.174',
 
         ## 2.4 starts here
         '2.4-build.117',
@@ -67,7 +68,6 @@ param(
         '2.4-build.152',
         '2.4-build.163',
         '2.4-build.168',
-        '2.4-build.174',
         ## 2.5 start here
         '2.5.0-build.158'
     )]
