@@ -68,7 +68,10 @@ else {
     $OM_TARGET_BLUE=$OM_TARGET
     $OM_TARGET_GREEN=$($OM_TARGET -replace "blue","green")
 }
-foreach ($TARGET in ("$OM_TARGET_GREEN","$OM_TARGET_BLUE"))
+$TARGETS = @()
+$TARGETS += $OM_TARGET_GREEN
+$TARGETS += $OM_TARGET_BLUE
+foreach ($TARGET in $TARGETS)
 {  
  
 "
