@@ -61,14 +61,14 @@ C:\OpenSSL-Win64\bin\openssl x509 -req -in "$($HOME)/$($DOMAIN).csr" `
 ## and now we go for OM_TARGET
 if ($OM_TARGET -match "green")
 {
- $OM_TARGET_GREEN= $OM_TARGET
- $OM_TARGET_BLUE=$OM_TARGET -replace "green","blue"
+ $OM_TARGET_GREEN=$OM_TARGET
+ $OM_TARGET_BLUE=$($OM_TARGET -replace "green","blue")
 }
 else {
-    $OM_TARGET_BLUE= $OM_TARGET
-    $OM_TARGET_GREEN=$OM_TARGET -replace "blue","green"
+    $OM_TARGET_BLUE=$OM_TARGET
+    $OM_TARGET_GREEN=$($OM_TARGET -replace "blue","green")
 }
-foreach ($TARGET in ($OM_TARGET_GREEN,$OM_TARGET_BLUE))
+foreach ($TARGET in ("$OM_TARGET_GREEN","$OM_TARGET_BLUE"))
 {  
  
 "
