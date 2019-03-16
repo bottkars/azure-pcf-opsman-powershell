@@ -95,8 +95,8 @@ switch ($tile) {
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet `
         pcf_service_network: pcf-services-subnet `
-        azure_storage_access_key: $($tile_conf.mysql_storage_key) `
-        azure_account: $($tile_conf.mysqlstorageaccountname)  `
+        azure_storage_access_key: $($director_conf.mysql_storage_key) `
+        azure_account: $($director_conf.mysqlstorageaccountname)  `
         global_recipient_email: $GLOBAL_RECIPIENT_EMAIL`
         blob_store_base_url: $domain
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"    }
