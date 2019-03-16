@@ -17,7 +17,7 @@ param(
         'redis', 
         'apm', 
         'p-dataflow',
-        'healthwatch', 
+        'p-healthwatch', 
         'masb',
         'wavefront-nozzle',
         'pivotal_single_sign-on_service',
@@ -75,9 +75,17 @@ switch ($tile) {
     "p-dataflow" {
         "
         product_name: $PRODUCT_NAME
-        pcf_pas_network: pcf-pas-subnet `
-        pcf_service_network: pcf-services-subnet `
+        pcf_pas_network: pcf-pas-subnet
+        pcf_service_network: pcf-services-subnet
         server_admin_password: $PCF_PIVNET_UAA_TOKEN 
+        " | Set-Content "$($HOME)/$($tile)_vars.yaml"
+    }
+    "p-healthwatch" {
+        "
+        product_name: $PRODUCT_NAME
+        pcf_pas_network: pcf-pas-subnet
+        pcf_service_network: pcf-services-subnet
+        opsman_enable_url: $OM_Target
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"
     }
     Default {
