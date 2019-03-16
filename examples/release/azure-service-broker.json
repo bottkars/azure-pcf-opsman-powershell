@@ -1,0 +1,4 @@
+{
+    "PCF_MASB_VERSION":  "1.10.1",
+    "CONFIG_FILE": "../templates/azure-service-broker/1.10.1/azure-service-broker.yaml"
+}

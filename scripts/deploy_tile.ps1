@@ -19,7 +19,7 @@ param(
         'apm', 
         'p-dataflow',
         'p-healthwatch', 
-        'masb',
+        'azure-service-broker',
         'wavefront-nozzle',
         'Pivotal_Single_Sign-On_Service',
         'p-compliance-scanner',
@@ -50,7 +50,6 @@ $tile_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $PCF_VERSION = $tile_conf.PCF_VERSION
 $config_file = $tile_conf.CONFIG_FILE
 
-
 $OM_Target = $director_conf.OM_TARGET
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
 $downloaddir = $director_conf.downloaddir
@@ -71,6 +70,25 @@ $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $PRODUCT_TILE = $tile
 
 switch ($tile) {
+    "azure-service-broker" {
+        $MASB_ENV = ("$($director_conf.PCF_SUBDOMAIN_NAME).$($director_conf.domain)" -replace ".","-")
+        write-verbose $MASB_ENV
+        break
+        "
+        product_name: $PRODUCT_TILE
+        pcf_pas_network: pcf-pas-subnet
+        azure_subscription_id: $($env_vars.AZURE_SUBSCRIPTION_ID)
+        azure_tenant_id: $($env_vars.AZURE_TENANT_ID)
+        azure_client_id: $($env_vars.AZURE_CLIENT_ID)
+        azure_client_secret: $($env_vars.AZURE_CLIENT_SECRET)
+        azure_broker_database_server: masb$($ENV_SHORT_NAME).database.windows.net
+        azure_broker_database_name: masb$($ENV_SHORT_NAME)
+        azure_broker_database_password: $PCF_PIVNET_UAA_TOKEN
+        azure_broker_database_encryption_key: $($env_vars.AZURE_DATABASE_ENCRYPTION_KEY)
+        azure_broker_default_location: $($env_vars.AZURE_REGION)
+        " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
+
+    }
     "minio-internal-blobstore" {
         "
         product_name: $PRODUCT_TILE
