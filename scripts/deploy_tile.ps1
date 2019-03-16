@@ -71,6 +71,13 @@ $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $PRODUCT_TILE = $tile
 
 switch ($tile) {
+    "minio-internal-blobstore" {
+        "
+        product_name: $PRODUCT_TILE
+        pcf_pas_network: pcf-pas-subnet
+        secret_key: $($env.PCF_PIVNET_UAA_TOKEN)
+        " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
+}
     "p-compliance-scanner" { 
         $PRODUCT_TILE = "scanner"
         "
@@ -243,6 +250,7 @@ switch ($PsCmdlet.ParameterSetName) {
         Write-Host "Applying Changes to all Products"
         om --skip-ssl-validation `
             apply-changes 
+        $applied=$true    
     } 
     "no_apply" { 
         Write-Host "Applying Changes to $PRODUCT_NAME skipped"
@@ -252,8 +260,30 @@ switch ($PsCmdlet.ParameterSetName) {
         om --skip-ssl-validation `
             apply-changes `
             --skip-unchanged-products
+        $applied=$true    
     }
 } 
+
+if ($applied)
+{
+    switch ($tile) {
+        "minio-internal-blobstore" {
+    $deployed = om --skip-ssl-validation `
+    curl --path /api/v0/staged/products 2>$null | ConvertFrom-Json
+    $MINIO_LB_IP = ((om.exe --skip-ssl-validation `
+        curl --path "/api/v0/deployed/products/$(($deployed | where-object type -eq minio-internal-blobstore).Installation_Name)/status" 2>$null `
+    | ConvertFrom-Json).status  | Where-Object job-name -Match load-balancer).ips 
+    
+    "
+    minio_ip: $($MINIO_LB_IP)
+    " | Set-Content "$HOME/$($PivSlug)_pas_vars.yaml"
+        }
+    default {
+        
+    }    
+    }    
+}
+
 Write-Host "Deployed Producst"
 
 om --skip-ssl-validation `
