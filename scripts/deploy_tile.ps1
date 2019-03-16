@@ -151,7 +151,7 @@ $PRODUCTS = $(om --skip-ssl-validation `
 $PRODUCT = $PRODUCTS | where-object name -Match $PRODUCT_TILE | Sort-Object -Descending -Property version | Select-Object -First 1
 $PRODUCT_NAME = $PRODUCT.name
 $VERSION = $PRODUCT.version
-
+Write-Verbose "we now have $PRODUCT_NAME"
 om --skip-ssl-validation `
     deployed-products
 # 2.  Stage using om cli
@@ -170,10 +170,6 @@ om --skip-ssl-validation `
     assign-stemcell  `
     --stemcell latest `
     --product $PRODUCT_NAME
-
-
-
-
 
 switch ($tile) {
     "p-event-alerts" {
