@@ -209,8 +209,15 @@ switch ($PsCmdlet.ParameterSetName) {
             --skip-unchanged-products
     }
 } 
+Write-Host "Deployed Producst"
+om --skip-ssl-validation `
+    deployed-products `
+    --format json | ConvertFrom-Json
+
+    Write-Host "Staged-Products"
 
 om --skip-ssl-validation `
-    deployed-products 
+    staged-products `
+    --format json | ConvertFrom-Json
 
 Pop-Location 
