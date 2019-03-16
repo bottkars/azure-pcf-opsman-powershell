@@ -59,7 +59,7 @@ C:\OpenSSL-Win64\bin\openssl x509 -req -in "$($HOME)/$($DOMAIN).csr" `
 
 
 ## and now we go for OM_TARGET
-if ($OM_TARGET -match green)
+if ($OM_TARGET -match "green")
 {
  $OM_TARGET_GREEN= $OM_TARGET
  $OM_TARGET_BLUE=$OM_TARGET -replace "green","blue"
