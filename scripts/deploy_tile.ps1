@@ -33,7 +33,7 @@ param(
     [Parameter(ParameterSetName = "applyme",Mandatory = $false)]
     [Parameter(ParameterSetName = "no_apply", Mandatory = $false)]
     [Parameter(ParameterSetName = "apply_all", Mandatory = $false)]
-    [switch]$do_not_configure_azure_DB
+    [switch]$configure_azure_DB
 
 )
 Push-Location $PSScriptRoot
@@ -92,7 +92,7 @@ switch ($tile) {
         azure_broker_default_location: $($env_vars.AZURE_REGION)
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
 
-        if (!$do_not_configure_azure_DB.ispresent)
+        if ($configure_azure_DB.ispresent)
         {
             $context = Get-AzureRmContext
             Write-Host "Now Creating Azure SQL Databas / Server for $PRODUCT_TILE"
