@@ -67,7 +67,6 @@
   },
   "variables": {
     "infrastructure_subnet_name": "[concat(resourceGroup().name,'-infrastructure-subnet')]",
-    "boshExtraStorageAccountName": "[concat('xtrastrg',uniquestring(resourceGroup().id, deployment().name))]",
     "opsManVMName": "[parameters('opsManFQDNPrefix')]",
     "location": "[parameters('location')]",
     "virtualNetworkName": "[concat(resourceGroup().name,'-virtual-network')]",
@@ -207,12 +206,8 @@
   ],
   "outputs": {
     "fqdn": {
-      "value": "[reference(variables('OpsManPublicIPName')).dnsSettings.fqdn]",
+      "value": "[reference(variables('OpsManPublicIPName')).properties.ipAddress]",
       "type": "string"
-    },
-    "Extra Storage Account Prefix": {
-      "type": "string",
-      "value": "[variables('boshExtraStorageAccountName')]"
     }
   }
 }

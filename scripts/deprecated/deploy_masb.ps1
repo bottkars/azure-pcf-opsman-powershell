@@ -45,7 +45,6 @@ $env:OM_Password = $env_vars.OM_Password
 $env:OM_Username = $env_vars.OM_Username
 $env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
-$GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $slug_id = "azure-service-broker"
@@ -140,7 +139,7 @@ if (!$do_not_configure_azure_DB.ispresent)
         Write-Host "Now Creating Azure SQL Databas / Server for $PRODUCT_NAME"
         $Credential=New-Object -TypeName System.Management.Automation.PSCredential `
         -ArgumentList $AZURE_CLIENT_ID, ($AZURE_CLIENT_SECRET | ConvertTo-SecureString -AsPlainText -Force)
-        $AzureRmContext = Connect-AzureRmAccount -Credential $Credential -Tenant $AZURE_TENANT_ID -ServicePrincipal
+         Connect-AzureRmAccount -Credential $Credential -Tenant $AZURE_TENANT_ID -ServicePrincipal
         $resourcegroupname = "$($director_conf.RG).$($PCF_SUBDOMAIN_NAME).$($domain)"
         $startip = "0.0.0.0"
         $endip = "255.255.255.0"

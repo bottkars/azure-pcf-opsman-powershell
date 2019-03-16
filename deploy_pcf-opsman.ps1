@@ -67,11 +67,11 @@ param(
         '2.4-build.152',
         '2.4-build.163',
         '2.4-build.168',
-
+        '2.4-build.174',
         ## 2.5 start here
         '2.5.0-build.158'
     )]
-    $opsmanager_image = '2.3-build.268',
+    $opsmanager_image = '2.3-build.274',
     # The name of the Ressource Group we want to Deploy to.
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
@@ -478,7 +478,7 @@ if (!$OpsmanUpdate) {
             }    
             $new_acsaccount | Set-AzureRmCurrentStorageAccount
             Write-Host "Creating Container `"$image_containername`" in $($new_acsaccount.StorageAccountName)"
-            $Container = New-AzureStorageContainer -Name $image_containername -Permission blob
+            New-AzureStorageContainer -Name $image_containername -Permission blob |  Out-Null
         }
         else {
             write-host "Scenario currently not supported"

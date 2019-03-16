@@ -116,7 +116,7 @@ switch ($tile) {
             Write-Host "Now Creating Azure SQL Database / Server for $PRODUCT_TILE"
             $Credential=New-Object -TypeName System.Management.Automation.PSCredential `
             -ArgumentList "$($env_vars.AZURE_CLIENT_ID)", ("$($env_vars.AZURE_CLIENT_SECRET)" | ConvertTo-SecureString -AsPlainText -Force)
-            $AzureRmContext = Connect-AzureRmAccount -Credential $Credential -Tenant "$($env_vars.AZURE_TENANT_ID)" -ServicePrincipal
+            Connect-AzureRmAccount -Credential $Credential -Tenant "$($env_vars.AZURE_TENANT_ID)" -ServicePrincipal
             $resourcegroupname = "$($director_conf.RG).$($director_conf.PCF_SUBDOMAIN_NAME).$($director_conf.domain)"
             $startip = "0.0.0.0"
             $endip = "255.255.255.0"
