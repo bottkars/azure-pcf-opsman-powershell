@@ -3,18 +3,20 @@
 param(
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet('mysql',
-        'rabbitmq',
-        'spring',
-        'redis', 
+    [ValidateSet(
+        'pivotal-mysql',
+        'p-rabbitmq',
+        'p-spring-cloud-services',
+        'p-redis', 
         'apm', 
-        'dataflow',
-        'healthwatch', 
-        'masb',
+        'p-dataflow',
+        'p-healthwatch', 
+        'azure-service-broker',
         'wavefront-nozzle',
-        'pivotal_single_sign-on_service',
+        'Pivotal_Single_Sign-On_Service',
         'p-compliance-scanner',
-        'p-event-alerts')]    
+        'p-event-alerts',
+        'minio-internal-blobstore')] 
     [string[]]$tiles,
     [Parameter(Mandatory = $true)]	
     [Validatescript( {Test-Path -Path $_ })]
@@ -31,20 +33,20 @@ New-Item -ItemType Directory -Path "$($HOME)/pcfdeployer/logs" -Force | out-null
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 
 
-if ($tiles -contains 'spring') {
-    $tiles = ('mysql', 'rabbitmq', 'spring') + $tiles
+if ($tiles -contains 'p-spring') {
+    $tiles = ('pivotal-mysql', 'p-rabbitmq', 'p-spring') + $tiles
     $tiles = $tiles | Select-Object -Unique
 }
 if ($tiles -contains 'dataflow') {
-    $tiles = ('mysql', 'rabbitmq', 'redis', 'dataflow') + $tiles
+    $tiles = ('pivotal-mysql', 'p-rabbitmq', 'p-redis', 'dataflow') + $tiles
     $tiles = $tiles | Select-Object -Unique
 }
 if ($tiles -contains 'p-event-alerts') {
-    $tiles = ('mysql', 'p-event-alerts') + $tiles
+    $tiles = ('pivotal-mysql', 'p-event-alerts') + $tiles
     $tiles = $tiles | Select-Object -Unique
 }
 
-if ($tiles -contains 'masb') {
+if ($tiles -contains 'azure-service-broker') {
     if (!$env_vars.AZURE_CLIENT_ID `
             -or !$env_vars.AZURE_CLIENT_SECRET `
             -or !$env_vars.AZURE_REGION `
@@ -75,10 +77,10 @@ ForEach ($tile in $tiles) {
     $StopWatch_Tile_deploy = New-Object System.Diagnostics.Stopwatch
     $StopWatch_Tile_deploy.Start()
     if ($tile -match $tiles[-1]) {
-        $command = "$ScriptDir/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
+        $command = "$ScriptDir/deploy_tile.ps1 -tile $tile -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
     }
     else {
-        $command = "$ScriptDir/deploy_$($tile).ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -DO_NOT_APPLY"
+        $command = "$ScriptDir/deploy_tile.ps1 -tile $tile -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -DO_NOT_APPLY"
     }
     Write-Host "Calling $command" 
     Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/$($tile)-$(get-date -f yyyyMMddhhmmss).log"

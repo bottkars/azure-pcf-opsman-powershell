@@ -1,5 +1,6 @@
 ﻿#requires -module pivposh
 #requires -module NetTCPIP
+#requires -module AzureRM.SQL
 param(
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
@@ -142,7 +143,21 @@ param(
     $PASTYPE = "srt",
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet('mysql', 'rabbitmq', 'spring', 'redis', 'apm', 'dataflow', 'healthwatch', 'masb')]
+        [ValidateSet(
+            'pivotal-mysql',
+            'p-rabbitmq',
+            'p-spring-cloud-services',
+            'p-redis', 
+            'apm', 
+            'p-dataflow',
+            'p-healthwatch', 
+            'azure-service-broker',
+            'wavefront-nozzle',
+            'Pivotal_Single_Sign-On_Service',
+            'p-compliance-scanner',
+            'p-event-alerts',
+            'minio-internal-blobstore'
+            )]
     [string[]]$tiles,
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]

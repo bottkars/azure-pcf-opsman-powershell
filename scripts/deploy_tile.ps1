@@ -76,6 +76,24 @@ $PRODUCT_TILE = $tile
 
 switch ($tile) {
     "azure-service-broker" {
+        if (!$env_vars.AZURE_CLIENT_ID `
+        -or !$env_vars.AZURE_CLIENT_SECRET `
+        -or !$env_vars.AZURE_REGION `
+        -or !$env_vars.AZURE_SUBSCRIPTION_ID `
+        -or !$env_vars.AZURE_TENANT_ID `
+        -or !$env_vars.AZURE_DATABASE_ENCRYPTION_KEY  
+        ) {
+            Write-Host -ForegroundColor White "Microsoft Azure Service Broker needs
+                    AZURE_CLIENT_ID 
+                    AZURE_CLIENT_SECRET 
+                    AZURE_REGION 
+                    AZURE_SUBSCRIPTION_ID 
+                    AZURE_TENANT_ID
+                    AZURE_DATABASE_ENCRYPTION_KEY in env.json
+        to be set correctly with role `contributor` for the Service Principal at the AZURE subscription level"
+            Pop-Location
+            break
+        }
         $MASB_ENV = "masb-$($director_conf.PCF_SUBDOMAIN_NAME).$($director_conf.domain)" -replace "\.","-"
         write-verbose $MASB_ENV
         "
@@ -95,7 +113,7 @@ switch ($tile) {
         if ($configure_azure_DB.ispresent)
         {
             $context = Get-AzureRmContext
-            Write-Host "Now Creating Azure SQL Databas / Server for $PRODUCT_TILE"
+            Write-Host "Now Creating Azure SQL Database / Server for $PRODUCT_TILE"
             $Credential=New-Object -TypeName System.Management.Automation.PSCredential `
             -ArgumentList "$($env_vars.AZURE_CLIENT_ID)", ("$($env_vars.AZURE_CLIENT_SECRET)" | ConvertTo-SecureString -AsPlainText -Force)
             $AzureRmContext = Connect-AzureRmAccount -Credential $Credential -Tenant "$($env_vars.AZURE_TENANT_ID)" -ServicePrincipal
