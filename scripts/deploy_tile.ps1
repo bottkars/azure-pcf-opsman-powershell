@@ -11,7 +11,8 @@ param(
     $DIRECTOR_CONF_FILE,
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet('mysql',
+    [ValidateSet(
+        'pivotal-mysql',
         'rabbitmq',
         'spring',
         'redis', 
