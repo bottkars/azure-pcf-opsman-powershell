@@ -210,14 +210,15 @@ switch ($PsCmdlet.ParameterSetName) {
     }
 } 
 Write-Host "Deployed Producst"
-om --skip-ssl-validation `
+
+$Deployed = om --skip-ssl-validation `
     deployed-products `
     --format json | ConvertFrom-Json
+Write-Host $Deployed
+Write-Host "Staged-Products"
 
-    Write-Host "Staged-Products"
-
-om --skip-ssl-validation `
+$staged = om --skip-ssl-validation `
     staged-products `
     --format json | ConvertFrom-Json
-
+Write-Host $staged
 Pop-Location 
