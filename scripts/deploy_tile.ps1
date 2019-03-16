@@ -74,7 +74,7 @@ switch ($tile) {
     }
     "p-dataflow" {
         "
-        product_name: $PRODUCT_NAME
+        product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
         pcf_service_network: pcf-services-subnet
         server_admin_password: $PCF_PIVNET_UAA_TOKEN 
@@ -82,7 +82,7 @@ switch ($tile) {
     }
     "p-healthwatch" {
         "
-        product_name: $PRODUCT_NAME
+        product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
         pcf_service_network: pcf-services-subnet
         opsman_enable_url: $OM_Target
@@ -92,7 +92,7 @@ switch ($tile) {
         $PRODUCT_TILE = $tile
         write-verbose "writing config for $($HOME)/$($tile)_vars.yaml"
         "
-        product_name: $PRODUCT_NAME
+        product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"
 
