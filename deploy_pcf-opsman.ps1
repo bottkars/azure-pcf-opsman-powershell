@@ -604,6 +604,7 @@ $parameters.Add("OpsManImageURI", $urlOfUploadedImageVhd)
 
 
 $StopWatch_deploy.Start()
+#     $parameters.Add("storageEndpoint", "blob.$blobbaseuri")
 
 Write-host "Starting deployment of PCF Control Plane using ARM template and  $deploymentcolor deployment of $opsManFQDNPrefix $opsmanVersion" -ForegroundColor $deploymentcolor
 if (!$OpsmanUpdate) {
@@ -611,7 +612,6 @@ if (!$OpsmanUpdate) {
     $parameters.Add("boshStorageAccountName", $boshstorageaccount)
     $parameters.Add("Environment", $Environment)
     $parameters.Add("pcflbConnection", $PCFlbType)
-    $parameters.Add("storageEndpoint", "blob.$blobbaseuri")
     $parameters.Add("useManagedDisks", $ManagedDisks)
     
  
