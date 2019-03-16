@@ -149,9 +149,9 @@ $PRODUCTS = $(om --skip-ssl-validation `
 
 
 
-# $PRODUCT = $PRODUCTS | where-object name -Match $PRODUCT_TILE | Sort-Object -Descending -Property version | Select-Object -First 1
-# $PRODUCT_NAME = $PRODUCT.name
-# $PCF_VERSION = $PRODUCT.version
+$PRODUCT = $PRODUCTS | where-object name -Match $PRODUCT_NAME | Sort-Object -Descending -Property version | Select-Object -First 1
+$PRODUCT_NAME = $PRODUCT.name
+$VERSION = $PRODUCT.version
 Write-Verbose "we now have $PRODUCT_NAME $PCF_VERSION"
 om --skip-ssl-validation `
     deployed-products
@@ -159,8 +159,8 @@ om --skip-ssl-validation `
 
 om --skip-ssl-validation `
     stage-product `
-    --product-name $PRODUCT_NAME `
-    --product-version $PCF_VERSION
+    --product-name $PRODUCT `
+    --product-version $VERSION
 
 if ($update_stemcells.ispresent) {
     $command = "$PSScriptRoot/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE  $DIRECTOR_CONF_FILE"
@@ -170,7 +170,7 @@ if ($update_stemcells.ispresent) {
 om --skip-ssl-validation `
     assign-stemcell  `
     --stemcell latest `
-    --product $PRODUCT_NAME
+    --product $PRODUCT
 
 switch ($tile) {
     "p-event-alerts" {
