@@ -98,7 +98,7 @@ Write-Host "Getting Release ID for $PCF_VERSION"
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 Write-Host "getting Access Token"
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
-if ($LASTEXITCODE -ne 0) {
+if (!$access_token) {
     Write-Warning "Error getting token"
     break
 }
