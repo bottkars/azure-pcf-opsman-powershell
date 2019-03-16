@@ -67,15 +67,15 @@ $env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 $GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
-$PRODUCT_NAME = $tile
+$PRODUCT_TILE = $tile
 
 switch ($tile) {
     "p-compliance-scanner" { 
-        $PRODUCT_NAME = "scanner"
+        $PRODUCT_TILE = "scanner"
     }
     "p-dataflow" {
         "
-        product_name: $PRODUCT_NAME
+        product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
         pcf_service_network: pcf-services-subnet
         server_admin_password: $PCF_PIVNET_UAA_TOKEN 
@@ -83,7 +83,7 @@ switch ($tile) {
     }
     "p-healthwatch" {
         "
-        product_name: $PRODUCT_NAME
+        product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
         pcf_service_network: pcf-services-subnet
         opsman_enable_url: $OM_Target
@@ -93,7 +93,7 @@ switch ($tile) {
         $PRODUCT_NAME = $tile
         write-verbose "writing config for $($HOME)/$($tile)_vars.yaml"
         "
-        product_name: $PRODUCT_NAME
+        product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"
 
@@ -149,10 +149,10 @@ $PRODUCTS = $(om --skip-ssl-validation `
 
 
 
-$PRODUCT = $PRODUCTS | where-object name -Match $PRODUCT_NAME | Sort-Object -Descending -Property version | Select-Object -First 1
+$PRODUCT = $PRODUCTS | where-object name -Match $tile | Sort-Object -Descending -Property version | Select-Object -First 1
 $PRODUCT_NAME = $PRODUCT.name
 $VERSION = $PRODUCT.version
-Write-Verbose "we now have $PRODUCT_NAME VERSION"
+Write-Verbose "we now have $PRODUCT_NAME $VERSION"
 om --skip-ssl-validation `
     deployed-products
 # 2.  Stage using om cli
