@@ -11,7 +11,7 @@ network-properties:
 product-properties:
   .properties.plan1_selector.single_node.description: 
     value: "This plan provides a small, single node, dedicated MySQL instance."
-  .properties.plan1_selector.lsingle_node.instance_limit:
+  .properties.plan1_selector.single_node.instance_limit:
     value: 10
   .properties.plan1_selector:
     value: single_node
