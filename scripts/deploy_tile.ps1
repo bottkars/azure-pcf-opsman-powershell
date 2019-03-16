@@ -73,6 +73,11 @@ $PRODUCT_TILE = $tile
 switch ($tile) {
     "p-compliance-scanner" { 
         $PRODUCT_TILE = "scanner"
+        "
+        product_name: $PRODUCT_TILE
+        pcf_pas_network: pcf-pas-subnet
+        " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
+
     }
     "p-dataflow" {
         "
