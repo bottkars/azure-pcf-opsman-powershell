@@ -70,7 +70,7 @@ $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 
 switch ($tile) {
     "p-compliance-scanner" { 
-        $PRODUCT_TILE = "scanner"
+        $PRODUCT_NAME = "scanner"
     }
     "p-dataflow" {
         "
@@ -82,17 +82,17 @@ switch ($tile) {
     }
     "p-healthwatch" {
         "
-        product_name: $PRODUCT_TILE
+        product_name: $PRODUCT_NAME
         pcf_pas_network: pcf-pas-subnet
         pcf_service_network: pcf-services-subnet
         opsman_enable_url: $OM_Target
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"
     }
     Default {
-        $PRODUCT_TILE = $tile
+        $PRODUCT_NAME = $tile
         write-verbose "writing config for $($HOME)/$($tile)_vars.yaml"
         "
-        product_name: $PRODUCT_TILE
+        product_name: $PRODUCT_NAME
         pcf_pas_network: pcf-pas-subnet
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"
 
@@ -115,7 +115,7 @@ else {
 }
 Write-Host "Accepting EULA for $tile $PCF_VERSION"
 $eula = $piv_release | Confirm-PIVEula -access_token $access_token
-$piv_object = $piv_release_id | Where-Object aws_object_key -Like "*$PRODUCT_TILE*.pivotal*"
+$piv_object = $piv_release_id | Where-Object aws_object_key -Like "*$PRODUCT_NAME*.pivotal*"
 $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($tile)_$($PCF_VERSION)" -Force
 
 if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.FullName)/download-file.json"))) {
@@ -148,10 +148,10 @@ $PRODUCTS = $(om --skip-ssl-validation `
 
 
 
-$PRODUCT = $PRODUCTS | where-object name -Match $PRODUCT_TILE | Sort-Object -Descending -Property version | Select-Object -First 1
-$PRODUCT_NAME = $PRODUCT.name
-$VERSION = $PRODUCT.version
-Write-Verbose "we now have $PRODUCT_NAME $VERSION"
+# $PRODUCT = $PRODUCTS | where-object name -Match $PRODUCT_TILE | Sort-Object -Descending -Property version | Select-Object -First 1
+# $PRODUCT_NAME = $PRODUCT.name
+# $PCF_VERSION = $PRODUCT.version
+Write-Verbose "we now have $PRODUCT_NAME $PCF_VERSION"
 om --skip-ssl-validation `
     deployed-products
 # 2.  Stage using om cli
@@ -159,7 +159,7 @@ om --skip-ssl-validation `
 om --skip-ssl-validation `
     stage-product `
     --product-name $PRODUCT_NAME `
-    --product-version $VERSION
+    --product-version $PCF_VERSION
 
 if ($update_stemcells.ispresent) {
     $command = "$PSScriptRoot/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE  $DIRECTOR_CONF_FILE"
