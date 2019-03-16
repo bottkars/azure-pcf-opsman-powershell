@@ -14,7 +14,7 @@ product-properties:
   .properties.plan1_selector.single_node.instance_limit:
     value: 10
   .properties.plan1_selector:
-    selected_option: single_node  
+    value: single_node
   .properties.plan1_selector.single_node.az_multi_select:
     value:
     - 'null'
