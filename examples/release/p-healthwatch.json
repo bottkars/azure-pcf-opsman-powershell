@@ -1,4 +1,4 @@
 {
     "PCF_HEALTHWATCH_VERSION":  "1.4.4",
-    "CONFIG_FILE": "../templates/p-healthwatch/1.4.4/healthwatch.yaml"
+    "CONFIG_FILE": "../templates/p-healthwatch/1.4.4/p-healthwatch.yaml"
 }
