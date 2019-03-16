@@ -102,7 +102,7 @@ switch ($tile) {
             $resourcegroupname = "$($director_conf.RG).$($director_conf.PCF_SUBDOMAIN_NAME).$($director_conf.domain)"
             $startip = "0.0.0.0"
             $endip = "255.255.255.0"
-            New-AzureRmResourceGroup -Name $resourcegroupname -Location $($env_vars.$AZURE_REGION) -Force
+            New-AzureRmResourceGroup -Name $resourcegroupname -Location "$($env_vars.$AZURE_REGION)" -Force
             New-AzureRmSqlServer -ResourceGroupName $resourcegroupname `
                 -ServerName "$($MASB_ENV)" `
                 -Location "$($director_conf.$AZURE_REGION)" `
