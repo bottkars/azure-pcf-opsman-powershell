@@ -105,7 +105,7 @@ switch ($tile) {
             New-AzureRmResourceGroup -Name $resourcegroupname -Location "$($env_vars.AZURE_REGION)" -Force
             New-AzureRmSqlServer -ResourceGroupName $resourcegroupname `
                 -ServerName "$($MASB_ENV)" `
-                -Location "$($director_conf.AZURE_REGION)" `
+                -Location "$($env_vars.AZURE_REGION)" `
                 -SqlAdministratorCredentials $(New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList sqladmin, $(ConvertTo-SecureString -String $PCF_PIVNET_UAA_TOKEN -AsPlainText -Force))
     
             New-AzureRmSqlServerFirewallRule -ResourceGroupName $resourcegroupname `
