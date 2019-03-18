@@ -203,11 +203,5 @@
         }
       }
     }
-  ],
-  "outputs": {
-    "fqdn": {
-      "value": "[reference(variables('OpsManPublicIPName')).properties.ipAddress]",
-      "type": "string"
-    }
-  }
+  ]
 }
