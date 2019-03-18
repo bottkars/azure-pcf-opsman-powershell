@@ -15,7 +15,7 @@ $env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 try
 {$PRODUCTS=$(om --skip-ssl-validation `
-  available-products `
+  deployed-products `
     --format json) | ConvertFrom-Json
 }
 catch
