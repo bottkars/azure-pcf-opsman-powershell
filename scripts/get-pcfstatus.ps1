@@ -14,9 +14,10 @@ $env:OM_Username = $env_vars.OM_Username
 $env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 try
-{$PRODUCTS=$(om --skip-ssl-validation `
-  deployed-products `
-    --format json) | ConvertFrom-Json
+{
+    write-host "getting deployed products"
+    $PRODUCTS=$(om --skip-ssl-validation `
+    curl --path /api/v0/deployed/products 2>$null | ConvertFrom-Json)
 }
 catch
 {
@@ -24,5 +25,10 @@ catch
     Pop-Location
     Break
 }
+$PRODUCTS=$DEPLOYED | ForEach-Object {
+    Write-Host "getting status for $($_.installation_name) ..."
+    (om.exe --skip-ssl-validation `
+ curl --path "/api/v0/deployed/products/$($_.installation_name)/status" 2>$null | ConvertFrom-Json).status
+} 
 Write-Output $PRODUCTS
 Pop-Location
