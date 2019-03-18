@@ -4,6 +4,13 @@
 
 
 
+
+<a href="https://portal.local.azurestack.external/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fbottkars%2Fazure-pcf-opsman-powershell%2Ftesting%2Fazuredeploy.json" target="_blank">
+<img src="images/deploytoasdk.png"/>
+</a>
+
+
+
 This repository contains ARM templates that help operators deploy Pivotal Cloud Foundry (PCF) to Azurestack (and azure) along with a number of Supported Services ( Tiles )
 
 
