@@ -48,7 +48,7 @@ if (!(get-command uaac -ErrorAction SilentlyContinue )) {
 $users = uaac curl -k /Users  | Select-String "RESPONSE BODY:" -Context 0, 10000000
 $Userlist = ($USERS -replace "RESPONSE BODY:" -replace ">" |  ConvertFrom-Json).resources
 
-$Wavefront_user = ($Userlist | where-object object userName -match wavefront-nozzle)
+$Wavefront_user = ($Userlist | where-object userName -match wavefront-nozzle)
 
 if ( !$Wavefront_user ) {
     Write-Host "Creating user wavefront-nozzle"
