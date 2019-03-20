@@ -2,10 +2,12 @@ product-name: ((product_name))
 network-properties:
   network:
     name: ((pcf_pas_network))
-  other_availability_zones:
-  - name: 'null'
+  service_network:
+    name: ((pcf_services_network))
   singleton_availability_zone:
     name: 'null'
+  other_availability_zones:
+  - name: 'null'
 product-properties:
   .properties.uaa_client_account_user: 
     value: ((uaa_admin_user))
