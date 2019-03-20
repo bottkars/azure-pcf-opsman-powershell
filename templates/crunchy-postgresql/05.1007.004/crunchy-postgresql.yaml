@@ -14,3 +14,6 @@ product-properties:
       secret: ((uaa_admin_secret)) 
   .properties.uaa_client_account_admin: 
     value: true
+  .properties.az_multi_select: 
+    value:
+    - 'null'
