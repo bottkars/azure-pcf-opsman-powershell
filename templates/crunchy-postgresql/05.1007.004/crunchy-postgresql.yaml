@@ -3,7 +3,7 @@ network-properties:
   network:
     name: ((pcf_pas_network))
   service_network:
-    name: ((pcf_services_network))
+    name: ((pcf_service_network))
   singleton_availability_zone:
     name: 'null'
   other_availability_zones:
