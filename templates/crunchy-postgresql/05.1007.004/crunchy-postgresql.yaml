@@ -6,3 +6,11 @@ network-properties:
   - name: 'null'
   singleton_availability_zone:
     name: 'null'
+product-properties:
+  .properties.uaa_client_account_user: 
+    value: ((uaa_admin_user))
+  .properties.uaa_client_account_secret: 
+    value: 
+      secret: ((uaa_admin_secret)) 
+  .properties.uaa_client_account_admin: 
+    value: true

@@ -28,8 +28,8 @@ $UAA_ADMIN_USER = om --skip-ssl-validation `
     | ConvertFrom-Json
 
 if ($showcreds.IsPresent) {
-    Write-Host $UAA_ADMIN_USER.credential.value.identity
-    Write-Host $UAA_ADMIN_USER.credential.value.password
+    Write-Output $UAA_ADMIN_USER.credential.value
+    #Write-Host $UAA_ADMIN_USER.credential.value.password
 }
 else {
     uaac target $UAA_API --skip-ssl-validation

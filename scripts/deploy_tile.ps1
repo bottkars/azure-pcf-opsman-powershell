@@ -213,7 +213,17 @@ switch ($tile) {
         pcf_pas_network: pcf-pas-subnet `
         pcf_service_network: pcf-services-subnet `
         server_admin_password: $PCF_PIVNET_UAA_TOKEN 
-        " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
+        " | Set-Content "$($HOME)/$($tile)_vars.yaml" 
+    }
+    "crunchy-postgresql" {
+    $UAA_cred = $./uaa_login.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -showcreds
+    "
+    product_name: $PRODUCT_TILE
+    pcf_pas_network: pcf-pas-subnet `
+    pcf_service_network: pcf-services-subnet `
+    uaa_admin_user: $($cred.identity) 
+    uaa_admin_secred: $($cred.password)
+    " | Set-Content "$($HOME)/$($tile)_vars.yaml" 
     }
     Default {
         $PRODUCT_NAME = $tile
@@ -311,7 +321,7 @@ switch ($tile) {
                 configure-product `
                 -c "$config_file"  -l "$HOME/$($tile)_vars.yaml"
         }
-    }   
+    }
     default {
         om --skip-ssl-validation `
             configure-product `
