@@ -218,7 +218,7 @@ switch ($tile) {
     "crunchy-postgresql" {
     $UAA_cred = ./uaa_login.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -showcreds
     "
-    product_name: $PRODUCT_TILE
+    product_name: $PRODUCT_TILE-10
     pcf_pas_network: pcf-pas-subnet `
     pcf_service_network: pcf-services-subnet `
     uaa_admin_user: $($cred.identity) 
