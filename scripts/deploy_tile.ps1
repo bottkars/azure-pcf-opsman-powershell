@@ -216,7 +216,7 @@ switch ($tile) {
         " | Set-Content "$($HOME)/$($tile)_vars.yaml" 
     }
     "crunchy-postgresql" {
-    $UAA_cred = $./uaa_login.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -showcreds
+    $UAA_cred = ./uaa_login.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -showcreds
     "
     product_name: $PRODUCT_TILE
     pcf_pas_network: pcf-pas-subnet `
