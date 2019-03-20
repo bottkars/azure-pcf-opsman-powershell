@@ -225,7 +225,6 @@ switch ($tile) {
         "
         exit
     }
-
     "
     product_name: $PRODUCT_TILE-10
     pcf_pas_network: pcf-pas-subnet `
