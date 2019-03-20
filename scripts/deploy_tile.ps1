@@ -217,13 +217,21 @@ switch ($tile) {
         " | Set-Content "$($HOME)/$($tile)_vars.yaml" 
     }
     "crunchy-postgresql" {
-    $uaa_cred = ./uaa_login.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -showcreds
+    if (!$director_conf.uaa_crunchy.password -or !$director_conf.uaa_crunchy.identity )
+    {
+        Write-Host "please add a uaa client for crunchy, and add uaa_crunchy.password and uaa_crunchy.identity
+        do env.json:
+        uaac client add crunchy --authorized_grant_types client_credentials --authorities bosh.admin --secret Password123!
+        "
+        break
+    }
+
     "
     product_name: $PRODUCT_TILE-10
     pcf_pas_network: pcf-pas-subnet `
     pcf_service_network: pcf-services-subnet `
-    uaa_admin_user: $($uaa_cred.identity) 
-    uaa_admin_secret: $($uaa_cred.password)
+    uaa_admin_user: $($director_conf.uaa_crunchy.identity) 
+    uaa_admin_secret: $($director_conf.uaa_crunchy.password)
     " | Set-Content "$($HOME)/$($tile)_vars.yaml" 
     }
     Default {
