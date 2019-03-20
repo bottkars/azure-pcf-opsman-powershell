@@ -24,7 +24,8 @@ param(
         'Pivotal_Single_Sign-On_Service',
         'p-compliance-scanner',
         'p-event-alerts',
-        'minio-internal-blobstore')]
+        'minio-internal-blobstore',
+        'crunchy-postgresql')]
     [string]$tile,
     [Parameter(ParameterSetName = "applyme", Mandatory = $false)]
     [Parameter(ParameterSetName = "no_apply", Mandatory = $false)]

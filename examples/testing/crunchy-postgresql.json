@@ -1,0 +1,4 @@
+{
+    "PCF_VERSION":  "05.1007.004",
+    "CONFIG_FILE": "../templates/crunchy-postgresql/05.1007.004/crunchy-postgresql.yaml"
+}
