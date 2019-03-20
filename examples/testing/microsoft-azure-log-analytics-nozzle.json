@@ -1,0 +1,4 @@
+{
+    "PCF_VERSION":  "1.3.1",
+    "CONFIG_FILE": "../templates/microsoft-azure-log-analytics-nozzle/1.3.1/microsoft-azure-log-analytics-nozzle.yaml"
+}
