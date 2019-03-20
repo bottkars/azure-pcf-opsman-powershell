@@ -224,6 +224,7 @@ switch ($tile) {
         uaac client add crunchy --authorized_grant_types client_credentials --authorities bosh.admin --secret Password123!
         "
         break
+        break
     }
 
     "
