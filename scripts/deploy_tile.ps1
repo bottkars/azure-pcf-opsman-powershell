@@ -222,7 +222,7 @@ switch ($tile) {
     pcf_pas_network: pcf-pas-subnet `
     pcf_service_network: pcf-services-subnet `
     uaa_admin_user: $($cred.identity) 
-    uaa_admin_secred: $($cred.password)
+    uaa_admin_secret: $($cred.password)
     " | Set-Content "$($HOME)/$($tile)_vars.yaml" 
     }
     Default {
