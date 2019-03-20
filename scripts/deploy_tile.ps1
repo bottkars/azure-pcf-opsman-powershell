@@ -217,7 +217,7 @@ switch ($tile) {
         " | Set-Content "$($HOME)/$($tile)_vars.yaml" 
     }
     "crunchy-postgresql" {
-    if (!$director_conf.uaa_crunchy.password -or !$director_conf.uaa_crunchy.identity )
+    if (!$env_vars.uaa_crunchy.password -or !$env_vars.uaa_crunchy.identity)
     {
         Write-Host "please add a uaa client for crunchy, 
         and add uaa_crunchy.password and uaa_crunchy.identity to env.json:
