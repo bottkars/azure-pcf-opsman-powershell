@@ -182,6 +182,10 @@ param(
     [switch]
     $USE_MINIO,
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [switch]
+    $DO_NOT_CONFIGURE_OPSMAN,
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
     $compute_instances=1,
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
@@ -523,6 +527,7 @@ if ($Environment -eq 'AzureStack') {
     }#>
     catch {
         Write-Warning "Unknown Exception"
+        $_
         break
     }
 
@@ -649,9 +654,6 @@ if (!$OpsmanUpdate) {
         $mysql_storage_account = $MYSQLStorageaccount.StorageAccountName
         $mysql_storage_key = $MYSQL_KEY[0].Value
 
-        Write-Host "now we are going to try and configure OpsManager"
-        $StopWatch_deploy_opsman = New-Object System.Diagnostics.Stopwatch
-        $StopWatch_deploy_opsman.Start()
         # will create director.json for future
         $JSon = [ordered]@{
             OM_TARGET                = "$OM_TARGET"
@@ -676,54 +678,59 @@ if (!$OpsmanUpdate) {
             release                  = $release
         } | ConvertTo-Json
         $JSon | Set-Content $DIRECTOR_CONF_FILE
-        if ($DO_NOT_APPLY.IsPresent) {
-            $command = "$ScriptDir/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -DO_NOT_APPLY"
-        }
-        elseif ($USE_MINIO.IsPresent) {
-            $command = "$ScriptDir/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -USE_MINIO"    
-        }
-        else {
-            $command = "$ScriptDir/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"    
-        }
-        
-        Write-Host "Calling $command" 
-        Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/init-om-$(get-date -f yyyyMMddhhmmss).log"
-        $StopWatch_deploy_opsman.Stop()
-        $DeployTimes += "opsman deployment took $($StopWatch_deploy_opsman.Elapsed.Hours) hours, $($StopWatch_deploy_opsman.Elapsed.Minutes) minutes and  $($StopWatch_deploy_opsman.Elapsed.Seconds) seconds"
-        $ScriptHome = $PSScriptRoot
-        if ($PAS_AUTOPILOT.IsPresent) {
-            $StopWatch_deploy_stemcells = New-Object System.Diagnostics.Stopwatch
-            $StopWatch_deploy_stemcells.Start()
-            $command = "$ScriptDir/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
-            Write-Host "Calling $command" 
-            Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/stemcells-$(get-date -f yyyyMMddhhmmss).log"
-            $StopWatch_deploy_stemcells.Stop()
-            $DeployTimes += "Stemcell deployment took $($StopWatch_deploy_stemcells.Elapsed.Hours) hours, $($StopWatch_deploy_stemcells.Elapsed.Minutes) minutes and  $($StopWatch_deploy_stemcells.Elapsed.Seconds) seconds"
-            
-            $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
-            $StopWatch_deploy_pas.Start()
-            if ($tiles) {
-                $command = "$ScriptHome/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -compute_instances $compute_instances -DO_NOT_APPLY"
+        Write-Host "now we are going to try and configure OpsManager"
+        if (!$DO_NOT_CONFIGURE_OPSMAN.IsPresent) {
+            $StopWatch_deploy_opsman = New-Object System.Diagnostics.Stopwatch
+            $StopWatch_deploy_opsman.Start()
+            if ($DO_NOT_APPLY.IsPresent) {
+                $command = "$ScriptDir/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -DO_NOT_APPLY"
+            }
+            elseif ($USE_MINIO.IsPresent) {
+                $command = "$ScriptDir/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -USE_MINIO"    
             }
             else {
-                $command = "$ScriptHome/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -compute_instances $compute_instances"
+                $command = "$ScriptDir/init_om.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"    
             }
+            
             Write-Host "Calling $command" 
-            Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/pas-$(get-date -f yyyyMMddhhmmss).log"
-            $StopWatch_deploy_pas.Stop()
-            $DeployTimes += "PAS deployment took $($StopWatch_deploy_pas.Elapsed.Hours) hours, $($StopWatch_deploy_pas.Elapsed.Minutes) minutes and  $($StopWatch_deploy_pas.Elapsed.Seconds) seconds"
-
-
-            $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
-            if ($tiles) {            
-                $StopWatch_deploy.Start()
-                $command = "$ScriptHome/scripts/tile_deployer.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -tiles $($tiles -join ',')"
+            Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/init-om-$(get-date -f yyyyMMddhhmmss).log"
+            $StopWatch_deploy_opsman.Stop()
+            $DeployTimes += "opsman deployment took $($StopWatch_deploy_opsman.Elapsed.Hours) hours, $($StopWatch_deploy_opsman.Elapsed.Minutes) minutes and  $($StopWatch_deploy_opsman.Elapsed.Seconds) seconds"
+            $ScriptHome = $PSScriptRoot
+            if ($PAS_AUTOPILOT.IsPresent) {
+                $StopWatch_deploy_stemcells = New-Object System.Diagnostics.Stopwatch
+                $StopWatch_deploy_stemcells.Start()
+                $command = "$ScriptDir/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
                 Write-Host "Calling $command" 
-                Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/deployment-$(get-date -f yyyyMMddhhmmss).log"
-                $StopWatch_deploy.Stop()
-                $DeployTimes += "$tile deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds"
-            }
-        }    
+                Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/stemcells-$(get-date -f yyyyMMddhhmmss).log"
+                $StopWatch_deploy_stemcells.Stop()
+                $DeployTimes += "Stemcell deployment took $($StopWatch_deploy_stemcells.Elapsed.Hours) hours, $($StopWatch_deploy_stemcells.Elapsed.Minutes) minutes and  $($StopWatch_deploy_stemcells.Elapsed.Seconds) seconds"
+                
+                $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
+                $StopWatch_deploy_pas.Start()
+                if ($tiles) {
+                    $command = "$ScriptHome/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -compute_instances $compute_instances -DO_NOT_APPLY"
+                }
+                else {
+                    $command = "$ScriptHome/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -compute_instances $compute_instances"
+                }
+                Write-Host "Calling $command" 
+                Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/pas-$(get-date -f yyyyMMddhhmmss).log"
+                $StopWatch_deploy_pas.Stop()
+                $DeployTimes += "PAS deployment took $($StopWatch_deploy_pas.Elapsed.Hours) hours, $($StopWatch_deploy_pas.Elapsed.Minutes) minutes and  $($StopWatch_deploy_pas.Elapsed.Seconds) seconds"
+
+
+                $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
+                if ($tiles) {            
+                    $StopWatch_deploy.Start()
+                    $command = "$ScriptHome/scripts/tile_deployer.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -tiles $($tiles -join ',')"
+                    Write-Host "Calling $command" 
+                    Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/deployment-$(get-date -f yyyyMMddhhmmss).log"
+                    $StopWatch_deploy.Stop()
+                    $DeployTimes += "$tile deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds"
+                }
+            }    
+        }
     }
 }
 else {
