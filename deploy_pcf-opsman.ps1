@@ -59,6 +59,7 @@ param(
         '2.3-build.258',
         '2.3-build.268',        
         '2.3-build.274',
+        '2.3-build.281',
         ## 2.4 starts here
         '2.4-build.117',
         '2.4-build.131',
@@ -70,7 +71,7 @@ param(
         ## 2.5 start here
         '2.5.0-build.158'
     )]
-    $opsmanager_image = '2.3-build.274',
+    $opsmanager_image = '2.3-build.281',
     # The name of the Ressource Group we want to Deploy to.
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
@@ -199,7 +200,7 @@ param(
 
 )
 
-
+$ScriptDir = "$PSScriptRoot/scripts"
 $opsmanager_uri = "https://opsmanager$($OpsManSeedLocation).blob.core.windows.net/images/ops-manager-$($opsmanager_image).vhd"
 if (!(Test-Path $HOME/env.json)) {
     "Please create $HOME/env.vars see README.md for details"
@@ -210,6 +211,12 @@ else {
 if (!$dnsdomain) {
     $dnsdomain = Read-Host "Please enter your DNS Domain [azurestack.external for asdk]"
 }
+
+
+if (!$location) {
+    $Location = Read-Host "Please enter your Region Name [local for asdk]"
+}
+
 New-Item -ItemType Directory -Path "$($HOME)/pcfdeployer/logs" -Force | out-null
 $DeployTimes = @()
 $dnsZoneName = "$PCF_SUBDOMAIN_NAME.$Location.$dnsdomain"
@@ -281,10 +288,6 @@ if ($Environment -eq "AzureStack" -and (get-runningos).OSType -ne "win_x86_64") 
 $DIRECTOR_CONF_FILE = "$HOME/director_$($resourceGroup).json"   
 
 Push-Location $PSScriptRoot
-$ScriptDir = "$PSScriptRoot/scripts"
-if (!$location) {
-    $Location = Read-Host "Please enter your Region Name [local for asdk]"
-}
 
 
 if (!(test-path -Path "$($HOME)/opsman.pub")) {
