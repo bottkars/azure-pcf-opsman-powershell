@@ -22,6 +22,7 @@ $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 
 
 $Releases = @()
+$Releases += Get-PIVRelease -id 233 | where-object version -Match 170. | Select-Object -First 1
 $Releases += Get-PIVRelease -id 233 | where-object version -Match 97. | Select-Object -First 1
 $Releases += Get-PIVRelease -id 82 | where-object version -Match 3586. | Select-Object -First 1
 $Releases += Get-PIVRelease -id 82 | where-object version -Match 3541. | Select-Object -First 1
