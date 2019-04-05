@@ -27,7 +27,7 @@ param(
         'minio-internal-blobstore',
         'crunchy-postgresql',
         'microsoft-azure-log-analytics-nozzle',
-        'p-isolation-segments')]
+        'p-isolation-segment')]
     [string]$tile,
     [Parameter(ParameterSetName = "applyme", Mandatory = $false)]
     [Parameter(ParameterSetName = "no_apply", Mandatory = $false)]
