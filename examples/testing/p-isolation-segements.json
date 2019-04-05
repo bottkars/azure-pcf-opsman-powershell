@@ -1,4 +1,4 @@
 {
-    "PCF_VERSION":  "2.32.8",
+    "PCF_VERSION":  "2.3.8",
     "CONFIG_FILE": "../templates/p-isolation-segments/2.3.8/p-isolation-segments.yaml"
 }
