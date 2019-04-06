@@ -463,7 +463,7 @@
         "TTL": 3600,
         "ARecords": [
           {
-            "ipv4Address": "[if(equals(parameters('pcflbConnection'),'public'),reference('Microsoft.Network/publicIPAddresses/web-lb-public-ip').IpAddress,variables('pcflbPrivateIP'))]"
+            "ipv4Address": "[if(equals(parameters('pcflbConnection'),'public'),reference('Microsoft.Network/publicIPAddresses/istio-lb-public-ip').IpAddress,variables('istiolbPrivateIP'))]"
           }
         ]
       }
