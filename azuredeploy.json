@@ -202,14 +202,14 @@
       }
     ],
   "istiolbPrivateIP": "[concat(parameters('mask'),'.8.73')]",
-  "istiolbPulicIPID": "[resourceId('Microsoft.Network/publicIPAddresses','web-lb-public-ip')]",
+  "istiolbPulicIPID": "[resourceId('Microsoft.Network/publicIPAddresses','istio-lb-public-ip')]",
   "istiolbFrontendIPConfig": "[if(equals(parameters('pcflbConnection'),'public'), variables('istiolbpublicFrontendIPConfig'), variables('istiolbprivateFrontendIPConfig'))]",
   "istiolbpublicFrontendIPConfig": [
     {
       "name": "istio-fe-ip",
       "properties": {
         "publicIPAddress": {
-          "id": "[resourceId('Microsoft.Network/publicIPAddresses','web-lb-public-ip')]"
+          "id": "[resourceId('Microsoft.Network/publicIPAddresses','istio-lb-public-ip')]"
         }
       }
     }
