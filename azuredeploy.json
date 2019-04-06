@@ -1553,20 +1553,11 @@
           {
             "name": "http8002",
             "properties": {
-              "protocol": "Tcp",
-              "port": 80,
+              "protocol": "http",
+              "port": 8002,
               "intervalInSeconds": 5,
               "numberOfProbes": 2,
               "path": "/healthcheck"
-            }
-          },
-          {
-            "name": "tcp443",
-            "properties": {
-              "protocol": "Tcp",
-              "port": 443,
-              "intervalInSeconds": 5,
-              "numberOfProbes": 2
             }
           }
         ]
