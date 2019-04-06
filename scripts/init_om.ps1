@@ -91,6 +91,8 @@ $content += "services_gateway: $services_gateway"
 $content += "infrastructure-subnet: $RG-virtual-network/$RG-infrastructure-subnet"
 $content += "pas-subnet: $RG-virtual-network/$RG-pas-subnet"
 $content += "services-subnet: $RG-virtual-network/$RG-services-subnet"
+$content += "availability_mode: availability_sets"
+$content += "singleton_availability_zone: 'null'"
 $content | Set-Content $HOME/director_vars.yaml
 
 om --skip-ssl-validation `
@@ -108,7 +110,7 @@ om --skip-ssl-validation `
     deployed-products
 
 om --skip-ssl-validation `
-    configure-director --config "$PSScriptRoot/../templates/director_conf.yaml" --vars-file "$HOME/director_vars.yaml"
+    configure-director --config "$PSScriptRoot/../templates/director_config.yaml" --vars-file "$HOME/director_vars.yaml"
 
 if (!$DO_NOT_APPLY.IsPresent) {
     om --skip-ssl-validation apply-changes
