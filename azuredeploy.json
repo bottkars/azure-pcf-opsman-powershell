@@ -161,6 +161,12 @@
     "mysqllbPoolID": "[concat(variables('mysqllbID'),'/backendAddressPools/mysql-backend-pool')]",
     "mysqllbProbeID": "[concat(variables('mysqllbID'),'/probes/tcp1936')]",
     "mysqllbPrivateIP": "[concat(parameters('mask'),'.8.71')]",
+    "istiolbName": "[concat(resourceGroup().name,'-istio-lb')]",
+    "istiolbID": "[resourceId('Microsoft.Network/loadBalancers',variables('istiolbName'))]",
+    "istiofrontEndIPConfigID": "[concat(variables('istiolbID'),'/frontendIPConfigurations/istio-fe-ip')]",
+    "istiolbPoolID": "[concat(variables('istiolbID'),'/backendAddressPools/istio-backend-pool')]",
+    "istiolbProbeID": "[concat(variables('istiolbID'),'/probes/http8002')]",
+    "istiolbPrivateIP": "[concat(parameters('mask'),'.8.73')]",
     "diagnosticsStorageAccountName": "[concat('diag', uniquestring(resourceGroup().id))]",
     "diagnosticsStorageAccountType": "Standard_LRS",
     "OpsManPublicIPName": "[concat('OpsManPublicIP_', parameters('deploymentcolor'))]",
@@ -1396,6 +1402,103 @@
             "properties": {
               "protocol": "Tcp",
               "port": 1936,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "apiVersion": "2015-05-01-preview",
+      "name": "[variables('istiolbName')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]"      ],
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "istio-fe-ip",
+            "properties": {
+              "subnet": {
+                "id": "[variables('internallb_subnetID')]"
+              },
+              "privateIPAddress": "[variables('istiolbPrivateIP')]",
+              "privateIPAllocationMethod": "Static"
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "istio-backend-pool"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "istio-https-rule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('istiofrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('istiolbPoolID')]"
+              },
+              "protocol": "http",
+              "frontendPort": 443,
+              "backendPort": 443,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "probe": {
+                "id": "[variables('istiolbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "istio-http-rule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('istiofrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('istiolbPoolID')]"
+              },
+              "protocol": "http",
+              "frontendPort": 80,
+              "backendPort": 80,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4
+            }
+          },
+          {
+            "name": "istio-8002-rule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('istiofrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('istiolbPoolID')]"
+              },
+              "protocol": "http",
+              "frontendPort": 8002,
+              "backendPort": 8002,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4
+            }
+          }          
+
+        ],
+        "probes": [
+          {
+            "name": "http8002",
+            "properties": {
+              "protocol": "http",
+              "port": 8002,
+              "path": "/healthcheck",
               "intervalInSeconds": 5,
               "numberOfProbes": 2
             }
