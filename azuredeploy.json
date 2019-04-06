@@ -166,7 +166,6 @@
     "istiofrontEndIPConfigID": "[concat(variables('istiolbID'),'/frontendIPConfigurations/istio-fe-ip')]",
     "istiolbPoolID": "[concat(variables('istiolbID'),'/backendAddressPools/istio-backend-pool')]",
     "istiolbProbeID": "[concat(variables('istiolbID'),'/probes/http8002')]",
-    "istiolbPrivateIP": "[concat(parameters('mask'),'.8.73')]",
     "diagnosticsStorageAccountName": "[concat('diag', uniquestring(resourceGroup().id))]",
     "diagnosticsStorageAccountType": "Standard_LRS",
     "OpsManPublicIPName": "[concat('OpsManPublicIP_', parameters('deploymentcolor'))]",
@@ -1548,23 +1547,7 @@
               "id": "[variables('istiolbProbeID')]"
             }
           }
-        },
-          {
-            "name": "istio-http-rule",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('istiofrontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('istiolbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 80,
-              "backendPort": 80,
-              "enableFloatingIP": false,
-              "idleTimeoutInMinutes": 4
-            }
-          }
+        }
         ],
         "probes": [
           {
