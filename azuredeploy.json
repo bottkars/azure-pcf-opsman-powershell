@@ -175,7 +175,7 @@
     "ops_manager_security_group_name": "[concat(resourceGroup().name,'-ops-manager-security-group')]",
     "bosh_deployed_vms_security_group_name": "[concat(resourceGroup().name,'-bosh-deployed-vms-security-group')]",
     "pcf-lb-ip-name": "web-lb-public-ip",
-    "istio-lb-ip-name": "web-lb-public-ip",
+    "istio-lb-ip-name": "istio-lb-public-ip",
     "pcflbPrivateIP": "[concat(parameters('mask'),'.8.73')]",
     "pcflbPulicIPID": "[resourceId('Microsoft.Network/publicIPAddresses','web-lb-public-ip')]",
     "pcflbFrontendIPConfig": "[if(equals(parameters('pcflbConnection'),'public'), variables('pcflbpublicFrontendIPConfig'), variables('pcflbprivateFrontendIPConfig'))]",
