@@ -423,6 +423,26 @@
       }
     },
     {
+      "type": "Microsoft.Network/dnszones/A",
+      "name": "[concat(parameters('dnsZoneName'), '/*.mesh.apps')]",
+      "apiVersion": "2016-04-01",
+      "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
+      "dependsOn": [
+        "[parameters('dnsZoneName')]"
+      ],
+      "properties": {
+        "TTL": 3600,
+        "ARecords": [
+          {
+            "ipv4Address": "[if(equals(parameters('pcflbConnection'),'public'),reference('Microsoft.Network/publicIPAddresses/web-lb-public-ip').IpAddress,variables('pcflbPrivateIP'))]"
+          }
+        ]
+      }
+    },
+    {
       "apiVersion": "2017-10-01",
       "condition": "[equals(parameters('pcflbConnection'),'public')]",
       "type": "Microsoft.Network/publicIPAddresses",

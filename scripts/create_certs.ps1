@@ -39,7 +39,7 @@ C:\OpenSSL-Win64\bin\openssl rsa `
   O = labbuildr
   CN = *.$($DOMAIN)
   [ v3_req ]
-  subjectAltName = DNS:*.$($DOMAIN), DNS:*.apps.$($DOMAIN), DNS:*.sys.$($DOMAIN), DNS:*.login.sys.$($DOMAIN), DNS:*.uaa.sys.$($DOMAIN), DNS:*.pks.$($DOMAIN)
+  subjectAltName = DNS:*.$($DOMAIN), DNS:*.apps.$($DOMAIN), DNS:*.mesh.apps.$($DOMAIN), DNS:*.sys.$($DOMAIN), DNS:*.login.sys.$($DOMAIN), DNS:*.uaa.sys.$($DOMAIN), DNS:*.pks.$($DOMAIN)
 " | set-content  "$HOME/config.csr"
 
 C:\OpenSSL-Win64\bin\openssl req `
@@ -48,7 +48,7 @@ C:\OpenSSL-Win64\bin\openssl req `
 
 "
   basicConstraints = CA:FALSE
-  subjectAltName = DNS:*.$($DOMAIN), DNS:*.apps.$($DOMAIN), DNS:*.sys.$($DOMAIN), DNS:*.login.sys.$($DOMAIN), DNS:*.uaa.sys.$($DOMAIN), DNS:*.pks.$($DOMAIN)
+  subjectAltName = DNS:*.$($DOMAIN), DNS:*.apps.$($DOMAIN), DNS:*.mesh.apps.$($DOMAIN), DNS:*.sys.$($DOMAIN), DNS:*.login.sys.$($DOMAIN), DNS:*.uaa.sys.$($DOMAIN), DNS:*.pks.$($DOMAIN)
   subjectKeyIdentifier = hash
 " | set-content "$HOME/extfile.txt"
 
