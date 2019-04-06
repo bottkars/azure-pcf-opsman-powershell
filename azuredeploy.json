@@ -175,6 +175,7 @@
     "ops_manager_security_group_name": "[concat(resourceGroup().name,'-ops-manager-security-group')]",
     "bosh_deployed_vms_security_group_name": "[concat(resourceGroup().name,'-bosh-deployed-vms-security-group')]",
     "pcf-lb-ip-name": "web-lb-public-ip",
+    "istio-lb-ip-name": "web-lb-public-ip",
     "pcflbPrivateIP": "[concat(parameters('mask'),'.8.73')]",
     "pcflbPulicIPID": "[resourceId('Microsoft.Network/publicIPAddresses','web-lb-public-ip')]",
     "pcflbFrontendIPConfig": "[if(equals(parameters('pcflbConnection'),'public'), variables('pcflbpublicFrontendIPConfig'), variables('pcflbprivateFrontendIPConfig'))]",
@@ -199,8 +200,33 @@
           "privateIPAllocationMethod": "Static"
         }
       }
-    ]
-  },
+    ],
+  "istiolbPrivateIP": "[concat(parameters('mask'),'.8.73')]",
+  "istiolbPulicIPID": "[resourceId('Microsoft.Network/publicIPAddresses','web-lb-public-ip')]",
+  "istiolbFrontendIPConfig": "[if(equals(parameters('pcflbConnection'),'public'), variables('istiolbpublicFrontendIPConfig'), variables('istiolbprivateFrontendIPConfig'))]",
+  "istiolbpublicFrontendIPConfig": [
+    {
+      "name": "istio-fe-ip",
+      "properties": {
+        "publicIPAddress": {
+          "id": "[resourceId('Microsoft.Network/publicIPAddresses','web-lb-public-ip')]"
+        }
+      }
+    }
+  ],
+  "istiolbprivateFrontendIPConfig": [
+    {
+      "name": "istio-fe-ip",
+      "properties": {
+        "subnet": {
+          "id": "[variables('internallb_subnetID')]"
+        },
+        "privateIPAddress": "[variables('istiolbPrivateIP')]",
+        "privateIPAllocationMethod": "Static"
+      }
+    }
+  ]
+},
   "resources": [
     {
       "type": "Microsoft.Compute/images",
@@ -455,6 +481,22 @@
         "publicIPAllocationMethod": "Static"
       }
     },
+
+    {
+      "apiVersion": "2017-10-01",
+      "condition": "[equals(parameters('pcflbConnection'),'public')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('istio-lb-ip-name')]",
+      "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      }
+    },
+
+
     {
       "name": "[variables('bosh_deployed_vms_security_group_name')]",
       "apiVersion": "2017-10-01",
@@ -1430,8 +1472,9 @@
       }
     },
 
+
     {
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2017-10-01",
       "name": "[variables('istiolbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
@@ -1439,20 +1482,10 @@
         "provisioner": "pcf_opsman_template"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]"      ],
+        "[if(equals(parameters('pcflbConnection'),'public'), variables('istiolbPulicIPID'),resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName')))]"
+      ],
       "properties": {
-        "frontendIPConfigurations": [
-          {
-            "name": "istio-fe-ip",
-            "properties": {
-              "subnet": {
-                "id": "[variables('internallb_subnetID')]"
-              },
-              "privateIPAddress": "[variables('istiolbPrivateIP')]",
-              "privateIPAllocationMethod": "Static"
-            }
-          }
-        ],
+        "frontendIPConfigurations": "[variables('istiolbFrontendIPConfig')]",
         "backendAddressPools": [
           {
             "name": "istio-backend-pool"
@@ -1468,7 +1501,7 @@
               "backendAddressPool": {
                 "id": "[variables('istiolbPoolID')]"
               },
-              "protocol": "http",
+              "protocol": "Tcp",
               "frontendPort": 443,
               "backendPort": 443,
               "enableFloatingIP": false,
@@ -1487,15 +1520,37 @@
               "backendAddressPool": {
                 "id": "[variables('istiolbPoolID')]"
               },
-              "protocol": "http",
+              "protocol": "Tcp",
               "frontendPort": 80,
               "backendPort": 80,
               "enableFloatingIP": false,
-              "idleTimeoutInMinutes": 4
+              "idleTimeoutInMinutes": 4,
+              "probe": {
+                "id": "[variables('istiolbProbeID')]"
+              }
             }
           },
           {
-            "name": "istio-8002-rule",
+          "name": "istio-8002-rule",
+          "properties": {
+            "frontendIPConfiguration": {
+              "id": "[variables('istiofrontEndIPConfigID')]"
+            },
+            "backendAddressPool": {
+              "id": "[variables('istiolbPoolID')]"
+            },
+            "protocol": "Tcp",
+            "frontendPort": 8002,
+            "backendPort": 8002,
+            "enableFloatingIP": false,
+            "idleTimeoutInMinutes": 4,
+            "probe": {
+              "id": "[variables('istiolbProbeID')]"
+            }
+          }
+        },
+          {
+            "name": "istio-http-rule",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('istiofrontEndIPConfigID')]"
@@ -1503,29 +1558,39 @@
               "backendAddressPool": {
                 "id": "[variables('istiolbPoolID')]"
               },
-              "protocol": "http",
-              "frontendPort": 8002,
-              "backendPort": 8002,
+              "protocol": "tcp",
+              "frontendPort": 80,
+              "backendPort": 80,
               "enableFloatingIP": false,
               "idleTimeoutInMinutes": 4
             }
-          }          
-
+          }
         ],
         "probes": [
           {
             "name": "http8002",
             "properties": {
-              "protocol": "http",
-              "port": 8002,
-              "path": "/healthcheck",
+              "protocol": "Tcp",
+              "port": 80,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2,
+              "path": "/healthcheck"
+            }
+          },
+          {
+            "name": "tcp443",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 443,
               "intervalInSeconds": 5,
               "numberOfProbes": 2
             }
           }
         ]
       }
-    },
+    }
+
+    ,
     {
       "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/networkInterfaces",
