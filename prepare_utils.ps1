@@ -88,7 +88,7 @@ Write-Host "installing module pivposh"
 Install-Module pivposh -scope CurrentUser -Force
 Write-Host "installing om-cli"
 Install-Script Download-Om -Force -Scope CurrentUser -MinimumVersion 1.1
-$OM = Download-Om -DownloadDir "$($HOME)/om" -OmRelease 0.53.0
+$OM = Download-Om -DownloadDir "$($HOME)/om" -OmRelease 0.54.0
 Write-Host "Installing cf-cli Installer"
 Install-Script install-cf-cli -Scope CurrentUser
 Install-cf-cli.ps1 -CLIRelease '6.43.0' -DownloadDir "$HOME\Downloads" 
