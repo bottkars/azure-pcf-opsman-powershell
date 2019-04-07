@@ -1553,11 +1553,11 @@
           {
             "name": "http8002",
             "properties": {
-              "protocol": "http",
+              "protocol": "Http",
               "port": 8002,
               "intervalInSeconds": 5,
               "numberOfProbes": 2,
-              "path": "/healthcheck"
+              "requestPath": "/healthcheck"
             }
           }
         ]
