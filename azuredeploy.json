@@ -161,6 +161,11 @@
     "mysqllbPoolID": "[concat(variables('mysqllbID'),'/backendAddressPools/mysql-backend-pool')]",
     "mysqllbProbeID": "[concat(variables('mysqllbID'),'/probes/tcp1936')]",
     "mysqllbPrivateIP": "[concat(parameters('mask'),'.8.71')]",
+    "istiolbName": "[concat(resourceGroup().name,'-istio-lb')]",
+    "istiolbID": "[resourceId('Microsoft.Network/loadBalancers',variables('istiolbName'))]",
+    "istiofrontEndIPConfigID": "[concat(variables('istiolbID'),'/frontendIPConfigurations/istio-fe-ip')]",
+    "istiolbPoolID": "[concat(variables('istiolbID'),'/backendAddressPools/istio-backend-pool')]",
+    "istiolbProbeID": "[concat(variables('istiolbID'),'/probes/http8002')]",
     "diagnosticsStorageAccountName": "[concat('diag', uniquestring(resourceGroup().id))]",
     "diagnosticsStorageAccountType": "Standard_LRS",
     "OpsManPublicIPName": "[concat('OpsManPublicIP_', parameters('deploymentcolor'))]",
@@ -169,6 +174,7 @@
     "ops_manager_security_group_name": "[concat(resourceGroup().name,'-ops-manager-security-group')]",
     "bosh_deployed_vms_security_group_name": "[concat(resourceGroup().name,'-bosh-deployed-vms-security-group')]",
     "pcf-lb-ip-name": "web-lb-public-ip",
+    "istio-lb-ip-name": "istio-lb-public-ip",
     "pcflbPrivateIP": "[concat(parameters('mask'),'.8.73')]",
     "pcflbPulicIPID": "[resourceId('Microsoft.Network/publicIPAddresses','web-lb-public-ip')]",
     "pcflbFrontendIPConfig": "[if(equals(parameters('pcflbConnection'),'public'), variables('pcflbpublicFrontendIPConfig'), variables('pcflbprivateFrontendIPConfig'))]",
@@ -193,8 +199,33 @@
           "privateIPAllocationMethod": "Static"
         }
       }
-    ]
-  },
+    ],
+  "istiolbPrivateIP": "[concat(parameters('mask'),'.8.73')]",
+  "istiolbPulicIPID": "[resourceId('Microsoft.Network/publicIPAddresses','istio-lb-public-ip')]",
+  "istiolbFrontendIPConfig": "[if(equals(parameters('pcflbConnection'),'public'), variables('istiolbpublicFrontendIPConfig'), variables('istiolbprivateFrontendIPConfig'))]",
+  "istiolbpublicFrontendIPConfig": [
+    {
+      "name": "istio-fe-ip",
+      "properties": {
+        "publicIPAddress": {
+          "id": "[resourceId('Microsoft.Network/publicIPAddresses','istio-lb-public-ip')]"
+        }
+      }
+    }
+  ],
+  "istiolbprivateFrontendIPConfig": [
+    {
+      "name": "istio-fe-ip",
+      "properties": {
+        "subnet": {
+          "id": "[variables('internallb_subnetID')]"
+        },
+        "privateIPAddress": "[variables('istiolbPrivateIP')]",
+        "privateIPAllocationMethod": "Static"
+      }
+    }
+  ]
+},
   "resources": [
     {
       "type": "Microsoft.Compute/images",
@@ -417,6 +448,26 @@
       }
     },
     {
+      "type": "Microsoft.Network/dnszones/A",
+      "name": "[concat(parameters('dnsZoneName'), '/*.mesh.apps')]",
+      "apiVersion": "2016-04-01",
+      "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
+      "dependsOn": [
+        "[parameters('dnsZoneName')]"
+      ],
+      "properties": {
+        "TTL": 3600,
+        "ARecords": [
+          {
+            "ipv4Address": "[if(equals(parameters('pcflbConnection'),'public'),reference('Microsoft.Network/publicIPAddresses/istio-lb-public-ip').IpAddress,variables('istiolbPrivateIP'))]"
+          }
+        ]
+      }
+    },
+    {
       "apiVersion": "2017-10-01",
       "condition": "[equals(parameters('pcflbConnection'),'public')]",
       "type": "Microsoft.Network/publicIPAddresses",
@@ -429,6 +480,22 @@
         "publicIPAllocationMethod": "Static"
       }
     },
+
+    {
+      "apiVersion": "2017-10-01",
+      "condition": "[equals(parameters('pcflbConnection'),'public')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('istio-lb-ip-name')]",
+      "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      }
+    },
+
+
     {
       "name": "[variables('bosh_deployed_vms_security_group_name')]",
       "apiVersion": "2017-10-01",
@@ -1403,6 +1470,101 @@
         ]
       }
     },
+
+
+    {
+      "apiVersion": "2017-10-01",
+      "name": "[variables('istiolbName')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
+      "dependsOn": [
+        "[if(equals(parameters('pcflbConnection'),'public'), variables('istiolbPulicIPID'),resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName')))]"
+      ],
+      "properties": {
+        "frontendIPConfigurations": "[variables('istiolbFrontendIPConfig')]",
+        "backendAddressPools": [
+          {
+            "name": "istio-backend-pool"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "istio-https-rule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('istiofrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('istiolbPoolID')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 443,
+              "backendPort": 443,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "probe": {
+                "id": "[variables('istiolbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "istio-http-rule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('istiofrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('istiolbPoolID')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 80,
+              "backendPort": 80,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "probe": {
+                "id": "[variables('istiolbProbeID')]"
+              }
+            }
+          },
+          {
+          "name": "istio-8002-rule",
+          "properties": {
+            "frontendIPConfiguration": {
+              "id": "[variables('istiofrontEndIPConfigID')]"
+            },
+            "backendAddressPool": {
+              "id": "[variables('istiolbPoolID')]"
+            },
+            "protocol": "Tcp",
+            "frontendPort": 8002,
+            "backendPort": 8002,
+            "enableFloatingIP": false,
+            "idleTimeoutInMinutes": 4,
+            "probe": {
+              "id": "[variables('istiolbProbeID')]"
+            }
+          }
+        }
+        ],
+        "probes": [
+          {
+            "name": "http8002",
+            "properties": {
+              "protocol": "http",
+              "port": 8002,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2,
+              "path": "/healthcheck"
+            }
+          }
+        ]
+      }
+    }
+
+    ,
     {
       "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/networkInterfaces",
