@@ -67,7 +67,7 @@ $smtp_port = $env_vars.SMTP_PORT
 $pcf_notifications_email = $env_vars.PCF_NOTIFICATIONS_EMAIL
 $PCF_DOMAIN_NAME = $domain
 
-
+$access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 
 $slug_id = "elastic_runtime"
 
@@ -76,7 +76,7 @@ $slug_id = "elastic_runtime"
 Write-Host "Getting Release for $PRODUCT_NAME $PCF_PAS_VERSION"
 $piv_release = Get-PIVRelease -id elastic-runtime | where-object version -Match $PCF_PAS_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
-$access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
+
 Write-Host "Accepting EULA for $slug_id $PRODUCT_NAME $PCF_PAS_VERSION"
 $eula = $piv_release | Confirm-PIVEula -access_token $access_token
 $piv_object = $piv_release_id | Where-Object aws_object_key -Like *$PRODUCT_NAME*.pivotal*
