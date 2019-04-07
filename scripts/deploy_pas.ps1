@@ -163,6 +163,7 @@ pcf_key_pem: `"$PCF_KEY_PEM`"
 pcf_credhub_key: `"012345678901234567890`"
 pcf_diego_ssh_lb: $RG-diego-ssh-lb
 pcf_mysql_lb: $RG-mysql-lb
+pcf_mysql_lb: $RG-istio-lb
 pcf_web_lb: $RG-web-lb
 pcf_tcp_lb: $RG-tcp-lb
 smtp_address: $smtp_address
@@ -172,6 +173,9 @@ smtp_from: $smtp_from
 smtp_port: $smtp_port
 pcf_notifications_email: $pcf_notifications_email
 compute_instances: $compute_instances
+singleton_zone: 'null'
+smtp_enable_starttls_auto: true
+zones_map: 'null'
 " | Set-Content $HOME/vars.yaml
 
 om --skip-ssl-validation `
