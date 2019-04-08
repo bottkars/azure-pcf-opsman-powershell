@@ -4,6 +4,9 @@ param(
     [Validatescript( {Test-Path -Path $_ })]
     $DIRECTOR_CONF_FILE,
     [Parameter(Mandatory = $false)]
+    [ValidateSet('170', '250','97','3586','3541')]
+    [string[]]$Family= '170',
+    [Parameter(Mandatory = $false)]
     [switch]$apply
 )
 Push-Location $PSScriptRoot
@@ -22,11 +25,22 @@ $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 
 
 $Releases = @()
-$Releases += Get-PIVRelease -id 233 | where-object version -Match 250. | Select-Object -First 1
-$Releases += Get-PIVRelease -id 233 | where-object version -Match 170. | Select-Object -First 1
-$Releases += Get-PIVRelease -id 233 | where-object version -Match 97. | Select-Object -First 1
-$Releases += Get-PIVRelease -id 82 | where-object version -Match 3586. | Select-Object -First 1
-$Releases += Get-PIVRelease -id 82 | where-object version -Match 3541. | Select-Object -First 1
+
+foreach ($Family in $Families) 
+{
+    switch ($Family){
+        '3586' {
+                $Releases += Get-PIVRelease -id 82 | where-object version -Match 3586. | Select-Object -First 1
+        }
+        '3541' {
+                $Releases += Get-PIVRelease -id 82 | where-object version -Match 3541. | Select-Object -First 1
+        }
+        default {
+                $Releases += Get-PIVRelease -id 233 | where-object version -Match "$Family." | Select-Object -First 1    
+            }
+    }
+}
+
 if ($apply.IsPresent)
     {
         $floating = "true"
