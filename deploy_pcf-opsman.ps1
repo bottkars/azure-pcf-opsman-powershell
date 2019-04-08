@@ -679,7 +679,7 @@ if (!$OpsmanUpdate) {
             services_range           = $services_range
             downloaddir              = $downloadpath
             force_product_download   = $force_product_download.IsPresent.ToString()
-            release                  = $release
+            release                  = $branch
         } | ConvertTo-Json
         $JSon | Set-Content $DIRECTOR_CONF_FILE
         Write-Host "now we are going to try and configure OpsManager"

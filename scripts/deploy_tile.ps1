@@ -102,6 +102,8 @@ switch ($tile) {
         "
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
+        singleton_zone: 'null'
+        zones_map: 'null'
         azure_subscription_id: $($env_vars.AZURE_SUBSCRIPTION_ID)
         azure_tenant_id: $($env_vars.AZURE_TENANT_ID)
         azure_client_id: $($env_vars.AZURE_CLIENT_ID)
@@ -151,6 +153,8 @@ switch ($tile) {
         "
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
+        singleton_zone: 'null'
+        zones_map: 'null'
         secret_key: $PCF_PIVNET_UAA_TOKEN
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
 }
@@ -159,6 +163,8 @@ switch ($tile) {
         "
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
+        singleton_zone: 'null'
+        zones_map: 'null'
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
 
     }
@@ -167,6 +173,8 @@ switch ($tile) {
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
         pcf_service_network: pcf-services-subnet
+        singleton_zone: 'null'
+        zones_map: 'null'
         server_admin_password: $PCF_PIVNET_UAA_TOKEN 
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"
     }
@@ -175,6 +183,8 @@ switch ($tile) {
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
         pcf_service_network: pcf-services-subnet
+        singleton_zone: 'null'
+        zones_map: 'null'
         opsman_enable_url: $OM_Target
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"
     }
@@ -183,6 +193,8 @@ switch ($tile) {
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet `
         pcf_service_network: pcf-services-subnet `
+        singleton_zone: 'null'
+        zones_map: 'null'
         azure_storage_access_key: $($director_conf.mysql_storage_key) `
         azure_account: $($director_conf.mysqlstorageaccountname)  `
         global_recipient_email: $GLOBAL_RECIPIENT_EMAIL`
@@ -193,6 +205,8 @@ switch ($tile) {
                 "
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
+        singleton_zone: 'null'
+        zones_map: 'null'
         smtp_address: $($env_vars.SMTP_ADDRESS)
         smtp_identity: $($env_vars.SMTP_IDENTITY)
         smtp_password: `"$($env_vars.SMTP_PASSWORD)`"
@@ -206,6 +220,8 @@ switch ($tile) {
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet `
         pcf_service_network: pcf-services-subnet `
+        singleton_zone: 'null'
+        zones_map: 'null'
         server_admin_password: $PCF_PIVNET_UAA_TOKEN 
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
     }
@@ -214,6 +230,8 @@ switch ($tile) {
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet `
         pcf_service_network: pcf-services-subnet `
+        singleton_zone: 'null'
+        zones_map: 'null'
         server_admin_password: $PCF_PIVNET_UAA_TOKEN 
         " | Set-Content "$($HOME)/$($tile)_vars.yaml" 
     }
@@ -230,6 +248,8 @@ switch ($tile) {
     product_name: $PRODUCT_TILE-10
     pcf_pas_network: pcf-pas-subnet `
     pcf_service_network: pcf-services-subnet `
+    singleton_zone: 'null'
+    zones_map: 'null'
     uaa_admin_user: $($env_vars.uaa_crunchy_identity) 
     uaa_admin_secret: $($env_vars.uaa_crunchy_password)
     " | Set-Content "$($HOME)/$($tile)_vars.yaml" 
@@ -240,6 +260,8 @@ switch ($tile) {
         "
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
+        singleton_zone: 'null'
+        zones_map: 'null'
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"
 
     }

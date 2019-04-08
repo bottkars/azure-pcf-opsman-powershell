@@ -120,7 +120,7 @@ om --skip-ssl-validation `
     upload-product `
     --product $TARGET_FILENAME
 if ($LASTEXITCODE -ne 0) {
-    write-Host  "Error running om, please fix and retry"
+    write-Host  "Error running om TILE Import, please fix and retry"
     Pop-Location
     break
 }
@@ -130,7 +130,7 @@ $PRODUCTS = $(om --skip-ssl-validation `
         available-products `
         --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
-$PRODUCT = $PRODUCTS | where-object name -eq cf | Sort-Object -Property version -Descending | select -first 1
+$PRODUCT = $PRODUCTS | where-object name -eq cf | Where-Object version -Match $PCF_PAS_VERSION
 $VERSION = $PRODUCT.version
 $PRODUCT_NAME = $PRODUCT.name
 # 2.  Stage using om cli
@@ -175,8 +175,8 @@ smtp_port: $smtp_port
 pcf_notifications_email: $pcf_notifications_email
 compute_instances: $compute_instances
 singleton_zone: 'null'
-smtp_enable_starttls_auto: true
 zones_map: 'null'
+smtp_enable_starttls_auto: true
 " | Set-Content $HOME/vars.yaml
 
 om --skip-ssl-validation `

@@ -5,9 +5,8 @@ network-properties:
   service_network:
     name: ((pcf_service_network))
   singleton_availability_zone:
-    name: 'null'
-  other_availability_zones:
-  - name: 'null'
+    name: ((singleton_zone))leton_zone))
+  other_availability_zones: ((zones_map))
 product-properties:
   .properties.uaa_client_account_user: 
     value: ((uaa_admin_user))

@@ -22,6 +22,7 @@ $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 
 
 $Releases = @()
+$Releases += Get-PIVRelease -id 233 | where-object version -Match 250. | Select-Object -First 1
 $Releases += Get-PIVRelease -id 233 | where-object version -Match 170. | Select-Object -First 1
 $Releases += Get-PIVRelease -id 233 | where-object version -Match 97. | Select-Object -First 1
 $Releases += Get-PIVRelease -id 82 | where-object version -Match 3586. | Select-Object -First 1
@@ -40,7 +41,7 @@ $output_directory = New-Item -ItemType Directory -Path "$downloaddir/stemcells/$
 $aws_object_key = ($Release | Get-PIVFileReleaseId | where-object aws_object_key -match "hyperv").aws_object_key
 $stemcell_real_filename = Split-Path -Leaf $aws_object_key
 
-Write-Host " Stemcell filename $stemcell_real_filename"
+Write-Host "Stemcell filename $stemcell_real_filename"
 om --skip-ssl-validation `
 --request-timeout 7200 `
 download-product `
@@ -52,12 +53,14 @@ download-product `
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $STEMCELL_FILENAME = $download_file.product_path
-Copy-Item  -Path "$STEMCELL_FILENAME" -Destination "$($output_directory.FullName)/$stemcell_real_filename"
+# Copy-Item  -Path "$STEMCELL_FILENAME" -Destination "$($output_directory.FullName)/$stemcell_real_filename"
 om --skip-ssl-validation `
     upload-stemcell `
     --floating=$floating `
-    --stemcell "$($output_directory.FullName)/$stemcell_real_filename"
+    --stemcell $STEMCELL_FILENAME
 }
+
+#    --stemcell "$($output_directory.FullName)/$stemcell_real_filename"
 if ($apply.IsPresent)
     {
     om --skip-ssl-validation `
