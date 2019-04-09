@@ -69,6 +69,7 @@ param(
         '2.4-build.163',
         '2.4-build.168',
         '2.4-build.171',
+        '2.4-build.177',
         ## 2.5 start here
         '2.6.0-build.54'
     )]

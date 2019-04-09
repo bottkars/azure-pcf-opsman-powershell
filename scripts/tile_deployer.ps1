@@ -33,12 +33,12 @@ New-Item -ItemType Directory -Path "$($HOME)/pcfdeployer/logs" -Force | out-null
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 
 
-if ($tiles -contains 'p-spring') {
-    $tiles = ('pivotal-mysql', 'p-rabbitmq', 'p-spring') + $tiles
+if ($tiles -contains 'p-spring-cloud-services') {
+    $tiles = ('pivotal-mysql', 'p-rabbitmq', 'p-spring-cloud-services') + $tiles
     $tiles = $tiles | Select-Object -Unique
 }
-if ($tiles -contains 'dataflow') {
-    $tiles = ('pivotal-mysql', 'p-rabbitmq', 'p-redis', 'dataflow') + $tiles
+if ($tiles -contains 'p-dataflow') {
+    $tiles = ('pivotal-mysql', 'p-rabbitmq', 'p-redis', 'p-dataflow') + $tiles
     $tiles = $tiles | Select-Object -Unique
 }
 if ($tiles -contains 'p-event-alerts') {

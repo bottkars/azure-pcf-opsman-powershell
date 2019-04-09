@@ -198,7 +198,9 @@ switch ($tile) {
         azure_storage_access_key: $($director_conf.mysql_storage_key) `
         azure_account: $($director_conf.mysqlstorageaccountname)  `
         global_recipient_email: $GLOBAL_RECIPIENT_EMAIL`
-        blob_store_base_url: $domain
+        blob_store_base_url: $domain `
+        properties.plan1_selector.single_node.az_multi_select: 'Availability Sets' `
+        properties.plan2_selector.leader_follower.az_multi_select : 'Availability Sets'
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
     }
     "p-event-alerts" {
@@ -227,11 +229,12 @@ switch ($tile) {
     }
     "p-rabbitmq" {
         "
-        product_name: $PRODUCT_TILE
+        product_name: $PRODUCT_TILE `
         pcf_pas_network: pcf-pas-subnet `
         pcf_service_network: pcf-services-subnet `
-        singleton_zone: 'null'
-        zones_map: 'null'
+        singleton_zone: 'null' `
+        zones_map: 'null' `
+        properties.on_demand_broker_plan_1_rabbitmq_az_placement: 'Availability Sets' `
         server_admin_password: $PCF_PIVNET_UAA_TOKEN 
         " | Set-Content "$($HOME)/$($tile)_vars.yaml" 
     }

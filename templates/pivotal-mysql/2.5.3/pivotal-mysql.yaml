@@ -18,7 +18,7 @@ product-properties:
     selected_option: single_node
   .properties.plan1_selector.single_node.az_multi_select:
     value:
-    - 'null'
+    - ((properties.plan1_selector.single_node.az_multi_select))
   .properties.plan1_selector.single_node.description: 
     value: "This plan provides a medium, leader-follower MySQL instance."   
   .properties.plan2_selector.leader_follower.instance_limit:
@@ -28,7 +28,7 @@ product-properties:
     selected_option: leader_follower  
   .properties.plan2_selector.leader_follower.az_multi_select:
     value:
-    - 'null'
+    - ((properties.plan2_selector.leader_follower.az_multi_select))
   .properties.plan3_selector:
     value: Inactive
     selected_option: inactive

@@ -5,7 +5,7 @@ param(
     $DIRECTOR_CONF_FILE,
     [Parameter(Mandatory = $false)]
     [ValidateSet('170', '250','97','3586','3541')]
-    [string[]]$Family= '170',
+    [string[]]$Families= '170',
     [Parameter(Mandatory = $false)]
     [switch]$apply
 )
