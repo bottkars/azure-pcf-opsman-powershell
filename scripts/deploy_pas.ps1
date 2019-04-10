@@ -40,7 +40,7 @@ if ($director_conf.release)
 else {
   $release = "release"
 }
-$PRODUCT_FILE = "$($HOME)/pas_$($PRODUCT_NAME).json"
+$PRODUCT_FILE = "$($HOME)/pas-$($PRODUCT_NAME).json"
 if (!(Test-Path $PRODUCT_FILE))
 {$PRODUCT_FILE = "../examples/$($release)/pas_$($PRODUCT_NAME).json"}
 $pas_conf = Get-Content $PRODUCT_FILE | ConvertFrom-Json
