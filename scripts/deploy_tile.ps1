@@ -7,7 +7,7 @@ param(
     [Parameter(ParameterSetName = "applyme", Mandatory = $true)]
     [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
     [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
-    [Validatescript( {Test-Path -Path $_ })]
+    [Validatescript( { Test-Path -Path $_ })]
     $DIRECTOR_CONF_FILE,
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
@@ -33,7 +33,7 @@ param(
     [Parameter(ParameterSetName = "no_apply", Mandatory = $false)]
     [Parameter(ParameterSetName = "apply_all", Mandatory = $false)]
     [switch]$update_stemcells,
-    [Parameter(ParameterSetName = "applyme",Mandatory = $false)]
+    [Parameter(ParameterSetName = "applyme", Mandatory = $false)]
     [Parameter(ParameterSetName = "no_apply", Mandatory = $false)]
     [Parameter(ParameterSetName = "apply_all", Mandatory = $false)]
     [switch]$configure_azure_DB
@@ -54,7 +54,7 @@ if (!(Test-Path $PRODUCT_FILE)) {
     $PRODUCT_FILE = "../examples/$($release)/$($tile).json"
     Write-Verbose "using $PRODUCT_FILE"
 }
-$tile_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
+$tile_conf = Get-Content $PRODUCT_FILE | ConvertFrom-Json
 $PCF_VERSION = $tile_conf.PCF_VERSION
 $config_file = $tile_conf.CONFIG_FILE
 
@@ -77,24 +77,23 @@ $GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $PRODUCT_TILE = $tile
 
-if ($branch -in ('2.5'))
-   {
-    $singleton_zone= 'Availability Sets'
-    $zones_map= 'Availability Sets'
-   } 
+if ($branch -in ('2.5')) {
+    $singleton_zone = "'Availability Sets'"
+    $zones_map = "'Availability Sets'"
+} 
 else {
-    $singleton_zone= 'null'
-    $zones_map= 'null'
+    $singleton_zone = "'null'"
+    $zones_map = "'null'"
 }   
 
 switch ($tile) {
     "azure-service-broker" {
         if (!$env_vars.AZURE_CLIENT_ID `
-        -or !$env_vars.AZURE_CLIENT_SECRET `
-        -or !$env_vars.AZURE_REGION `
-        -or !$env_vars.AZURE_SUBSCRIPTION_ID `
-        -or !$env_vars.AZURE_TENANT_ID `
-        -or !$env_vars.AZURE_DATABASE_ENCRYPTION_KEY  
+                -or !$env_vars.AZURE_CLIENT_SECRET `
+                -or !$env_vars.AZURE_REGION `
+                -or !$env_vars.AZURE_SUBSCRIPTION_ID `
+                -or !$env_vars.AZURE_TENANT_ID `
+                -or !$env_vars.AZURE_DATABASE_ENCRYPTION_KEY  
         ) {
             Write-Host -ForegroundColor White "Microsoft Azure Service Broker needs
                     AZURE_CLIENT_ID 
@@ -107,8 +106,8 @@ switch ($tile) {
             Pop-Location
             break
         }
-        $MASB_ENV = "masb-$($director_conf.PCF_SUBDOMAIN_NAME).$($director_conf.domain)" -replace "\.","-"
-        write-verbose $MASB_ENV
+        $MASB_ENV = "masb-$($director_conf.PCF_SUBDOMAIN_NAME).$($director_conf.domain)" -replace "\.", "-"
+        Write-Verbose $MASB_ENV
         "
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
@@ -125,12 +124,11 @@ switch ($tile) {
         azure_broker_default_location: $($env_vars.AZURE_REGION)
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
 
-        if ($configure_azure_DB.ispresent)
-        {
+        if ($configure_azure_DB.ispresent) {
             $context = Get-AzureRmContext
             Write-Host "Now Creating Azure SQL Database / Server for $PRODUCT_TILE"
-            $Credential=New-Object -TypeName System.Management.Automation.PSCredential `
-            -ArgumentList "$($env_vars.AZURE_CLIENT_ID)", ("$($env_vars.AZURE_CLIENT_SECRET)" | ConvertTo-SecureString -AsPlainText -Force)
+            $Credential = New-Object -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList "$($env_vars.AZURE_CLIENT_ID)", ("$($env_vars.AZURE_CLIENT_SECRET)" | ConvertTo-SecureString -AsPlainText -Force)
             Connect-AzureRmAccount -Credential $Credential -Tenant "$($env_vars.AZURE_TENANT_ID)" -ServicePrincipal
             $resourcegroupname = "$($director_conf.RG).$($director_conf.PCF_SUBDOMAIN_NAME).$($director_conf.domain)"
             $startip = "0.0.0.0"
@@ -153,7 +151,7 @@ switch ($tile) {
                 -DatabaseName "$($MASB_ENV)-db" `
                 -RequestedServiceObjectiveName "Basic" 
             Get-AzureRmContext | Disconnect-AzureRmAccount  
-            $context  | Set-AzureRmContext
+            $context | Set-AzureRmContext
         } 
 
 
@@ -167,7 +165,7 @@ switch ($tile) {
         zones_map: $zones_map
         secret_key: $PCF_PIVNET_UAA_TOKEN
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
-}
+    }
     "p-compliance-scanner" { 
         $PRODUCT_TILE = "scanner"
         "
@@ -198,7 +196,7 @@ switch ($tile) {
         opsman_enable_url: $OM_Target
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"
     }
-    "pivotal-mysql"{
+    "pivotal-mysql" {
         "
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet `
@@ -214,7 +212,7 @@ switch ($tile) {
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"    
     }
     "p-event-alerts" {
-                "
+        "
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
         singleton_zone: $singleton_zone
@@ -249,15 +247,14 @@ switch ($tile) {
         " | Set-Content "$($HOME)/$($tile)_vars.yaml" 
     }
     "crunchy-postgresql" {
-    if (!$env_vars.uaa_crunchy_password -or !$env_vars.uaa_crunchy_identity)
-    {
-        Write-Host "please add a uaa client for crunchy, 
+        if (!$env_vars.uaa_crunchy_password -or !$env_vars.uaa_crunchy_identity) {
+            Write-Host "please add a uaa client for crunchy, 
         and add uaa_crunchy_password and uaa_crunchy_identity to env.json:
         uaac client add crunchy --authorized_grant_types client_credentials --authorities bosh.admin --secret Password123!
         "
-        exit
-    }
-    "
+            exit
+        }
+        "
     product_name: $PRODUCT_TILE-10
     pcf_pas_network: pcf-pas-subnet `
     pcf_service_network: pcf-services-subnet `
@@ -269,7 +266,7 @@ switch ($tile) {
     }
     Default {
         $PRODUCT_NAME = $tile
-        write-verbose "writing config for $($HOME)/$($tile)_vars.yaml"
+        Write-Verbose "writing config for $($HOME)/$($tile)_vars.yaml"
         "
         product_name: $PRODUCT_TILE
         pcf_pas_network: pcf-pas-subnet
@@ -282,7 +279,7 @@ switch ($tile) {
 
 
 Write-Host "Getting Release for $tile $PCF_VERSION"
-$piv_release = Get-PIVRelease -id $tile | where-object version -Match $PCF_VERSION | Select-Object -First 1
+$piv_release = Get-PIVRelease -id $tile | Where-Object version -Match $PCF_VERSION | Select-Object -First 1
 Write-Host "Getting Release ID for $PCF_VERSION"
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
 Write-Host "getting Access Token"
@@ -299,7 +296,7 @@ $eula = $piv_release | Confirm-PIVEula -access_token $access_token
 $piv_object = $piv_release_id | Where-Object aws_object_key -Like "*$PRODUCT_NAME*.pivotal*"
 $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($tile)_$($PCF_VERSION)" -Force
 
-if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.FullName)/download-file.json"))) {
+if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
 
     om --skip-ssl-validation `
@@ -312,7 +309,7 @@ if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.Fu
         --output-directory  "$($output_directory.FullName)"
 }
 
-$download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
+$download_file = Get-Content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME = $download_file.product_path
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
@@ -329,7 +326,7 @@ $PRODUCTS = $(om --skip-ssl-validation `
 
 
 
-$PRODUCT = $PRODUCTS | where-object name -Match $PRODUCT_TILE | Sort-Object -Descending -Property version | Select-Object -First 1
+$PRODUCT = $PRODUCTS | Where-Object name -Match $PRODUCT_TILE | Sort-Object -Descending -Property version | Select-Object -First 1
 $PRODUCT_NAME = $PRODUCT.name
 $VERSION = $PRODUCT.version
 Write-Verbose "we now have $PRODUCT_NAME $VERSION"
@@ -345,7 +342,7 @@ om --skip-ssl-validation `
 if ($update_stemcells.ispresent) {
     $command = "$PSScriptRoot/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE  $DIRECTOR_CONF_FILE"
     Write-Host "no starting $command"
-    Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/get-stemcells-$(get-date -f yyyyMMddhhmmss).log"
+    Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/get-stemcells-$(Get-Date -f yyyyMMddhhmmss).log"
 }
 om --skip-ssl-validation `
     assign-stemcell  `
@@ -378,7 +375,7 @@ switch ($PsCmdlet.ParameterSetName) {
         Write-Host "Applying Changes to all Products"
         om --skip-ssl-validation `
             apply-changes 
-        $applied=$true    
+        $applied = $true    
     } 
     "no_apply" { 
         Write-Host "Applying Changes to $PRODUCT_NAME skipped"
@@ -388,27 +385,26 @@ switch ($PsCmdlet.ParameterSetName) {
         om --skip-ssl-validation `
             apply-changes `
             --skip-unchanged-products
-        $applied=$true    
+        $applied = $true    
     }
 } 
 
-if ($applied)
-{
+if ($applied) {
     switch ($tile) {
         "minio-internal-blobstore" {
-    $deployed = om --skip-ssl-validation `
-    curl --path /api/v0/staged/products 2>$null | ConvertFrom-Json
-    $MINIO_LB_IP = ((om.exe --skip-ssl-validation `
-        curl --path "/api/v0/deployed/products/$(($deployed | where-object type -eq minio-internal-blobstore).Installation_Name)/status" 2>$null `
-    | ConvertFrom-Json).status  | Where-Object job-name -Match load-balancer).ips 
+            $deployed = om --skip-ssl-validation `
+                curl --path /api/v0/staged/products 2>$null | ConvertFrom-Json
+            $MINIO_LB_IP = ((om.exe --skip-ssl-validation `
+                        curl --path "/api/v0/deployed/products/$(($deployed | Where-Object type -eq minio-internal-blobstore).Installation_Name)/status" 2>$null `
+                    | ConvertFrom-Json).status | Where-Object job-name -Match load-balancer).ips 
     
-    "
+            "
     minio_ip: $($MINIO_LB_IP)
     " | Set-Content "$HOME/$($PivSlug)_pas_vars.yaml"
         }
-    default {
+        default {
 
-    }    
+        }    
     }    
 }
 
@@ -417,10 +413,10 @@ Write-Host "Deployed Producst"
 om --skip-ssl-validation `
     deployed-products
 
-    Write-Host "Staged-Products"
+Write-Host "Staged-Products"
 
 om --skip-ssl-validation `
     staged-products
-    # `
-    #--format json | ConvertFrom-Json
+# `
+#--format json | ConvertFrom-Json
 Pop-Location 

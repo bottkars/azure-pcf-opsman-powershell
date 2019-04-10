@@ -63,7 +63,7 @@ om --skip-ssl-validation `
 
 $EXPORT_FILE="$((New-Guid).guid).export"
 om --skip-ssl-validation `
-    export-installation --output-file $EXPORT_FILE  
+    export-installation --output-file "$HOME/$EXPORT_FILE"
 
 
 Get-AzureRmResource -ResourceGroupName $RG `
@@ -77,7 +77,7 @@ Get-AzureRmResource -ResourceGroupName $RG `
 
 
 
-../deploy_pcf-opsman.ps1 -OpsmanUpdate `
+..\deploy_pcf-opsman.ps1 -OpsmanUpdate `
  -deploymentcolor $deploymentcolor `
  -dnsdomain $Domain `
  -location $location `
