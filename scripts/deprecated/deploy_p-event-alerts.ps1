@@ -17,7 +17,7 @@ if ($director_conf.branch)
     $branch = $director_conf.branch
   }
 else {
-  $branch = "2.4"
+  $branch = "2.5"
 }
 $downloaddir = $director_conf.downloaddir
 $PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME

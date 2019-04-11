@@ -17,7 +17,7 @@ if ($director_conf.branch)
     $branch = $director_conf.branch
   }
 else {
-  $branch = "2.4"
+  $branch = "2.5"
 }
 $PRODUCT_FILE = "$($HOME)/dataflow.json"
 if (!(Test-Path $PRODUCT_FILE))

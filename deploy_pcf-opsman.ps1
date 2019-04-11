@@ -190,7 +190,7 @@ param(
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet('testing', '2.3','2.4','2.5')]
-    $branch = "2.4"
+    $branch = "2.5"
 
 )
 

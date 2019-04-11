@@ -45,7 +45,7 @@ if ($director_conf.branch) {
     $branch = $director_conf.branch
 }
 else {
-    $branch = "2.4"
+    $branch = "2.5"
 }
 Write-Verbose "Release: $branch"
 $PRODUCT_FILE = "$($HOME)/$($tile).json"

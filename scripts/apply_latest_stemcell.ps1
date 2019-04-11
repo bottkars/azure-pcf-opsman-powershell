@@ -12,7 +12,7 @@ if ($director_conf.branch)
     $branch = $director_conf.branch
   }
 else {
-  $branch = "2.4"
+  $branch = "2.5"
 }
 $OM_Target = $director_conf.OM_TARGET
 $downloaddir = $director_conf.downloaddir

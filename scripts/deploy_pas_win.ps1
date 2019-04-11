@@ -16,7 +16,7 @@ if ($director_conf.branch)
     $branch = $director_conf.branch
   }
 else {
-  $branch = "2.4"
+  $branch = "2.5"
 }
 $pasw_conf = Get-Content "$($HOME)/pasw.json" | ConvertFrom-Json
 
