@@ -42,16 +42,16 @@ param(
 Push-Location $PSScriptRoot
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 if ($director_conf.release) {
-    $release = $director_conf.release
+    $branch = $director_conf.release
 }
 else {
-    $release = "release"
+    $branch = "2.4"
 }
-Write-Verbose "Release: $Release"
+Write-Verbose "Release: $branch"
 $PRODUCT_FILE = "$($HOME)/$($tile).json"
 if (!(Test-Path $PRODUCT_FILE)) {
 
-    $PRODUCT_FILE = "../examples/$($release)/$($tile).json"
+    $PRODUCT_FILE = "../examples/$($branch)/$($tile).json"
     Write-Verbose "using $PRODUCT_FILE"
 }
 $tile_conf = Get-Content $PRODUCT_FILE | ConvertFrom-Json
