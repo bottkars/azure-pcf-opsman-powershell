@@ -1,0 +1,4 @@
+{
+    "PCF_VERSION":  "2.5.1",
+    "CONFIG_FILE": "../templates/p-isolation-segment/2.5.1/p-isolation-segment.yaml"
+}
