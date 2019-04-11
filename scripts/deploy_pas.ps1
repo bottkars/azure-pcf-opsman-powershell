@@ -33,16 +33,16 @@ param(
 )
 Push-Location $PSScriptRoot
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
-if ($director_conf.release)
+if ($director_conf.branch)
   {
-    $release = $director_conf.release
+    $branch = $director_conf.branch
   }
 else {
-  $release = "release"
+  $branch = "2.4"
 }
 $PRODUCT_FILE = "$($HOME)/pas-$($PRODUCT_NAME).json"
 if (!(Test-Path $PRODUCT_FILE))
-{$PRODUCT_FILE = "../examples/$($release)/pas-$($PRODUCT_NAME).json"}
+{$PRODUCT_FILE = "../examples/$($branch)/pas-$($PRODUCT_NAME).json"}
 $pas_conf = Get-Content $PRODUCT_FILE | ConvertFrom-Json
 $PCF_PAS_VERSION = $pas_conf.PCF_PAS_VERSION
 $config_file = $pas_conf.CONFIG_FILE

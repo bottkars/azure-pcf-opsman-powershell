@@ -41,8 +41,8 @@ param(
 )
 Push-Location $PSScriptRoot
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
-if ($director_conf.release) {
-    $branch = $director_conf.release
+if ($director_conf.branch) {
+    $branch = $director_conf.branch
 }
 else {
     $branch = "2.4"

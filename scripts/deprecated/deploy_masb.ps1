@@ -18,16 +18,16 @@ param(
 )
 Push-Location $PSScriptRoot
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
-if ($director_conf.release)
+if ($director_conf.branch)
   {
-    $release = $director_conf.release
+    $branch = $director_conf.branch
   }
 else {
-  $release = "release"
+  $branch = "2.4"
 }
 $PRODUCT_FILE = "$($HOME)/masb.json"
 if (!(Test-Path $PRODUCT_FILE))
-{$PRODUCT_FILE = "../examples/$($release)/masb.json"}
+{$PRODUCT_FILE = "../examples/$($branch)/masb.json"}
 $masb_conf = Get-Content $PRODUCT_FILE| ConvertFrom-Json
 $PCF_masb_VERSION = $masb_conf.PCF_masb_VERSION
 

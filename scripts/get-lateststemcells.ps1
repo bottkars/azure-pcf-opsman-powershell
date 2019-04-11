@@ -24,19 +24,19 @@ $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
 
 
-$Releases = @()
+$branchs = @()
 
 foreach ($Family in $Families) 
 {
     switch ($Family){
         '3586' {
-                $Releases += Get-PIVRelease -id 82 | where-object version -Match 3586. | Select-Object -First 1
+                $branchs += Get-PIVRelease -id 82 | where-object version -Match 3586. | Select-Object -First 1
         }
         '3541' {
-                $Releases += Get-PIVRelease -id 82 | where-object version -Match 3541. | Select-Object -First 1
+                $branchs += Get-PIVRelease -id 82 | where-object version -Match 3541. | Select-Object -First 1
         }
         default {
-                $Releases += Get-PIVRelease -id 233 | where-object version -Match "$Family." | Select-Object -First 1    
+                $branchs += Get-PIVRelease -id 233 | where-object version -Match "$Family." | Select-Object -First 1    
             }
     }
 }
@@ -48,11 +48,11 @@ if ($apply.IsPresent)
 else {
     $floating = "false"
 }    
-foreach ($Release in $Releases) {
-Write-Host  "Accepting EULA for Slug $($Release.slugid) Release $($Release.id)"
-$eula =    $Release | Confirm-PIVEula -access_token $access_token
-$output_directory = New-Item -ItemType Directory -Path "$downloaddir/stemcells/$($Release.version)" -Force 
-$aws_object_key = ($Release | Get-PIVFileReleaseId | where-object aws_object_key -match "hyperv").aws_object_key
+foreach ($branch in $branchs) {
+Write-Host  "Accepting EULA for Slug $($branch.slugid) Release $($branch.id)"
+$eula =    $branch | Confirm-PIVEula -access_token $access_token
+$output_directory = New-Item -ItemType Directory -Path "$downloaddir/stemcells/$($branch.version)" -Force 
+$aws_object_key = ($branch | Get-PIVFileReleaseId | where-object aws_object_key -match "hyperv").aws_object_key
 $stemcell_real_filename = Split-Path -Leaf $aws_object_key
 
 Write-Host "Stemcell filename $stemcell_real_filename"
@@ -61,8 +61,8 @@ om --skip-ssl-validation `
 download-product `
 --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
 --pivnet-file-glob $stemcell_real_filename `
---pivnet-product-slug $Release.slugid `
---product-version $Release.version `
+--pivnet-product-slug $branch.slugid `
+--product-version $branch.version `
 --output-directory $output_directory.FullName
 
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json

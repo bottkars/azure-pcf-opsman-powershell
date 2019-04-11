@@ -12,12 +12,12 @@ param(
 )
 Push-Location $PSScriptRoot
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
-if ($director_conf.release)
+if ($director_conf.branch)
   {
-    $release = $director_conf.release
+    $branch = $director_conf.branch
   }
 else {
-  $release = "release"
+  $branch = "2.4"
 }
 $downloaddir = $director_conf.downloaddir
 $PCF_SUBDOMAIN_NAME = $director_conf.PCF_SUBDOMAIN_NAME
