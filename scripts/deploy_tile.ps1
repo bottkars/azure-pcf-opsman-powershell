@@ -1,4 +1,4 @@
-#requires -module pivposh
+#Requires -Modules @{ModuleName="pivposh";ModuleVersion="0.5"}
 param(
     [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
     [switch]$DO_NOT_APPLY,
@@ -341,7 +341,7 @@ om --skip-ssl-validation `
 
 if ($update_stemcells.ispresent) {
     $command = "$PSScriptRoot/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE  $DIRECTOR_CONF_FILE -Families 97,170,250"
-    Write-Host "no starting $command"
+    Write-Host "now starting $command"
     Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/get-stemcells-$(Get-Date -f yyyyMMddhhmmss).log"
 }
 om --skip-ssl-validation `
