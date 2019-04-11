@@ -723,7 +723,7 @@ if (!$OpsmanUpdate) {
                 
                 $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
                 $StopWatch_deploy_pas.Start()
-                if ($tiles) {
+                if (($tiles) -or ($DO_NOT_APPLY.IsPresent)) {
                     $command = "$ScriptHome/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -compute_instances $compute_instances -DO_NOT_APPLY"
                 }
                 else {
@@ -738,7 +738,13 @@ if (!$OpsmanUpdate) {
                 $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
                 if ($tiles) {            
                     $StopWatch_deploy.Start()
-                    $command = "$ScriptHome/scripts/tile_deployer.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -tiles $($tiles -join ',')"
+                    if ($DO_NOT_APPLY.IsPresent)
+                        {
+                    $command = "$ScriptHome/scripts/tile_deployer.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -tiles $($tiles -join ',') -DO_NOT_APPLY"
+                    }
+                    else {
+                        $command = "$ScriptHome/scripts/tile_deployer.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -tiles $($tiles -join ',')"
+                    }
                     Write-Host "Calling $command" 
                     Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/deployment-$(get-date -f yyyyMMddhhmmss).log"
                     $StopWatch_deploy.Stop()
