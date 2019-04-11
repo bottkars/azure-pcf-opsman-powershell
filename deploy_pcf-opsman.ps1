@@ -424,6 +424,7 @@ to be set correctly with role `contributor`for the Service Principal at the AZUR
     }    
 
 }
+
 $opsManFQDNPrefix = "$opsManFQDNPrefix$deploymentcolor"
 if (!$boshstorageaccount) {
     $boshstorageaccount = 'boshstorage'
@@ -701,6 +702,11 @@ if (!$OpsmanUpdate) {
                 }   
 
             }
+            switch ($pastype){
+            'cf' {
+                $compute_instances = [math]::ceiling($compute_instances/3)*3
+            }
+}
             Write-Host "Calling $command" 
             Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/init-om-$(get-date -f yyyyMMddhhmmss).log"
             $StopWatch_deploy_opsman.Stop()
