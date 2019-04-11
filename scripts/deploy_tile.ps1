@@ -1,4 +1,4 @@
-#requires -module pivposh
+#requires -module pivposh -version 0.5
 param(
     [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
     [switch]$DO_NOT_APPLY,
