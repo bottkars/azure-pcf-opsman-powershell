@@ -1,4 +1,4 @@
-﻿#requires -module pivposh
+﻿#Requires -Modules @{ModuleName="pivposh";ModuleVersion="0.5"}
 #requires -module NetTCPIP
 #requires -module AzureRM.SQL
 param(
