@@ -383,18 +383,18 @@ Write-Host
 if ($PsCmdlet.ParameterSetName -eq "install") {
     if ($tiles) {
         [switch]$PAS_AUTOPILOT = $true
-        if ($tiles -contains 'spring') {
-            $tiles = ('mysql', 'rabbitmq', 'spring') + $tiles
+        if ($tiles -contains 'p-spring-cloud-services') {
+            $tiles = ('pivotal-mysql', 'p-rabbitmq', 'p-spring-cloud-services') + $tiles
             $tiles = $tiles | Select-Object -Unique
             if ($compute_instances -lt 2) {
                 $compute_instances = 2
             }
         }
         if ($tiles -contains 'dataflow') {
-            $tiles = ('mysql', 'rabbitmq', 'redis', 'dataflow') + $tiles
+            $tiles = ('pivotal-mysql', 'p-rabbitmq', 'p-redis', 'p-dataflow') + $tiles
             $tiles = $tiles | Select-Object -Unique
         }
-        if ($tiles -contains 'masb') {
+        if ($tiles -contains 'azure-service-broker') {
             if (!$env_vars.AZURE_CLIENT_ID `
                     -or !$env_vars.AZURE_CLIENT_SECRET `
                     -or !$env_vars.AZURE_REGION `
