@@ -152,11 +152,6 @@ $PCF_KEY_PEM = $PCF_KEY_PEM -join "\r\n"
 $PCF_CERT_PEM = get-content "$($HOME)/$($PCF_SUBDOMAIN_NAME).$($PCF_DOMAIN_NAME).crt"
 $PCF_CERT_PEM = $PCF_CERT_PEM -join "\r\n"
     
-switch ($PRODUCT_NAME){
-    'cf' {
-        $compute_instances = [math]::ceiling($compute_instances/3)*3
-    }
-}    
 
 "
 product_name: $PRODUCT_NAME
