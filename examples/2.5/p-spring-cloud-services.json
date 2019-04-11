@@ -1,4 +1,4 @@
 {
-    "PCF_VERSION": "2.0.6",
-    "CONFIG_FILE": "../templates/p-spring-cloud-services/2.0.6/p-spring-cloud-services.yaml"
+    "PCF_VERSION": "2.0.7",
+    "CONFIG_FILE": "../templates/p-spring-cloud-services/2.0.7/p-spring-cloud-services.yaml"
 }

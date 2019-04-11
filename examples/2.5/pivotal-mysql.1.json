@@ -1,4 +1,0 @@
-{
-    "PCF_VERSION":  "2.5.3",
-    "CONFIG_FILE": "../templates/pivotal-mysql/2.5.3/pivotal-mysql.yaml"
-}
