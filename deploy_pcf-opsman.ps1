@@ -390,7 +390,7 @@ if ($PsCmdlet.ParameterSetName -eq "install") {
                 $compute_instances = 2
             }
         }
-        if ($tiles -contains 'p-dataflow') {
+        if ($tiles -contains 'dataflow') {
             $tiles = ('pivotal-mysql', 'p-rabbitmq', 'p-redis', 'p-dataflow') + $tiles
             $tiles = $tiles | Select-Object -Unique
         }
