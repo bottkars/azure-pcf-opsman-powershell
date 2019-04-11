@@ -340,7 +340,7 @@ om --skip-ssl-validation `
     --product-version $VERSION
 
 if ($update_stemcells.ispresent) {
-    $command = "$PSScriptRoot/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE  $DIRECTOR_CONF_FILE"
+    $command = "$PSScriptRoot/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE  $DIRECTOR_CONF_FILE -Families 97,170,250"
     Write-Host "no starting $command"
     Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/get-stemcells-$(Get-Date -f yyyyMMddhhmmss).log"
 }

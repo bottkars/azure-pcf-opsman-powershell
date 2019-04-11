@@ -697,7 +697,7 @@ if (!$OpsmanUpdate) {
             if ($PAS_AUTOPILOT.IsPresent) {
                 $StopWatch_deploy_stemcells = New-Object System.Diagnostics.Stopwatch
                 $StopWatch_deploy_stemcells.Start()
-                $command = "$ScriptDir/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE"
+                $command = "$ScriptDir/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -Families 97,170,250"
                 Write-Host "Calling $command" 
                 Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/stemcells-$(get-date -f yyyyMMddhhmmss).log"
                 $StopWatch_deploy_stemcells.Stop()
