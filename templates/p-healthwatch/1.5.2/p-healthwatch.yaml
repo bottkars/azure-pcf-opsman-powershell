@@ -13,4 +13,4 @@ product-properties:
   .properties.boshtasks:
     value: disable
   .healthwatch-forwarder.health_check_az:
-    value: 'null'  
+    value: ((singleton_zone))  
