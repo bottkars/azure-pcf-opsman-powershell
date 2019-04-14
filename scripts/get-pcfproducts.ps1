@@ -21,7 +21,7 @@ $env:OM_Username = $env_vars.OM_Username
 $env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 try
-{$PRODUCTS=$(om --skip-ssl-validation `
+{$PRODUCTS=$( om --env $HOME/om_$($RG).env `
     curl --path /api/v0/$state/products 2>$null | ConvertFrom-Json)
 }
 catch

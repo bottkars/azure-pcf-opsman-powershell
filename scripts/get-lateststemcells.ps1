@@ -56,7 +56,7 @@ $aws_object_key = ($branch | Get-PIVFileReleaseId | where-object aws_object_key 
 $stemcell_real_filename = Split-Path -Leaf $aws_object_key
 
 Write-Host "Stemcell filename $stemcell_real_filename"
-om --skip-ssl-validation `
+ om --env $HOME/om_$($RG).env `
 --request-timeout 7200 `
 download-product `
 --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
@@ -68,7 +68,7 @@ download-product `
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $STEMCELL_FILENAME = $download_file.product_path
 # Copy-Item  -Path "$STEMCELL_FILENAME" -Destination "$($output_directory.FullName)/$stemcell_real_filename"
-om --skip-ssl-validation `
+ om --env $HOME/om_$($RG).env `
     upload-stemcell `
     --floating=$floating `
     --stemcell $STEMCELL_FILENAME
@@ -77,7 +77,7 @@ om --skip-ssl-validation `
 #    --stemcell "$($output_directory.FullName)/$stemcell_real_filename"
 if ($apply.IsPresent)
     {
-    om --skip-ssl-validation `
+     om --env $HOME/om_$($RG).env `
     apply-changes `
     --skip-unchanged-products
     }

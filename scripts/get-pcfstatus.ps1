@@ -16,7 +16,7 @@ $env:Path = "$($env:Path);$HOME/OM"
 try
 {
     write-host "getting deployed products"
-    $PRODUCTS=$(om --skip-ssl-validation `
+    $PRODUCTS=$( om --env $HOME/om_$($RG).env `
     curl --path /api/v0/deployed/products 2>$null | ConvertFrom-Json)
 }
 catch

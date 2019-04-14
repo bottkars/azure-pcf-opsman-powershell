@@ -52,7 +52,7 @@ $piv_winfs_object = $piv_release_id | Where-Object aws_object_key -Like *winfs*.
 $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_PASW_VERSION)" -Force
 $injector_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_PASW_VERSION)_injector" -Force
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($RG).env `
     --request-timeout 7200 `
     download-product `
     --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
@@ -64,7 +64,7 @@ om --skip-ssl-validation `
 
 if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
-    om --skip-ssl-validation `
+     om --env $HOME/om_$($RG).env `
         --request-timeout 7200 `
         download-product `
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
@@ -88,13 +88,12 @@ Start-Process $winfs_injector -Wait -ArgumentList "--input-tile $TARGET_FILENAME
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
-om --skip-ssl-validation `
-    --request-timeout 3600 `
+ om --env $HOME/om_$($RG).env `
     upload-product `
     --product $TARGET_FILENAME
 
 <#
-$PRODUCTS=$(om --skip-ssl-validation `
+$PRODUCTS=$( om --env $HOME/om_$($RG).env `
   available-products `
     --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
@@ -102,12 +101,12 @@ $VERSION= $PRODUCTS.version
 $PRODUCT_NAME=$PRODUCTS.name
   # 2.  Stage using om cli
 
-  om --skip-ssl-validation `
+   om --env $HOME/om_$($RG).env `
     stage-product `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
 
-    om --skip-ssl-validation `
+     om --env $HOME/om_$($RG).env `
     assign-stemcell  `
   --stemcell latest `
     --product $PRODUCT_NAME
@@ -134,10 +133,10 @@ pcf_mysql_lb: mysql-lb
 pcf_web_lb: pcf-lb
 " | Set-Content $HOME/vars.yaml
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($RG).env `
   configure-product `
   -c $PSScriptRoot/pas.yaml -l $HOME/vars.yaml
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($RG).env `
   apply-changes
 #>

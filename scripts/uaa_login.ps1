@@ -14,14 +14,14 @@ $env:Path = "$($env:Path);$HOME/OM"
 $UAA_API = "uaa.sys.$($director_conf.PCF_SUBDOMAIN_NAME).$($director_conf.domain)"
 
 Write-Host "Reading deployed Products from OpsManager" 
-$DEPLOYED_PRODUCTS = om --skip-ssl-validation `
+$DEPLOYED_PRODUCTS =  om --env $HOME/om_$($RG).env `
     curl `
     --silent `
     --path /api/v0/deployed/products | ConvertFrom-Json
 
 $PCF = $DEPLOYED_PRODUCTS | Select-Object | where-object type -eq cf      
 Write-Host "Getting UAA from OpsManger"
-$UAA_ADMIN_USER = om --skip-ssl-validation `
+$UAA_ADMIN_USER =  om --env $HOME/om_$($RG).env `
     curl `
     --silent `
     --path "/api/v0/deployed/products/$($PCF.GUID)/credentials/.uaa.admin_client_credentials" `

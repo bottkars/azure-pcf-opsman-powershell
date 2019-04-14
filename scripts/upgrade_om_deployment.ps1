@@ -57,12 +57,12 @@ else {
 
 
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($RG).env `
     deployed-products
 
 
 $EXPORT_FILE="$((New-Guid).guid).export"
-om --skip-ssl-validation `
+ om --env $HOME/om_$($RG).env `
     export-installation --output-file "$HOME/$EXPORT_FILE"
 
 
@@ -87,6 +87,6 @@ Get-AzureRmResource -ResourceGroupName $RG `
 
 
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($RG).env `
     deployed-products
 Pop-Location

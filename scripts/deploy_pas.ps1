@@ -88,7 +88,7 @@ $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($PRODUCT_NAM
 if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
 
-    om --skip-ssl-validation `
+     om --env $HOME/om_$($RG).env `
         --request-timeout 21600 `
         download-product `
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
@@ -110,13 +110,12 @@ if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.Fu
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME = $download_file.product_path
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($RG).env `
     deployed-products
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
-om --skip-ssl-validation `
-    --request-timeout 3600 `
+ om --env $HOME/om_$($RG).env `
     upload-product `
     --product $TARGET_FILENAME
 if ($LASTEXITCODE -ne 0) {
@@ -126,7 +125,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 
-$PRODUCTS = $(om --skip-ssl-validation `
+$PRODUCTS = $( om --env $HOME/om_$($RG).env `
         available-products `
         --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
@@ -135,12 +134,12 @@ $VERSION = $PRODUCT.version
 $PRODUCT_NAME = $PRODUCT.name
 # 2.  Stage using om cli
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($RG).env `
     stage-product `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($RG).env `
     assign-stemcell  `
     --stemcell latest `
     --product $PRODUCT_NAME
@@ -179,7 +178,7 @@ zones_map: 'null'
 smtp_enable_starttls_auto: true
 " | Set-Content $HOME/vars.yaml
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($RG).env `
     configure-product `
     -c "$config_file" -l $HOME/vars.yaml
 
@@ -201,20 +200,20 @@ if ($USE_MINIO.ispresent) {
 switch ($PsCmdlet.ParameterSetName) { 
     "apply_all" { 
         Write-Host "Applying Changes to all Products"
-        om --skip-ssl-validation `
+         om --env $HOME/om_$($RG).env `
             apply-changes 
     } 
     "no_apply" { 
         Write-Host "Applying Changes to $PRODUCT_NAME skipped"
     } 
     "apply_changed" {
-        om --skip-ssl-validation `
+         om --env $HOME/om_$($RG).env `
             apply-changes `
             --skip-unchanged-products
     }    
     default {
         Write-Host "Applying Changes to $PRODUCT_NAME and changed Products"
-        om --skip-ssl-validation `
+         om --env $HOME/om_$($RG).env `
             apply-changes `
             --skip-unchanged-products
     }
@@ -224,6 +223,6 @@ switch ($PsCmdlet.ParameterSetName) {
 
 
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($RG).env `
     deployed-products
 Pop-Location

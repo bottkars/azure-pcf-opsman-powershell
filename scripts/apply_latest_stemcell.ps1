@@ -23,7 +23,7 @@ $env:OM_Username = $env_vars.OM_Username
 $env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 
-$DEPLOYED_PRODUCTS = om --skip-ssl-validation `
+$DEPLOYED_PRODUCTS =  om --env $HOME/om_$($RG).env `
 curl `
 --silent `
 --path /api/v0/deployed/products | ConvertFrom-Json
@@ -32,7 +32,7 @@ $DEPLOYED_PRODUCTS
 
 foreach ($PRODUCT_NAME in $DEPLOYED_PRODUCTS)
 {
-    om --skip-ssl-validation `
+     om --env $HOME/om_$($RG).env `
     assign-stemcell  `
     --stemcell latest `
     --product $PRODUCT_NAME.type
@@ -40,7 +40,7 @@ foreach ($PRODUCT_NAME in $DEPLOYED_PRODUCTS)
 
 if ($apply.IsPresent){
     Write-Host "Applying Stemcells to Products"
-    om --skip-ssl-validation `
+     om --env $HOME/om_$($RG).env `
         apply-changes `
         --skip-unchanged-products
 }
