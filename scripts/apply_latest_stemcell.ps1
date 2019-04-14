@@ -18,12 +18,9 @@ $OM_Target = $director_conf.OM_TARGET
 $downloaddir = $director_conf.downloaddir
 # getting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
-$env:OM_Password = $env_vars.OM_Password
-$env:OM_Username = $env_vars.OM_Username
-$env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 
-$DEPLOYED_PRODUCTS =  om --env $HOME/om_$($RG).env `
+$DEPLOYED_PRODUCTS =  om --env $HOME/om_$($director_conf.RG).env `
 curl `
 --silent `
 --path /api/v0/deployed/products | ConvertFrom-Json
@@ -32,7 +29,7 @@ $DEPLOYED_PRODUCTS
 
 foreach ($PRODUCT_NAME in $DEPLOYED_PRODUCTS)
 {
-     om --env $HOME/om_$($RG).env `
+     om --env $HOME/om_$($director_conf.RG).env `
     assign-stemcell  `
     --stemcell latest `
     --product $PRODUCT_NAME.type
@@ -40,7 +37,7 @@ foreach ($PRODUCT_NAME in $DEPLOYED_PRODUCTS)
 
 if ($apply.IsPresent){
     Write-Host "Applying Stemcells to Products"
-     om --env $HOME/om_$($RG).env `
+     om --env $HOME/om_$($director_conf.RG).env `
         apply-changes `
         --skip-unchanged-products
 }

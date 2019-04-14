@@ -29,9 +29,6 @@ $PCF_SUBDOMAIN_NAME = $pasw_conf.PCF_SUBDOMAIN_NAME
 $domain = $director_conf.domain
 # getting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
-$env:OM_Password = $env_vars.OM_Password
-$env:OM_Username = $env_vars.OM_Username
-$env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
@@ -52,7 +49,7 @@ $piv_winfs_object = $piv_release_id | Where-Object aws_object_key -Like *winfs*.
 $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_PASW_VERSION)" -Force
 $injector_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_PASW_VERSION)_injector" -Force
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     --request-timeout 7200 `
     download-product `
     --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
@@ -64,7 +61,7 @@ $injector_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_
 
 if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
-     om --env $HOME/om_$($RG).env `
+     om --env $HOME/om_$($director_conf.RG).env `
         --request-timeout 7200 `
         download-product `
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
@@ -88,12 +85,12 @@ Start-Process $winfs_injector -Wait -ArgumentList "--input-tile $TARGET_FILENAME
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     upload-product `
     --product $TARGET_FILENAME
 
 <#
-$PRODUCTS=$( om --env $HOME/om_$($RG).env `
+$PRODUCTS=$( om --env $HOME/om_$($director_conf.RG).env `
   available-products `
     --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
@@ -101,12 +98,12 @@ $VERSION= $PRODUCTS.version
 $PRODUCT_NAME=$PRODUCTS.name
   # 2.  Stage using om cli
 
-   om --env $HOME/om_$($RG).env `
+   om --env $HOME/om_$($director_conf.RG).env `
     stage-product `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
 
-     om --env $HOME/om_$($RG).env `
+     om --env $HOME/om_$($director_conf.RG).env `
     assign-stemcell  `
   --stemcell latest `
     --product $PRODUCT_NAME
@@ -133,10 +130,10 @@ pcf_mysql_lb: mysql-lb
 pcf_web_lb: pcf-lb
 " | Set-Content $HOME/vars.yaml
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
   configure-product `
   -c $PSScriptRoot/pas.yaml -l $HOME/vars.yaml
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
   apply-changes
 #>

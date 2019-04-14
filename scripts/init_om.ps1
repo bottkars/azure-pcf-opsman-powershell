@@ -63,7 +63,7 @@ $om_cert = $om_cert -join "`r`n"
 $om_key = get-content "$($HOME)/$($OM_Target).key"
 $om_key = $om_key -join "`r`n"
 
-$OM_ENV_FILE = "$HOME/OM_$($RG).env"   
+$OM_ENV_FILE = "$HOME/OM_$($director_conf.RG).env"   
 
 "
 ---
@@ -111,28 +111,28 @@ $content += "availability_mode: availability_sets"
 $content += "singleton_availability_zone: 'null'"
 $content | Set-Content $HOME/director_vars.yaml
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     configure-authentication `
     --decryption-passphrase $PCF_PIVNET_UAA_TOKEN
 
 Write-Host "Now Uploading OM Certs"
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     update-ssl-certificate `
     --certificate-pem "$om_cert" `
     --private-key-pem "$om_key" 
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     deployed-products
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     configure-director --config "$PSScriptRoot/../templates/director_config.yaml" --vars-file "$HOME/director_vars.yaml"
 
 if (!$DO_NOT_APPLY.IsPresent) {
-     om --env $HOME/om_$($RG).env apply-changes
+     om --env $HOME/om_$($director_conf.RG).env apply-changes
 }
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     deployed-products
 
 if ($USE_MINIO.IsPresent)

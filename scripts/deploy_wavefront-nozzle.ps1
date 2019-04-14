@@ -25,9 +25,6 @@ $domain = $director_conf.domain
 
 $OM_Target = $director_conf.OM_TARGET
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
-$env:OM_Password = $env_vars.OM_Password
-$env:OM_Username = $env_vars.OM_Username
-$env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 $GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 $wavefront_url = $env_vars.wavefront_url

@@ -15,9 +15,6 @@ $OM_Target = $director_conf.OM_TARGET
 $downloaddir = $director_conf.downloaddir
 # getting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
-$env:OM_Password = $env_vars.OM_Password
-$env:OM_Username = $env_vars.OM_Username
-$env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 
@@ -56,7 +53,7 @@ $aws_object_key = ($branch | Get-PIVFileReleaseId | where-object aws_object_key 
 $stemcell_real_filename = Split-Path -Leaf $aws_object_key
 
 Write-Host "Stemcell filename $stemcell_real_filename"
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
 --request-timeout 7200 `
 download-product `
 --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
@@ -68,7 +65,7 @@ download-product `
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $STEMCELL_FILENAME = $download_file.product_path
 # Copy-Item  -Path "$STEMCELL_FILENAME" -Destination "$($output_directory.FullName)/$stemcell_real_filename"
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     upload-stemcell `
     --floating=$floating `
     --stemcell $STEMCELL_FILENAME
@@ -77,7 +74,7 @@ $STEMCELL_FILENAME = $download_file.product_path
 #    --stemcell "$($output_directory.FullName)/$stemcell_real_filename"
 if ($apply.IsPresent)
     {
-     om --env $HOME/om_$($RG).env `
+     om --env $HOME/om_$($director_conf.RG).env `
     apply-changes `
     --skip-unchanged-products
     }

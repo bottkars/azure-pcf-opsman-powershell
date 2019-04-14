@@ -54,9 +54,6 @@ $domain = $director_conf.domain
 $RG = $director_conf.RG
 # getting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
-$env:OM_Password = $env_vars.OM_Password
-$env:OM_Username = $env_vars.OM_Username
-$env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $smtp_address = $env_vars.SMTP_ADDRESS
@@ -88,7 +85,7 @@ $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($PRODUCT_NAM
 if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
 
-     om --env $HOME/om_$($RG).env `
+     om --env $HOME/om_$($director_conf.RG).env `
         --request-timeout 21600 `
         download-product `
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
@@ -110,12 +107,12 @@ if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.Fu
 $download_file = get-content "$($output_directory.FullName)/download-file.json" | ConvertFrom-Json
 $TARGET_FILENAME = $download_file.product_path
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     deployed-products
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     upload-product `
     --product $TARGET_FILENAME
 if ($LASTEXITCODE -ne 0) {
@@ -125,7 +122,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 
-$PRODUCTS = $( om --env $HOME/om_$($RG).env `
+$PRODUCTS = $( om --env $HOME/om_$($director_conf.RG).env `
         available-products `
         --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
@@ -134,12 +131,12 @@ $VERSION = $PRODUCT.version
 $PRODUCT_NAME = $PRODUCT.name
 # 2.  Stage using om cli
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     stage-product `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     assign-stemcell  `
     --stemcell latest `
     --product $PRODUCT_NAME
@@ -178,7 +175,7 @@ zones_map: 'null'
 smtp_enable_starttls_auto: true
 " | Set-Content $HOME/vars.yaml
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     configure-product `
     -c "$config_file" -l $HOME/vars.yaml
 
@@ -200,20 +197,20 @@ if ($USE_MINIO.ispresent) {
 switch ($PsCmdlet.ParameterSetName) { 
     "apply_all" { 
         Write-Host "Applying Changes to all Products"
-         om --env $HOME/om_$($RG).env `
+         om --env $HOME/om_$($director_conf.RG).env `
             apply-changes 
     } 
     "no_apply" { 
         Write-Host "Applying Changes to $PRODUCT_NAME skipped"
     } 
     "apply_changed" {
-         om --env $HOME/om_$($RG).env `
+         om --env $HOME/om_$($director_conf.RG).env `
             apply-changes `
             --skip-unchanged-products
     }    
     default {
         Write-Host "Applying Changes to $PRODUCT_NAME and changed Products"
-         om --env $HOME/om_$($RG).env `
+         om --env $HOME/om_$($director_conf.RG).env `
             apply-changes `
             --skip-unchanged-products
     }
@@ -223,6 +220,6 @@ switch ($PsCmdlet.ParameterSetName) {
 
 
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     deployed-products
 Pop-Location

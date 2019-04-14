@@ -15,7 +15,8 @@ Push-Location $PSScriptRoot
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 $env:Path = "$($env:Path);$HOME/OM"
 try
-{$PRODUCTS=$( om --env $HOME/om_$($DIRECTOR_CONF.RG).env `
+{
+$PRODUCTS=$( om --env $HOME/om_$($DIRECTOR_CONF.RG).env `
     curl --path /api/v0/$state/products 2>$null | ConvertFrom-Json)
 }
 catch

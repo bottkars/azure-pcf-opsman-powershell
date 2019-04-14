@@ -41,9 +41,6 @@ $domain = $director_conf.domain
 $config_file = $masb_conf.CONFIG_FILE
 $OM_Target = $director_conf.OM_TARGET
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
-$env:OM_Password = $env_vars.OM_Password
-$env:OM_Username = $env_vars.OM_Username
-$env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
@@ -72,7 +69,7 @@ $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$(
 if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
 
-     om --env $HOME/om_$($RG).env `
+     om --env $HOME/om_$($director_conf.RG).env `
         --request-timeout 7200 `
         download-product `
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
@@ -87,10 +84,10 @@ $TARGET_FILENAME = $download_file.product_path
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     upload-product `
     --product $TARGET_FILENAME
-$PRODUCTS = $( om --env $HOME/om_$($RG).env `
+$PRODUCTS = $( om --env $HOME/om_$($director_conf.RG).env `
         available-products `
         --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
@@ -98,16 +95,16 @@ $PRODUCT=$PRODUCTS | where-object name -Match $slug_id | Sort-Object -Descending
 $PRODUCT_NAME = $PRODUCT.name
 $VERSION = $PRODUCT.version
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     deployed-products
 # 2.  Stage using om cli
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     stage-product `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     assign-stemcell  `
     --stemcell latest `
     --product $PRODUCT_NAME
@@ -127,7 +124,7 @@ azure_broker_default_location: $AZURE_REGION
 " | Set-Content $HOME/masb_vars.yaml
 #azure_broker_database_encryption_key:  $(-join ((65..90) + (97..122) | Get-Random -Count 32 | ForEach-Object {[char]$_}))
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     configure-product `
     -c "$config_file" -l "$HOME/masb_vars.yaml"
 
@@ -168,7 +165,7 @@ if (!$do_not_configure_azure_DB.ispresent)
             do {} until ((Test-NetConnection "masb$($ENV_SHORT_NAME).database.windows.net" -Port 1433).TcpTestSucceeded) 
             Write-Host -ForegroundColor Green "[done]" 
             Write-Host "Applying Changes to all Products"
-             om --env $HOME/om_$($RG).env `
+             om --env $HOME/om_$($director_conf.RG).env `
                 apply-changes 
         } 
         "no_apply" {
@@ -182,13 +179,13 @@ if (!$do_not_configure_azure_DB.ispresent)
             do {} until ((Test-NetConnection "masb$($ENV_SHORT_NAME).database.windows.net" -Port 1433).TcpTestSucceeded) 
             Write-Host -ForegroundColor Green "[done]"
             Write-Host "Applying Changes to $PRODUCT_NAME"
-             om --env $HOME/om_$($RG).env `
+             om --env $HOME/om_$($director_conf.RG).env `
                 apply-changes `
                 --product-name $PRODUCT_NAME 
         }
     }        
 
- om --env $HOME/om_$($RG).env `
+ om --env $HOME/om_$($director_conf.RG).env `
     deployed-products 
 
 Pop-Location 
