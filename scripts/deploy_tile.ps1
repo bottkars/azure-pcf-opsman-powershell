@@ -264,6 +264,17 @@ switch ($tile) {
     uaa_admin_secret: $($env_vars.uaa_crunchy_password)
     " | Set-Content "$($HOME)/$($tile)_vars.yaml" 
     }
+    'apm'
+    {
+        
+    "
+
+    product_name: apmPostgres
+    pcf_pas_network: pcf-pas-subnet
+    singleton_zone: $singleton_zone
+    zones_map: $zones_map
+    " | Set-Content "$($HOME)/$($tile)_vars.yaml"
+    }
     Default {
         $PRODUCT_NAME = $tile
         Write-Verbose "writing config for $($HOME)/$($tile)_vars.yaml"
