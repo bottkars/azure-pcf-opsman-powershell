@@ -34,9 +34,6 @@ $config_file = $healthwatch_conf.CONFIG_FILE
 $OM_Target = $director_conf.OM_TARGET
 # setting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
-$env:OM_Password = $env_vars.OM_Password
-$env:OM_Username = $env_vars.OM_Username
-$env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 $GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 
@@ -55,7 +52,7 @@ $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$(
 if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
 
-    om --skip-ssl-validation `
+     om --env $HOME/om_$($director_conf.RG).env `
         --request-timeout 7200 `
         download-product `
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
@@ -70,12 +67,11 @@ $TARGET_FILENAME = $download_file.product_path
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
-om --skip-ssl-validation `
-    --request-timeout 3600 `
+ om --env $HOME/om_$($director_conf.RG).env `
     upload-product `
     --product $TARGET_FILENAME
 
-$PRODUCTS = $(om --skip-ssl-validation `
+$PRODUCTS = $( om --env $HOME/om_$($director_conf.RG).env `
         available-products `
         --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
@@ -83,16 +79,16 @@ $PRODUCT=$PRODUCTS | where-object name -Match $slug_id | Sort-Object -Descending
 $PRODUCT_NAME = $PRODUCT.name
 $VERSION = $PRODUCT.version
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     deployed-products
 # 2.  Stage using om cli
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     stage-product `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     assign-stemcell  `
     --stemcell latest `
     --product $PRODUCT_NAME
@@ -104,14 +100,14 @@ pcf_service_network: pcf-services-subnet
 opsman_enable_url: $OM_Target
 " | Set-Content $HOME/healthwatch_vars.yaml
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     configure-product `
     -c "$config_file" -l "$HOME/healthwatch_vars.yaml"
 
 switch ($PsCmdlet.ParameterSetName) { 
     "apply_all" { 
         Write-Host "Applying Changes to all Products"
-        om --skip-ssl-validation `
+         om --env $HOME/om_$($director_conf.RG).env `
             apply-changes 
     } 
     "no_apply" { 
@@ -119,13 +115,13 @@ switch ($PsCmdlet.ParameterSetName) {
     } 
     default {
         Write-Host "Applying Changes to $PRODUCT_NAME and changed Products"
-        om --skip-ssl-validation `
+         om --env $HOME/om_$($director_conf.RG).env `
             apply-changes `
             --skip-unchanged-products
     }
 } 
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     deployed-products 
 
 Pop-Location 

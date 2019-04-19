@@ -36,9 +36,9 @@ $services_gateway = $director_conf.services_gateway
 $services_range = $director_conf.services_range
 #some env´s
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
-$env:OM_Password = $env_vars.OM_Password
-$env:OM_Username = $env_vars.OM_Username
-$env:OM_Target = $OM_Target
+$OM_Password = $env_vars.OM_Password
+$OM_Username = $env_vars.OM_Username
+$OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
@@ -62,6 +62,22 @@ $om_cert = $om_cert -join "`r`n"
 
 $om_key = get-content "$($HOME)/$($OM_Target).key"
 $om_key = $om_key -join "`r`n"
+
+$OM_ENV_FILE = "$HOME/OM_$($director_conf.RG).env"   
+
+"
+---
+target: $OM_Target
+connect-timeout: 30          # default 5
+request-timeout: 3600        # default 1800
+skip-ssl-validation: true   # default false
+username: $OM_USERNAME
+password: $OM_PASSWORD
+decryption-passphrase: $PCF_PIVNET_UAA_TOKEN
+" | Set-Content $OM_ENV_FILE
+
+        Write-Host "Creating OM Environment $OM_ENV_FILE"
+
 
 $content = get-content "../templates/director_vars.yaml"
 $content += "default_security_group: $RG-bosh-deployed-vms-security-group"
@@ -95,28 +111,28 @@ $content += "availability_mode: availability_sets"
 $content += "singleton_availability_zone: 'null'"
 $content | Set-Content $HOME/director_vars.yaml
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     configure-authentication `
     --decryption-passphrase $PCF_PIVNET_UAA_TOKEN
 
 Write-Host "Now Uploading OM Certs"
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     update-ssl-certificate `
     --certificate-pem "$om_cert" `
     --private-key-pem "$om_key" 
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     deployed-products
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     configure-director --config "$PSScriptRoot/../templates/director_config.yaml" --vars-file "$HOME/director_vars.yaml"
 
 if (!$DO_NOT_APPLY.IsPresent) {
-    om --skip-ssl-validation apply-changes
+     om --env $HOME/om_$($director_conf.RG).env apply-changes
 }
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     deployed-products
 
 if ($USE_MINIO.IsPresent)

@@ -40,9 +40,6 @@ $domain = $director_conf.domain -replace "$location."
 $RG = $director_conf.RG
 # getting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
-$env:OM_Password = $env_vars.OM_Password
-$env:OM_Username = $env_vars.OM_Username
-$env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 
@@ -57,12 +54,12 @@ else {
 
 
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     deployed-products
 
 
 $EXPORT_FILE="$((New-Guid).guid).export"
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     export-installation --output-file "$HOME/$EXPORT_FILE"
 
 
@@ -87,6 +84,6 @@ Get-AzureRmResource -ResourceGroupName $RG `
 
 
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     deployed-products
 Pop-Location

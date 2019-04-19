@@ -13,15 +13,10 @@ param(
 
 Push-Location $PSScriptRoot
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
-$OM_Target = $director_conf.OM_TARGET
-# setting the env
-$env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
-$env:OM_Password = $env_vars.OM_Password
-$env:OM_Username = $env_vars.OM_Username
-$env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 try
-{$PRODUCTS=$(om --skip-ssl-validation `
+{
+$PRODUCTS=$( om --env $HOME/om_$($DIRECTOR_CONF.RG).env `
     curl --path /api/v0/$state/products 2>$null | ConvertFrom-Json)
 }
 catch

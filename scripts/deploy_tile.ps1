@@ -58,7 +58,6 @@ $tile_conf = Get-Content $PRODUCT_FILE | ConvertFrom-Json
 $PCF_VERSION = $tile_conf.PCF_VERSION
 $config_file = $tile_conf.CONFIG_FILE
 
-$OM_Target = $director_conf.OM_TARGET
 [switch]$force_product_download = [System.Convert]::ToBoolean($director_conf.force_product_download)
 $downloaddir = $director_conf.downloaddir
 Write-Verbose $downloaddir
@@ -69,9 +68,6 @@ $smtp_identity = $env_vars.SMTP_IDENTITY
 $smtp_password = $env_vars.SMTP_PASSWORD
 $smtp_from = $env_vars.SMTP_FROM
 $smtp_port = $env_vars.SMTP_PORT
-$env:OM_Password = $env_vars.OM_Password
-$env:OM_Username = $env_vars.OM_Username
-$env:OM_Target = $OM_Target
 $env:Path = "$($env:Path);$HOME/OM"
 $GLOBAL_RECIPIENT_EMAIL = $env_vars.PCF_NOTIFICATIONS_EMAIL
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
@@ -310,7 +306,7 @@ $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($tile)_$($PC
 if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
 
-    om --skip-ssl-validation `
+     om --env $HOME/om_$($director_conf.RG).env `
         --request-timeout 7200 `
         download-product `
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
@@ -325,12 +321,11 @@ $TARGET_FILENAME = $download_file.product_path
 
 Write-Host "importing $TARGET_FILENAME into OpsManager"
 # Import the tile to Ops Manager.
-om --skip-ssl-validation `
-    --request-timeout 3600 `
+ om --env $HOME/om_$($director_conf.RG).env `
     upload-product `
     --product $TARGET_FILENAME
 
-$PRODUCTS = $(om --skip-ssl-validation `
+$PRODUCTS = $( om --env $HOME/om_$($director_conf.RG).env `
         available-products `
         --format json) | ConvertFrom-Json
 # next lines for compliance to bash code
@@ -341,11 +336,11 @@ $PRODUCT = $PRODUCTS | Where-Object name -Match $PRODUCT_TILE | Sort-Object -Des
 $PRODUCT_NAME = $PRODUCT.name
 $VERSION = $PRODUCT.version
 Write-Verbose "we now have $PRODUCT_NAME $VERSION"
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     deployed-products
 # 2.  Stage using om cli
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     stage-product `
     --product-name $PRODUCT_NAME `
     --product-version $VERSION
@@ -355,7 +350,7 @@ if ($update_stemcells.ispresent) {
     Write-Host "now starting $command"
     Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/get-stemcells-$(Get-Date -f yyyyMMddhhmmss).log"
 }
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     assign-stemcell  `
     --stemcell latest `
     --product $PRODUCT_NAME
@@ -364,18 +359,18 @@ switch ($tile) {
     "p-event-alerts" {
         $email_config_file = $tile_conf.EMAIL_CONFIG_FILE
         if ($smtp_address -and $smtp_identity -and $smtp_password -and $smtp_from -and $smtp_port ) {
-            om --skip-ssl-validation `
+             om --env $HOME/om_$($director_conf.RG).env `
                 configure-product `
                 -c "$email_config_file"  -l "$HOME/$($tile)_vars.yaml"
         }
         else {
-            om --skip-ssl-validation `
+             om --env $HOME/om_$($director_conf.RG).env `
                 configure-product `
                 -c "$config_file"  -l "$HOME/$($tile)_vars.yaml"
         }
     }
     default {
-        om --skip-ssl-validation `
+         om --env $HOME/om_$($director_conf.RG).env `
             configure-product `
             -c "$config_file"  -l "$HOME/$($tile)_vars.yaml"
     }
@@ -384,7 +379,7 @@ switch ($tile) {
 switch ($PsCmdlet.ParameterSetName) { 
     "apply_all" { 
         Write-Host "Applying Changes to all Products"
-        om --skip-ssl-validation `
+         om --env $HOME/om_$($director_conf.RG).env `
             apply-changes 
         $applied = $true    
     } 
@@ -393,7 +388,7 @@ switch ($PsCmdlet.ParameterSetName) {
     } 
     default {
         Write-Host "Applying Changes to $PRODUCT_NAME"
-        om --skip-ssl-validation `
+         om --env $HOME/om_$($director_conf.RG).env `
             apply-changes `
             --skip-unchanged-products
         $applied = $true    
@@ -403,7 +398,7 @@ switch ($PsCmdlet.ParameterSetName) {
 if ($applied) {
     switch ($tile) {
         "minio-internal-blobstore" {
-            $deployed = om --skip-ssl-validation `
+            $deployed =  om --env $HOME/om_$($director_conf.RG).env `
                 curl --path /api/v0/staged/products 2>$null | ConvertFrom-Json
             $MINIO_LB_IP = ((om.exe --skip-ssl-validation `
                         curl --path "/api/v0/deployed/products/$(($deployed | Where-Object type -eq minio-internal-blobstore).Installation_Name)/status" 2>$null `
@@ -421,12 +416,12 @@ if ($applied) {
 
 Write-Host "Deployed Producst"
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     deployed-products
 
 Write-Host "Staged-Products"
 
-om --skip-ssl-validation `
+ om --env $HOME/om_$($director_conf.RG).env `
     staged-products
 # `
 #--format json | ConvertFrom-Json

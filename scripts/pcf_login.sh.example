@@ -2,7 +2,7 @@ export OM_TARGET=pcfopsmangreen.pcfdemo.local.azurestack.external
 export OM_USERNAME=opsman
 export OM_PASSWORD=Password123!
 
-CF_GUID=$(om --skip-ssl-validation \
+CF_GUID=$( om --env $HOME/om_$($director_conf.RG).env \
     curl \
     --silent \
     --path /api/v0/deployed/products \

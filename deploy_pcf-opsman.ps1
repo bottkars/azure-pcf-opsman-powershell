@@ -651,7 +651,7 @@ if (!$OpsmanUpdate) {
         $MYSQL_KEY = $MYSQLStorageaccount | Get-AzureRmStorageAccountKey
         $mysql_storage_account = $MYSQLStorageaccount.StorageAccountName
         $mysql_storage_key = $MYSQL_KEY[0].Value
-
+        Write-Host "Creating Director Environment $DIRECTOR_CONF_FILE"
         # will create director.json for future
         $JSon = [ordered]@{
             OM_TARGET                = "$OM_TARGET"
@@ -676,6 +676,8 @@ if (!$OpsmanUpdate) {
             branch                  = $branch
         } | ConvertTo-Json
         $JSon | Set-Content $DIRECTOR_CONF_FILE
+
+
         Write-Host "now we are going to try and configure OpsManager"
         if (!$DO_NOT_CONFIGURE_OPSMAN.IsPresent) {
             $StopWatch_deploy_opsman = New-Object System.Diagnostics.Stopwatch
