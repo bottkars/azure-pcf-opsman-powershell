@@ -44,7 +44,6 @@ $env:Path = "$($env:Path);$HOME/OM"
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 $ntp_servers_string = $env_vars.NTP_SERVERS_STRING
 
-$env:Path = "$($env:Path);$HOME/OM"
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
 
@@ -110,9 +109,11 @@ $content += "services-subnet: $RG-virtual-network/$RG-services-subnet"
 $content += "availability_mode: availability_sets"
 $content += "singleton_availability_zone: 'null'"
 $content | Set-Content $HOME/director_vars.yaml
-
+# we go api for this next iteration
  om --env $HOME/om_$($director_conf.RG).env `
     configure-authentication `
+    --password $OM_Password `
+    --username $OM_Username `
     --decryption-passphrase $PCF_PIVNET_UAA_TOKEN
 
 Write-Host "Now Uploading OM Certs"
