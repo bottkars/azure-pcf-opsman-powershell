@@ -1,8 +1,8 @@
 #requires -module pivposh
 param(
-    [Parameter(Mandatory = $true)]	
+    [Parameter(Mandatory = $false)]	
     [Validatescript( {Test-Path -Path $_ })]
-    $DIRECTOR_CONF_FILE,
+    $DIRECTOR_CONF_FILE="$HOME/director_pcf.json",
     [Parameter(Mandatory = $false)]
     [ValidateSet('170', '250','97','3586','3541')]
     [string[]]$Families= '170',
