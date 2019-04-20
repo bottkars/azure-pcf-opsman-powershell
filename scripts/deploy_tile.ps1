@@ -6,9 +6,9 @@ param(
     [switch]$APPLY_ALL,    
     [Parameter(ParameterSetName = "applyme", Mandatory = $true)]
     [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
-    [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
-    [Validatescript( { Test-Path -Path $_ })]
-    $DIRECTOR_CONF_FILE,
+    [Parameter(Mandatory = $FALSE)]
+    [Validatescript( {Test-Path -Path $_ })]
+    $DIRECTOR_CONF_FILE="$HOME/director_pcf.json",
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet(
