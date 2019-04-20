@@ -4,9 +4,9 @@ param(
     [switch]$DO_NOT_APPLY,
     [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
     [switch]$APPLY_ALL,    
-    [Parameter(ParameterSetName = "applyme", Mandatory = $true)]
-    [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
-    [Parameter(Mandatory = $FALSE)]
+    [Parameter(ParameterSetName = "applyme", Mandatory = $false)]
+    [Parameter(ParameterSetName = "no_apply", Mandatory = $false)]
+    [Parameter(ParameterSetName = "apply_all", Mandatory = $false)]
     [Validatescript( {Test-Path -Path $_ })]
     $DIRECTOR_CONF_FILE="$HOME/director_pcf.json",
     [Parameter(Mandatory = $true)]
