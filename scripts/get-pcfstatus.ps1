@@ -20,10 +20,11 @@ catch
     Pop-Location
     Break
 }
-$PRODUCTS=$DEPLOYED | ForEach-Object {
+$PRODUCTS=@()
+$DEPLOYED | ForEach-Object {
     Write-Host "getting status for $($_.installation_name) ..."
     (om.exe --env $HOME/om_$($director_conf.RG).env `
- curl --path "/api/v0/deployed/products/$($_.installation_name)/status" 2>$null | ConvertFrom-Json).status
+ curl --path "/api/v0/deployed/products/$($_.installation_name)/status" )#2>$null | ConvertFrom-Json).status
 } 
-Write-Output $PRODUCTS
+#Write-Output $PRODUCTS
 Pop-Location
