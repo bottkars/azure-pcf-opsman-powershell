@@ -189,7 +189,7 @@ switch ($tile) {
         pcf_service_network: pcf-services-subnet
         singleton_zone: $singleton_zone
         zones_map: $zones_map
-        opsman_enable_url: $OM_Target
+        opsman_enable_url: $($director_conf.OM_Target)
         " | Set-Content "$($HOME)/$($tile)_vars.yaml"
     }
     "pivotal-mysql" {
