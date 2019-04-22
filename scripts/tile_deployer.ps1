@@ -18,9 +18,9 @@ param(
         'p-event-alerts',
         'minio-internal-blobstore')] 
     [string[]]$tiles,
-    [Parameter(Mandatory = $true)]	
+    [Parameter(Mandatory = $false)]	
     [Validatescript( { Test-Path -Path $_ })]
-    $DIRECTOR_CONF_FILE,
+    $DIRECTOR_CONF_FILE="$HOME/director_pcf.json",
     [Parameter(Mandatory = $false)]	
     [switch]$DO_NOT_APPLY,
     [Parameter(Mandatory = $false)]
