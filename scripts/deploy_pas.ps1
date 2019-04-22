@@ -1,11 +1,11 @@
 #requires -module pivposh
 param(
-    [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
-    [Parameter(ParameterSetName = "apply_changed", Mandatory = $true)]
-    [Parameter(ParameterSetName = "apply_all", Mandatory = $true)]
-    [Parameter(ParameterSetName = "apply_product", Mandatory = $true)]
+    [Parameter(ParameterSetName = "no_apply", Mandatory = $false)]
+    [Parameter(ParameterSetName = "apply_changed", Mandatory = $false)]
+    [Parameter(ParameterSetName = "apply_all", Mandatory = $false)]
+    [Parameter(ParameterSetName = "apply_product", Mandatory = $false)]
     [Validatescript( {Test-Path -Path $_ })]
-    $DIRECTOR_CONF_FILE,
+    $DIRECTOR_CONF_FILE="$HOME/director_pcf.json",
 
     [Parameter(ParameterSetName = "no_apply", Mandatory = $true)]
     [switch]$DO_NOT_APPLY,
