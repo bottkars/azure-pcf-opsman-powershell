@@ -13,7 +13,6 @@ param(
     [switch]
     $USE_MINIO
 
-
 )
 Push-Location $PSScriptRoot
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
@@ -79,6 +78,7 @@ decryption-passphrase: $PCF_PIVNET_UAA_TOKEN
 
 
 $content = get-content "../templates/director_vars.yaml"
+$content += "authentication: $($director_conf.Authentication)"
 $content += "default_security_group: $RG-bosh-deployed-vms-security-group"
 $content += "subscription_id: $((Get-AzureRmContext).Subscription.Id)"
 $content += "tenant_id: $((Get-AzureRmContext).Tenant.Id)"

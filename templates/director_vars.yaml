@@ -1,3 +1,2 @@
 cloud_storage_type: storage_accounts
-authentication: "AzureAD"
 endpoint_prefix: "management"

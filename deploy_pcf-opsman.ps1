@@ -64,7 +64,8 @@ param(
         '2.4-build.177',
         ## 2.5 start here
         '2.5.2-build.172',
-        '2.6.0-build.54'
+        '2.6.0-build.54',
+        '2.6.0-build.77'
     )]
     $opsmanager_image = '2.5.2-build.172',
     # The name of the Ressource Group we want to Deploy to.
@@ -93,6 +94,11 @@ param(
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     $ImageStorageAccount = "opsmanagerimage", 
+    [Parameter(ParameterSetName = "install", Mandatory = $false)]
+    [Parameter(ParameterSetName = "update", Mandatory = $false)]
+    [ValidateSet('AzureAD','ADFS')]
+    [ValidateNotNullOrEmpty()]
+    $Authentication = "AzureAD",
     # The Containername we will host the Images for Opsmanager in
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
@@ -379,6 +385,7 @@ Write-Host "$resourceGroup-virtual-network/$resourceGroup-lb-subnet             
 Write-Host "$($opsManFQDNPrefix)green $Mask.8.4/32"
 Write-Host "$($opsManFQDNPrefix)blue $Mask.8.5/32"
 Write-Host "Selected loadbalancer type is $PCFlbType"
+Write-Host "Using $Authentication as Identity provider for Azure"
 Write-Host
 
 if ($PsCmdlet.ParameterSetName -eq "install") {
@@ -675,6 +682,7 @@ if (!$OpsmanUpdate) {
             downloaddir              = $downloadpath
             force_product_download   = $force_product_download.IsPresent.ToString()
             branch                  = $branch
+            Authentication          = $Authentication
         } | ConvertTo-Json
         $JSon | Set-Content $DIRECTOR_CONF_FILE
 

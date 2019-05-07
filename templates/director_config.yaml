@@ -54,10 +54,17 @@ properties-configuration:
     environment: AzureStack
     azure_stack:
       domain: ((domain))
-      authentication: ((authentication))
+      authentication: AzureAD
       resource: ((ressource))
       endpoint_prefix: ((endpoint_prefix))
       ca_cert: ((ca_cert)) 
+    additional_cloud_properties:
+        azure_stack:
+          domain: ((domain))
+          authentication: ((authentication))
+          resource: ((ressource))
+          endpoint_prefix: ((endpoint_prefix))
+          ca_cert: ((ca_cert))      
 resource-configuration:
   director:
     instances: automatic
