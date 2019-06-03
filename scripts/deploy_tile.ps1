@@ -315,7 +315,7 @@ $output_directory = New-Item -ItemType Directory "$($downloaddir)/$($tile)_$($PC
 if (($force_product_download.ispresent) -or (!(Test-Path "$($output_directory.FullName)/download-file.json"))) {
     Write-Host "downloading $(Split-Path -Leaf $piv_object.aws_object_key) to $($output_directory.FullName)"
 
-     om --env $HOME/om_$($director_conf.RG).env `
+     om --trace --env $HOME/om_$($director_conf.RG).env `
         --request-timeout 7200 `
         download-product `
         --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
