@@ -10,6 +10,7 @@ param(
     [Validatescript( {Test-Path -Path $_ })]
     $DIRECTOR_CONF_FILE
 )
+Push-Location $PSScriptRoot
 $director_conf = Get-Content $DIRECTOR_CONF_FILE | ConvertFrom-Json
 if ($director_conf.branch)
   {
@@ -18,44 +19,52 @@ if ($director_conf.branch)
 else {
   $branch = "2.5"
 }
-$pasw_conf = Get-Content "$($HOME)/pasw.json" | ConvertFrom-Json
+$tile="pasw"
+Write-Verbose "Release: $branch"
+$PRODUCT_FILE = "$($HOME)/$($tile).json"
+if (!(Test-Path $PRODUCT_FILE)) {
 
-$PCF_PASW_VERSION = $pasw_conf.PCF_PAS_VERSION
-$PRODUCT_NAME = $pasw_conf.PRODUCT_NAME
+    $PRODUCT_FILE = "../examples/$($branch)/$($tile).json"
+    Write-Verbose "using $PRODUCT_FILE"
+}
+$tile_conf = Get-Content $PRODUCT_FILE | ConvertFrom-Json
+$PCF_VERSION = $tile_conf.PCF_VERSION
+$config_file = $tile_conf.CONFIG_FILE
+
 $OM_Target = $director_conf.OM_TARGET
 [switch]$no_product_download = [System.Convert]::ToBoolean($pasw_conf.no_product_download)
-$downloaddir = $pasw_conf.downloaddir
-$PCF_SUBDOMAIN_NAME = $pasw_conf.PCF_SUBDOMAIN_NAME
-$domain = $director_conf.domain
+
 # getting the env
 $env_vars = Get-Content $HOME/env.json | ConvertFrom-Json
 $env:Path = "$($env:Path);$HOME/OM"
 
-$PCF_PIVNET_UAA_TOKEN = $env_vars.PCF_PIVNET_UAA_TOKEN
+$PIVNET_UAA_TOKEN = $env_vars.PIVNET_UAA_TOKEN
 $slug_id = "pas-windows"
 
+$downloaddir = $director_conf.downloaddir
 
 
 
-Write-Host "Getting Release for $slug_id $PCF_PASW_VERSION"
-$piv_release = Get-PIVRelease -id $slug_id | where-object version -Match $PCF_PASW_VERSION | Select-Object -First 1
+
+Write-Host "Getting Release for $slug_id $PCF_VERSION"
+$piv_release = Get-PIVRelease -id $slug_id | where-object version -Match $PCF_VERSION | Select-Object -First 1
 $piv_release_id = $piv_release | Get-PIVFileReleaseId
-$access_token = Get-PIVaccesstoken -refresh_token $PCF_PIVNET_UAA_TOKEN
-Write-Host "Accepting EULA for $slug_id $PCF_PASW_VERSION"
+$access_token = Get-PIVaccesstoken -refresh_token $PIVNET_UAA_TOKEN
+Write-Host "Accepting EULA for $slug_id $PCF_VERSION"
 $eula = $piv_release | Confirm-PIVEula -access_token $access_token
 $piv_object = $piv_release_id | Where-Object aws_object_key -Like *$slug_id*.pivotal*
 $piv_winfs_object = $piv_release_id | Where-Object aws_object_key -Like *winfs*.zip*
 
-$output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_PASW_VERSION)" -Force
-$injector_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_PASW_VERSION)_injector" -Force
+$output_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_VERSION)" -Force
+$injector_directory = New-Item -ItemType Directory "$($downloaddir)/$($slug_id)_$($PCF_VERSION)_injector" -Force
 
  om --env $HOME/om_$($director_conf.RG).env `
     --request-timeout 7200 `
     download-product `
-    --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
+    --pivnet-api-token $PIVNET_UAA_TOKEN `
     --pivnet-file-glob $(Split-Path -Leaf $piv_winfs_object.aws_object_key) `
     --pivnet-product-slug $slug_id `
-    --product-version $PCF_PASW_VERSION `
+    --product-version $PCF_VERSION `
     --output-directory  "$($injector_directory.FullName)"
 
 
@@ -64,10 +73,10 @@ if (($force_product_download.ispresent) -or (!(test-path "$($output_directory.Fu
      om --env $HOME/om_$($director_conf.RG).env `
         --request-timeout 7200 `
         download-product `
-        --pivnet-api-token $PCF_PIVNET_UAA_TOKEN `
+        --pivnet-api-token $PIVNET_UAA_TOKEN `
         --pivnet-file-glob $(Split-Path -Leaf $piv_object.aws_object_key) `
         --pivnet-product-slug $slug_id `
-        --product-version $PCF_PASW_VERSION `
+        --product-version $PCF_VERSION `
         --output-directory  "$($output_directory.FullName)"
 
 }
@@ -88,7 +97,7 @@ Write-Host "importing $TARGET_FILENAME into OpsManager"
  om --env $HOME/om_$($director_conf.RG).env `
     upload-product `
     --product $TARGET_FILENAME
-
+Pop-Location
 <#
 $PRODUCTS=$( om --env $HOME/om_$($director_conf.RG).env `
   available-products `
