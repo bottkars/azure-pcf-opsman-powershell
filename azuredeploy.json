@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "apiProfile": "2018-03-01-hybrid",
+  "apiProfile": "2019-03-01-hybrid",
   "parameters": {
     "boshstorageaccountname": {
       "type": "string",
@@ -12,7 +12,7 @@
     },
     "OpsManImageURI": {
       "type": "string",
-      "defaultValue": "https://opsmanagerwesteurope.blob.core.windows.net/images/ops-manager-2.3-build.250.vhd",
+      "defaultValue": "https://opsmanagerimage.blob.local.azurestack.external/images/ops-manager-2.5.4-build.189.vhd",
       "metadata": {
         "description": "Uri of the Operations Manager VHD"
       }
@@ -60,14 +60,14 @@
     "opsManVHD": {
       "type": "string",
       "metadata": {
-        "description": "Opsman VHD Name"
+        "description": "Opsman VHD Name / name that the managed dosk woill be named"
       }
     },
     "mask": {
       "type": "string",
       "defaultValue": "10.0",
       "metadata": {
-        "description": "Opsman VHD Name"
+        "description": "Network mask to me use"
       }
     },
     "deploymentcolor": {
