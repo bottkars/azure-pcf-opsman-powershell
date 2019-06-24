@@ -610,7 +610,7 @@ $parameters.Add("opsManVHD", $opsManVHD)
 $parameters.Add("deploymentcolor", $deploymentcolor)
 $parameters.Add("mask", $mask)
 $parameters.Add("location", $location)
-$parameters.Add("OpsManImageURI", $urlOfUploadedImageVhd)
+$parameters.Add("opsmanimageuri", $urlOfUploadedImageVhd)
 
 
 $StopWatch_deploy.Start()

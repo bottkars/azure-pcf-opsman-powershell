@@ -10,7 +10,7 @@
         "description": "Name of storage account for bosh jobs"
       }
     },
-    "OpsManImageURI": {
+    "opsmanimageuri": {
       "type": "string",
       "defaultValue": "https://opsmanagerimage.blob.local.azurestack.external/images/ops-manager-2.5.4-build.189.vhd",
       "metadata": {
@@ -240,7 +240,7 @@
           "osDisk": {
             "osType": "Linux",
             "osState": "Generalized",
-            "blobUri": "[parameters('OpsManImageURI')]",
+            "blobUri": "[parameters('opsmanimageuri')]",
             "storageAccountType": "Standard_LRS",
             "caching": "ReadWrite",
             "diskSizeGB": 127
