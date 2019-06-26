@@ -77,7 +77,7 @@
     "opsManPrivateIPAddress": "[if(equals(parameters('deploymentcolor'),'green'), variables('OpsManGreenIP'), variables('OpsManBlueIP'))]",
     "OpsManPublicIPName": "[concat('OpsManPublicIP_', parameters('deploymentcolor'))]",
     "OpsManIPConfigName": "[concat('OpsManIPConfig_', parameters('deploymentcolor'))]",
-    "OpsManVersion": "[replace(parameters('opsManVHD'),'vhd', '')]",
+    "OpsManVersion": "[replace(parameters('opsManVHD'),'.vhd', '')]",
     "ops_manager_security_group_name": "[concat(resourceGroup().name,'-ops-manager-security-group')]"
   },
   "resources": [
