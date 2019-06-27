@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "apiProfile": "2019-03-01-hybrid",
+  "apiProfile": "2018-03-01-hybrid",
   "parameters": {
     "boshstorageaccountname": {
       "type": "string",
@@ -52,7 +52,7 @@
     },
     "opsManFQDNPrefix": {
       "type": "string",
-      "defaultValue": "pcfopsman",
+      "defaultValue": "pcf",
       "metadata": {
         "description": "Domain prefix for opsman."
       }
@@ -127,16 +127,14 @@
     "infrastructure_subnet_name": "[concat(resourceGroup().name,'-infrastructure-subnet')]",
     "internallb_subnet_name": "[concat(resourceGroup().name,'-lb-subnet')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
-    "opsManNicName": "[concat('OPSMANNIC_',parameters('deploymentcolor'))]",
+    "opsManNicName": "OPSMANNIC",
     "addressSpace": "[concat(parameters('mask'),'.0.0/16')]",
     "infrastructureaddressPrefix": "[concat(parameters('mask'),'.8.0/26')]",
     "internallbaddressPrefix": "[concat(parameters('mask'),'.8.64/28')]",
     "internallb_subnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('internallb_subnet_name'))]",
     "servicesaddressPrefix": "[concat(parameters('mask'),'.4.0/22')]",
     "pasaddressPrefix": "[concat(parameters('mask'),'.0.0/22')]",
-    "OpsManGreenIP": "[concat(parameters('mask'),'.8.4')]",
-    "OpsManBlueIP": "[concat(parameters('mask'),'.8.5')]",
-    "opsManPrivateIPAddress": "[if(equals(parameters('deploymentcolor'),'green'), variables('OpsManGreenIP'), variables('OpsManBlueIP'))]",
+    "opsManPrivateIPAddress": "[concat(parameters('mask'),'.8.4')]",
     "pcflbName": "[concat(resourceGroup().name,'-web-lb')]",
     "pcflbID": "[resourceId('Microsoft.Network/loadBalancers',variables('pcflbName'))]",
     "pcffrontEndIPConfigID": "[concat(variables('pcflbID'),'/frontendIPConfigurations/pcf-fe-ip')]",
@@ -168,8 +166,7 @@
     "istiolbProbeID": "[concat(variables('istiolbID'),'/probes/http8002')]",
     "diagnosticsStorageAccountName": "[concat('diag', uniquestring(resourceGroup().id))]",
     "diagnosticsStorageAccountType": "Standard_LRS",
-    "OpsManPublicIPName": "[concat('OpsManPublicIP_', parameters('deploymentcolor'))]",
-    "OpsManIPConfigName": "[concat('OpsManIPConfig_', parameters('deploymentcolor'))]",
+    "OpsManPublicIPName": "OpsManPublicIP",
     "OpsManVersion": "[replace(parameters('opsManVHD'),'.vhd', '')]",
     "ops_manager_security_group_name": "[concat(resourceGroup().name,'-ops-manager-security-group')]",
     "bosh_deployed_vms_security_group_name": "[concat(resourceGroup().name,'-bosh-deployed-vms-security-group')]",

@@ -65,9 +65,10 @@ param(
         ## 2.5 start here
         '2.5.2-build.172',
         '2.5.3-build.185',
-        '2.5.4-build.189'
+        '2.5.4-build.189',
+        '2.5.7-build.208'
     )]
-    $opsmanager_image = '2.5.4-build.189',
+    $opsmanager_image = '2.5.7-build.208',
     # The name of the Ressource Group we want to Deploy to.
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
@@ -107,7 +108,7 @@ param(
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    $opsManFQDNPrefix = "pcfopsman",
+    $opsManFQDNPrefix = "pcf",
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     $PCF_SUBDOMAIN_NAME = "pcfdemo",
@@ -221,7 +222,7 @@ if (!$location) {
 New-Item -ItemType Directory -Path "$($HOME)/pcfdeployer/logs" -Force | out-null
 $DeployTimes = @()
 $dnsZoneName = "$PCF_SUBDOMAIN_NAME.$Location.$dnsdomain"
-$OM_TARGET = "$($opsManFQDNPrefix)$($deploymentcolor).$($dnszonename)"
+$OM_TARGET = "$($opsManFQDNPrefix).$($dnszonename)"
 Write-Verbose $OM_TARGET
 function get-runningos {
     # backward copatibility for peeps runnin powershell 5
@@ -433,7 +434,6 @@ to be set correctly with role `contributor`for the Service Principal at the AZUR
 
 }
 
-$opsManFQDNPrefix = "$opsManFQDNPrefix$deploymentcolor"
 if (!$boshstorageaccount) {
     $boshstorageaccount = 'boshstorage'
     $boshstorageaccount = ($resourceGroup + $boshStorageaccount) -Replace '[^a-zA-Z0-9]', ''
