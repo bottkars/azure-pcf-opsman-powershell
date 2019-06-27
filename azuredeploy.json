@@ -239,7 +239,7 @@
             "osType": "Linux",
             "osState": "Generalized",
             "blobUri": "[parameters('OpsManImageURI')]",
-            "storageAccountType": "Standard_LRS",
+            "storageAccountType": "Premium_LRS",
             "caching": "ReadWrite",
             "diskSizeGB": 127
           }
