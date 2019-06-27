@@ -345,7 +345,7 @@ if (!(test-path -Path "$($HOME)/$($OM_TARGET).key")) {
     write-host "Required$($HOME)/$($OM_TARGET).key not found. 
     Now Generating Self Signed Certificates
     "
-    $command = "$ScriptDir/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain) -OM_TARGET $OM_TARGET"
+    $command = "$ScriptDir/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain) -OPSMANFQDNPREFIX $OpsManFQDNPrefix"
     Write-Host "Now running $command"
     Invoke-Expression -Command $command
 }
