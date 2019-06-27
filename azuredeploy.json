@@ -119,7 +119,7 @@
   "variables": {
     "mysqlStorageAccountName": "[concat('mysqlstrg',uniquestring(resourceGroup().id, deployment().name))]",
     "boshExtraStorageAccountName": "[concat('xtrastrg',uniquestring(resourceGroup().id, deployment().name))]",
-    "opsManVMName": "[parameters('opsManFQDNPrefix')]",
+    "opsManVMName": "ops_man_vm",
     "location": "[parameters('location')]",
     "virtualNetworkName": "[concat(resourceGroup().name,'-virtual-network')]",
     "pas_subnet_name": "[concat(resourceGroup().name,'-pas-subnet')]",
@@ -167,6 +167,7 @@
     "diagnosticsStorageAccountName": "[concat('diag', uniquestring(resourceGroup().id))]",
     "diagnosticsStorageAccountType": "Standard_LRS",
     "OpsManPublicIPName": "OpsManPublicIP",
+    "OpsManIPConfigName": "OpsManIPConfig",
     "OpsManVersion": "[replace(parameters('opsManVHD'),'.vhd', '')]",
     "ops_manager_security_group_name": "[concat(resourceGroup().name,'-ops-manager-security-group')]",
     "bosh_deployed_vms_security_group_name": "[concat(resourceGroup().name,'-bosh-deployed-vms-security-group')]",
@@ -1619,7 +1620,7 @@
           "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
-          "computerName": "[variables('opsManVMName')]",
+          "computerName": "[parameters('opsManFQDNPrefix')]",
           "adminUsername": "[parameters('adminUsername')]",
           "linuxConfiguration": {
             "disablePasswordAuthentication": true,

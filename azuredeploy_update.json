@@ -68,17 +68,15 @@
   },
   "variables": {
     "infrastructure_subnet_name": "[concat(resourceGroup().name,'-infrastructure-subnet')]",
-    "opsManVMName": "[parameters('opsManFQDNPrefix')]",
+    "opsManVMName": "ops_man_vm",
     "location": "[parameters('location')]",
     "virtualNetworkName": "[concat(resourceGroup().name,'-virtual-network')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
-    "opsManNicName": "[concat('OPSMANNIC_',parameters('deploymentcolor'))]",
-    "OpsManGreenIP": "[concat(parameters('mask'),'.8.4')]",
-    "OpsManBlueIP": "[concat(parameters('mask'),'.8.5')]",
-    "opsManPrivateIPAddress": "[if(equals(parameters('deploymentcolor'),'green'), variables('OpsManGreenIP'), variables('OpsManBlueIP'))]",
-    "OpsManPublicIPName": "[concat('OpsManPublicIP_', parameters('deploymentcolor'))]",
-    "OpsManIPConfigName": "[concat('OpsManIPConfig_', parameters('deploymentcolor'))]",
-    "OpsManVersion": "[replace(parameters('opsManVHD'),'ops-manager-', '')]",
+    "opsManNicName": "OPSMANNIC",
+    "opsManPrivateIPAddress": "[concat(parameters('mask'),'.8.4')]",
+    "OpsManPublicIPName": "OpsManPublicIP",
+    "OpsManIPConfigName": "OpsManIPConfig",
+    "OpsManVersion": "[replace(parameters('opsManVHD'),'.vhd', '')]",
     "ops_manager_security_group_name": "[concat(resourceGroup().name,'-ops-manager-security-group')]"
   },
   "resources": [
@@ -171,7 +169,7 @@
           "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
-          "computerName": "[variables('opsManVMName')]",
+          "computerName": "[parameters('opsManFQDNPrefix')]",
           "adminUsername": "[parameters('adminUsername')]",
           "linuxConfiguration": {
             "disablePasswordAuthentication": true,
