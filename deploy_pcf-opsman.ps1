@@ -66,9 +66,12 @@ param(
         '2.5.2-build.172',
         '2.5.3-build.185',
         '2.5.4-build.189',
-        '2.5.7-build.208'
+        '2.5.7-build.208',
+        ### 2.6 start here
+        '2.6.1-build.156'
+
     )]
-    $opsmanager_image = '2.5.7-build.208',
+    $opsmanager_image = '2.6.1-build.156',
     # The name of the Ressource Group we want to Deploy to.
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
@@ -197,7 +200,7 @@ param(
     # The Azure Location to Download Opsman from
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet('testing', '2.3','2.4','2.5')]
+    [ValidateSet('testing', '2.3','2.4','2.5','2.6')]
     $branch = "2.5"
 
 )
