@@ -58,22 +58,7 @@ C:\OpenSSL-Win64\bin\openssl x509 -req -in "$($HOME)/$($DOMAIN).csr" `
 -CAcreateserial -out "$($HOME)/$($DOMAIN).host.crt" -days $DAYS -sha256 -extfile $extfile "$($HOME)/extfile.txt"
 
 
-## and now we go for OM_TARGET
-if ($OM_TARGET -match "green")
-{
- $OM_TARGET_GREEN=$OM_TARGET
- $OM_TARGET_BLUE=$($OM_TARGET -replace "green","blue")
-}
-else {
-    $OM_TARGET_BLUE=$OM_TARGET
-    $OM_TARGET_GREEN=$($OM_TARGET -replace "blue","green")
-}
-$TARGETS = @()
-$TARGETS += $OM_TARGET_GREEN
-$TARGETS += $OM_TARGET_BLUE
-foreach ($TARGET in $TARGETS)
-{  
- 
+
 "
   [ req ]
   prompt = no
@@ -82,31 +67,30 @@ foreach ($TARGET in $TARGETS)
   [ dn ]
   C  = DE
   O = labbuildr
-  CN = $($TARGET)
+  CN = $($OM_TARGET)
   [ v3_req ]
-  subjectAltName = DNS:$($TARGET)
+  subjectAltName = DNS:$($OM_TARGET)
 " | set-content  "$HOME/config.csr"
-Write-Host "Creating KEY for $TARGET" 
+Write-Host "Creating KEY for $OM_TARGET" 
 
 C:\OpenSSL-Win64\bin\openssl req `
   -nodes -sha256 -newkey rsa:$KEY_BITS -days $DAYS `
-  -keyout "$($HOME)/$($TARGET).key" -out "$($HOME)/$($TARGET).csr" -config "$HOME/config.csr"
+  -keyout "$($HOME)/$($OM_TARGET).key" -out "$($HOME)/$($OM_TARGET).csr" -config "$HOME/config.csr"
 
 "
   basicConstraints = CA:FALSE
-  subjectAltName = DNS:$($TARGET)
+  subjectAltName = DNS:$($OM_TARGET)
   subjectKeyIdentifier = hash
 " | set-content "$HOME/extfile.txt"
 
-Write-Host "Creating Cert for $TARGET" 
+Write-Host "Creating Cert for $OM_TARGET" 
 
 C:\OpenSSL-Win64\bin\openssl x509 -req `
--in "$($HOME)/$($TARGET).csr" `
+-in "$($HOME)/$($OM_TARGET).csr" `
 -CA "$($HOME)/$($DOMAIN).ca.crt" `
 -CAkey "$($HOME)/$($DOMAIN).ca.key.pkcs8" `
--CAcreateserial -out "$($HOME)/$($TARGET).crt" -days $DAYS -sha256 -extfile $extfile "$($HOME)/extfile.txt"
+-CAcreateserial -out "$($HOME)/$($OM_TARGET).crt" -days $DAYS -sha256 -extfile $extfile "$($HOME)/extfile.txt"
 
-}
 $content = Get-Content "$($HOME)/$($DOMAIN).host.crt"
 $content += Get-Content "$($HOME)/$($DOMAIN).ca.crt"
 $content | Set-Content "$($HOME)/$($DOMAIN).crt"
