@@ -82,7 +82,7 @@
   "resources": [
     {
       "type": "Microsoft.Compute/images",
-      "apiVersion": "2017-12-01",
+      "apiVersion": "2017-03-30",
       "name": "[variables('OpsManVersion')]",
       "location": "[parameters('location')]",
       "tags": {
@@ -94,13 +94,14 @@
             "osType": "Linux",
             "osState": "Generalized",
             "blobUri": "[parameters('OpsManImageURI')]",
-            "storageAccountType": "Standard_LRS",
+            "storageAccountType": "Premium_LRS",
             "caching": "ReadWrite",
             "diskSizeGB": 127
           }
         }
       }
     },
+
     {
       "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
