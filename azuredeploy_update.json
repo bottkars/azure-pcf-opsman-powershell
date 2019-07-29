@@ -53,7 +53,7 @@
       }
     },
     "sshKeyData": {
-      "type": "securestring",
+      "type": "string",
       "metadata": {
         "description": "Password for admin user."
       }
