@@ -1,0 +1,4 @@
+{
+    "PCF_PAS_VERSION":  "2.6.4",
+    "CONFIG_FILE": "../templates/pas/2.6.4/pas-cf.yaml"
+}

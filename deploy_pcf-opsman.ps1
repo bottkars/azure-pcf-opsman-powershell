@@ -68,10 +68,18 @@ param(
         '2.5.4-build.189',
         '2.5.7-build.208',
         ### 2.6 start here
-        '2.6.1-build.156'
+        '2.6.1-build.156',
+        '2.6.2-build.159',
+        '2.6.3-build.163',
+        '2.6.4-build.166',
+        '2.6.5-build.173',
+        '2.6.6-build.179',
+        '2.6.7-build.187',
+        '2.6.8-build.192',
+        '2.6.9-build.201'
 
     )]
-    $opsmanager_image = '2.6.1-build.156',
+    $opsmanager_image = '2.6.9-build.201',
     # The name of the Ressource Group we want to Deploy to.
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
@@ -201,7 +209,7 @@ param(
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet('testing', '2.3','2.4','2.5','2.6')]
-    $branch = "2.5"
+    $branch = "2.6"
 
 )
 
@@ -705,6 +713,9 @@ if (!$OpsmanUpdate) {
             }
             switch ($branch)
             {
+                '2.6' {
+                    $stemcell = '315'
+                }                
                 '2.5' {
                     $stemcell = '250'
                 }

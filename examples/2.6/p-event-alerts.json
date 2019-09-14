@@ -1,0 +1,5 @@
+{
+    "PCF_VERSION":  "1.2.6",
+    "CONFIG_FILE": "../templates/p-event-alerts/1.2.6/p-event-alerts.yaml",
+    "EMAIL_CONFIG_FILE": "../templates/p-event-alerts/1.2.6/p-event-alerts-email.yaml"
+}
