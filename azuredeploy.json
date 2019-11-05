@@ -164,6 +164,15 @@
     "istiofrontEndIPConfigID": "[concat(variables('istiolbID'),'/frontendIPConfigurations/istio-fe-ip')]",
     "istiolbPoolID": "[concat(variables('istiolbID'),'/backendAddressPools/istio-backend-pool')]",
     "istiolbProbeID": "[concat(variables('istiolbID'),'/probes/http8002')]",
+    "istio-lb-ip-name": "istio-lb-public-ip",
+
+    "viewlbName": "[concat(resourceGroup().name,'-view-lb')]",
+    "viewlbID": "[resourceId('Microsoft.Network/loadBalancers',variables('viewlbName'))]",
+    "viewfrontEndIPConfigID": "[concat(variables('viewlbID'),'/frontendIPConfigurations/view-fe-ip')]",
+    "viewlbPoolID": "[concat(variables('viewlbID'),'/backendAddressPools/view-backend-pool')]",
+    "viewlbProbeID": "[concat(variables('viewlbID'),'/probes/http3000')]",
+    "view-lb-ip-name": "view-lb-public-ip",
+    
     "diagnosticsStorageAccountName": "[concat('diag', uniquestring(resourceGroup().id))]",
     "diagnosticsStorageAccountType": "Standard_LRS",
     "OpsManPublicIPName": "OpsManPublicIP",
@@ -172,7 +181,6 @@
     "ops_manager_security_group_name": "[concat(resourceGroup().name,'-ops-manager-security-group')]",
     "bosh_deployed_vms_security_group_name": "[concat(resourceGroup().name,'-bosh-deployed-vms-security-group')]",
     "pcf-lb-ip-name": "web-lb-public-ip",
-    "istio-lb-ip-name": "istio-lb-public-ip",
     "pcflbPrivateIP": "[concat(parameters('mask'),'.8.73')]",
     "pcflbPulicIPID": "[resourceId('Microsoft.Network/publicIPAddresses','web-lb-public-ip')]",
     "pcflbFrontendIPConfig": "[if(equals(parameters('pcflbConnection'),'public'), variables('pcflbpublicFrontendIPConfig'), variables('pcflbprivateFrontendIPConfig'))]",
@@ -222,7 +230,32 @@
         "privateIPAllocationMethod": "Static"
       }
     }
-  ]
+  ],
+  "viewlbPrivateIP": "[concat(parameters('mask'),'.8.73')]",
+  "viewlbPulicIPID": "[resourceId('Microsoft.Network/publicIPAddresses','view-lb-public-ip')]",
+  "viewlbFrontendIPConfig": "[if(equals(parameters('pcflbConnection'),'public'), variables('viewlbpublicFrontendIPConfig'), variables('viewlbprivateFrontendIPConfig'))]",
+  "viewlbpublicFrontendIPConfig": [
+    {
+      "name": "view-fe-ip",
+      "properties": {
+        "publicIPAddress": {
+          "id": "[resourceId('Microsoft.Network/publicIPAddresses','view-lb-public-ip')]"
+        }
+      }
+    }
+  ],
+  "viewlbprivateFrontendIPConfig": [
+    {
+      "name": "view-fe-ip",
+      "properties": {
+        "subnet": {
+          "id": "[variables('internallb_subnetID')]"
+        },
+        "privateIPAddress": "[variables('viewlbPrivateIP')]",
+        "privateIPAllocationMethod": "Static"
+      }
+    }
+  ]  
 },
   "resources": [
     {
@@ -493,6 +526,19 @@
       }
     },
 
+    {
+      "apiVersion": "2017-10-01",
+      "condition": "[equals(parameters('pcflbConnection'),'public')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('view-lb-ip-name')]",
+      "location": "[variables('location')]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      }
+    },
 
     {
       "name": "[variables('bosh_deployed_vms_security_group_name')]",
@@ -1560,8 +1606,60 @@
           }
         ]
       }
+    },
+{
+      "apiVersion": "2017-10-01",
+      "name": "[variables('viewlbName')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "provisioner": "pcf_opsman_template"
+      },
+      "dependsOn": [
+        "[if(equals(parameters('pcflbConnection'),'public'), variables('viewlbPulicIPID'),resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName')))]"
+      ],
+      "properties": {
+        "frontendIPConfigurations": "[variables('viewlbFrontendIPConfig')]",
+        "backendAddressPools": [
+          {
+            "name": "view-backend-pool"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "view-http-rule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('viewfrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('viewlbPoolID')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 3000,
+              "backendPort": 3000,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "probe": {
+                "id": "[variables('viewlbProbeID')]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "http3000",
+            "properties": {
+              "protocol": "Http",
+              "port": 3000,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2,
+              "requestPath": "/login"
+            }
+          }
+        ]
+      }
     }
-
     ,
     {
       "apiVersion": "2017-10-01",
