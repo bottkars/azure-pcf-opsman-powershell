@@ -422,6 +422,24 @@
     },
     {
       "type": "Microsoft.Network/dnszones/A",
+      "name": "[concat(parameters('dnsZoneName'),'/view')]",
+      "apiVersion": "2016-04-01",
+      "properties": {
+        "TTL": 60,
+        "ARecords": [
+          {
+            "ipv4Address": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('view-lb-ip-name'))).IpAddress]"
+          }
+        ],
+        "targetResource": {}
+      },
+      "dependsOn": [
+        "[parameters('dnsZoneName')]",
+        "[concat('Microsoft.Network/publicIPAddresses/',variables('view-lb-ip-name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/dnszones/A",
       "name": "[concat(parameters('dnsZoneName'),'/', parameters('opsManFQDNPrefix'))]",
       "apiVersion": "2016-04-01",
       "properties": {
