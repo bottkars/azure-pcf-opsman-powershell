@@ -49,6 +49,14 @@
         "description": "Use managed disks, otherwise, storageaccounts will be created"
       }
     },
+
+    "opsManVMName": {
+      "type": "string",
+      "defaultValue": "ops_man_vm",
+      "metadata": {
+        "description": "vm name for opsman opsman."
+      }
+    },
     "opsManFQDNPrefix": {
       "type": "string",
       "defaultValue": "pcf",
@@ -118,7 +126,6 @@
   "variables": {
     "mysqlStorageAccountName": "[concat('mysqlstrg',uniquestring(resourceGroup().id, deployment().name))]",
     "boshExtraStorageAccountName": "[concat('xtrastrg',uniquestring(resourceGroup().id, deployment().name))]",
-    "opsManVMName": "ops_man_vm",
     "location": "[parameters('location')]",
     "virtualNetworkName": "[concat(resourceGroup().name,'-virtual-network')]",
     "pas_subnet_name": "[concat(resourceGroup().name,'-pas-subnet')]",
@@ -1735,7 +1742,7 @@
     {
       "apiVersion": "2017-12-01",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[variables('opsManVMName')]",
+      "name": "[parameters('opsManVMName')]",
       "location": "[variables('location')]",
       "tags": {
         "deployment": "[parameters('deploymentcolor')]",

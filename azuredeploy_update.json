@@ -16,7 +16,6 @@
         "description": "Domain prefix for opsman."
       }
     },
-
     "opsManVMName": {
       "type": "string",
       "defaultValue": "ops_man_vm",
