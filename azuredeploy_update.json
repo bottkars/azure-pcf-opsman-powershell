@@ -9,12 +9,19 @@
         "description": "Uri of the Operations Manager VHD"
       }
     },
-
     "opsManFQDNPrefix": {
       "type": "string",
       "defaultValue": "pcf-opsman",
       "metadata": {
         "description": "Domain prefix for opsman."
+      }
+    },
+
+    "opsManVMName": {
+      "type": "string",
+      "defaultValue": "ops_man_vm",
+      "metadata": {
+        "description": "vm name for opsman opsman."
       }
     },
     "opsManVHD": {
@@ -67,7 +74,6 @@
   },
   "variables": {
     "infrastructure_subnet_name": "[concat(resourceGroup().name,'-infrastructure-subnet')]",
-    "opsManVMName": "ops_man_vm",
     "location": "[parameters('location')]",
     "virtualNetworkName": "[concat(resourceGroup().name,'-virtual-network')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
@@ -153,7 +159,7 @@
     {
       "apiVersion": "2017-12-01",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[variables('opsManVMName')]",
+      "name": "[parameters('opsManVMName')]",
       "location": "[variables('location')]",
       "tags": {
         "deployment": "[parameters('deploymentcolor')]",
