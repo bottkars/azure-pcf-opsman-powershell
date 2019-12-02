@@ -20,7 +20,7 @@
       "type": "string",
       "defaultValue": "ops_man_vm",
       "metadata": {
-        "description": "vm name for opsman opsman."
+        "description": "vm name for OpsMan in Azure"
       }
     },
     "opsManVHD": {
