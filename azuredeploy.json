@@ -346,36 +346,6 @@
     {
       "type": "Microsoft.Storage/storageAccounts",
       "condition": "[equals(parameters('usemanageddisks'),'no')]",
-      "name": "[concat(variables('boshExtraStorageAccountName'), '3')]",
-      "apiVersion": "2017-10-01",
-      "location": "[variables('location')]",
-      "tags": {
-        "provisioner": "pcf_opsman_template"
-      },
-      "sku": {
-        "name": "Standard_LRS"
-      },
-      "kind": "Storage",
-      "properties": {}
-    },
-    {
-      "type": "Microsoft.Storage/storageAccounts",
-      "condition": "[equals(parameters('usemanageddisks'),'no')]",
-      "name": "[concat(variables('boshExtraStorageAccountName'), '4')]",
-      "apiVersion": "2017-10-01",
-      "location": "[variables('location')]",
-      "tags": {
-        "provisioner": "pcf_opsman_template"
-      },
-      "sku": {
-        "name": "Standard_LRS"
-      },
-      "kind": "Storage",
-      "properties": {}
-    },
-    {
-      "type": "Microsoft.Storage/storageAccounts",
-      "condition": "[equals(parameters('usemanageddisks'),'no')]",
       "name": "[concat(variables('boshExtraStorageAccountName'), '5')]",
       "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
