@@ -23,9 +23,9 @@ param(
         '2.1-build.361',
         '2.1-build.372',
         '2.1-build.377',
-        ##>
+        ##
         '2.1-build.389',
-        ## 2.2 starts here ##>
+        ## 2.2 starts here ##
         '2.2-build.292',
         '2.2-build.296',
         '2.2-build.300',
@@ -91,15 +91,18 @@ param(
         '2.7.3-build.208',
         '2.7.4-build.216',
         '2.7.5-build.218',
-        '2.7.6-build.223'
+        '2.7.6-build.223',
+        ##
+        ##>
+        '2.9.0-build.101'
 
     )]
-    $opsmanager_image = '2.6.9-build.201',
+    $opsmanager_image = '2.9.0-build.101',
     # The name of the Ressource Group we want to Deploy to.
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    $resourceGroup = 'pcf',
+    $resourceGroup = 'tas',
     # Name of the Storage Resource Group for Images
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
@@ -134,14 +137,14 @@ param(
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    $opsManFQDNPrefix = "pcf",
+    $opsManFQDNPrefix = "vmw",
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    $PCF_SUBDOMAIN_NAME = "pcfdemo",
+    $tas_SUBDOMAIN_NAME = "tasdemo",
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet('public', 'private')]
-    $PCFlbType = "public",
+    $TASlbType = "public",
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [switch]$RegisterProviders,
@@ -165,11 +168,11 @@ param(
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [Parameter(ParameterSetName = "update", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [switch]$PAS_AUTOPILOT,
+    [switch]$TAS_AUTOPILOT,
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet('cf', 'srt')]
-    $PASTYPE = "srt",
+    $TASTYPE = "srt",
     [Parameter(ParameterSetName = "install", Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
         [ValidateSet(
@@ -245,9 +248,9 @@ if (!$location) {
     $Location = Read-Host "Please enter your Region Name [local for asdk]"
 }
 
-New-Item -ItemType Directory -Path "$($HOME)/pcfdeployer/logs" -Force | out-null
+New-Item -ItemType Directory -Path "$($HOME)/tasdeployer/logs" -Force | out-null
 $DeployTimes = @()
-$dnsZoneName = "$PCF_SUBDOMAIN_NAME.$Location.$dnsdomain"
+$dnsZoneName = "$tas_SUBDOMAIN_NAME.$Location.$dnsdomain"
 $OM_TARGET = "$($opsManFQDNPrefix).$($dnszonename)"
 Write-Verbose $OM_TARGET
 function get-runningos {
@@ -353,7 +356,7 @@ if (!(test-path -Path "$($HOME)/$($dnsZoneName).crt")) {
     write-host "Required$($HOME)/$($dnsZoneName).crt not found. 
     Now Generating Self Signed Certificates
     "
-    $command = "$ScriptDir/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain) -OM_TARGET $OM_TARGET"
+    $command = "$ScriptDir/create_certs.ps1 -tas_SUBDOMAIN_NAME $tas_SUBDOMAIN_NAME -tas_DOMAIN_NAME $($location).$($dnsdomain) -OM_TARGET $OM_TARGET"
     Write-Host "Now running $command"
     Invoke-Expression -Command $command
 }
@@ -362,7 +365,7 @@ if (!(test-path -Path "$($HOME)/$($dnsZoneName).key")) {
     write-host "Required$($HOME)/$($dnsZoneName).key not found. 
     Now Generating Self Signed Certificates
     "
-    $command = "$ScriptDir/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain) -OM_TARGET $OM_TARGET"
+    $command = "$ScriptDir/create_certs.ps1 -tas_SUBDOMAIN_NAME $tas_SUBDOMAIN_NAME -tas_DOMAIN_NAME $($location).$($dnsdomain) -OM_TARGET $OM_TARGET"
     Write-Host "Now running $command"
     Invoke-Expression -Command $command
 }
@@ -371,7 +374,7 @@ if (!(test-path -Path "$($HOME)/$($OM_TARGET).key")) {
     write-host "Required$($HOME)/$($OM_TARGET).key not found. 
     Now Generating Self Signed Certificates
     "
-    $command = "$ScriptDir/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain) -OPSMANFQDNPREFIX $OpsManFQDNPrefix"
+    $command = "$ScriptDir/create_certs.ps1 -tas_SUBDOMAIN_NAME $tas_SUBDOMAIN_NAME -tas_DOMAIN_NAME $($location).$($dnsdomain) -OPSMANFQDNPREFIX $OpsManFQDNPrefix"
     Write-Host "Now running $command"
     Invoke-Expression -Command $command
 }
@@ -380,14 +383,14 @@ if (!(test-path -Path "$($HOME)/$($OM_TARGET).crt")) {
     write-host "Required$($HOME)/$($OM_TARGET).crt not found. 
     Now Generating Self Signed Certificates
     "
-    $command = "$ScriptDir/create_certs.ps1 -PCF_SUBDOMAIN_NAME $PCF_SUBDOMAIN_NAME -PCF_DOMAIN_NAME $($location).$($dnsdomain) -OM_TARGET $OM_TARGET"
+    $command = "$ScriptDir/create_certs.ps1 -tas_SUBDOMAIN_NAME $tas_SUBDOMAIN_NAME -tas_DOMAIN_NAME $($location).$($dnsdomain) -OM_TARGET $OM_TARGET"
     Write-Host "Now running $command"
     Invoke-Expression -Command $command
 }
 
 # The SSH Key for OpsManager
 $OPSMAN_SSHKEY = Get-Content "$HOME/opsman.pub"
-$dnsZoneName = "$PCF_SUBDOMAIN_NAME.$Location.$dnsdomain"
+$dnsZoneName = "$tas_SUBDOMAIN_NAME.$Location.$dnsdomain"
 $blobbaseuri = (Get-AzureRmContext).Environment.StorageEndpointSuffix
 $BaseNetworkVersion = [version]$subnet.IPAddressToString
 $mask = "$($BaseNetworkVersion.Major).$($BaseNetworkVersion.Minor)"
@@ -397,9 +400,9 @@ $infrastructure_gateway = "$mask.8.1"
 $internal_lb_cidr = "$mask.8.64/28"
 $internal_lb_range = "$mask.8.65-$mask.8.69"
 $internal_lb_gateway = "$mask.8.65"
-$pas_cidr = "$Mask.0.0/22"
-$pas_range = "$mask.0.1-$mask.0.10"
-$pas_gateway = "$mask.0.1"
+$tas_cidr = "$Mask.0.0/22"
+$tas_range = "$mask.0.1-$mask.0.10"
+$tas_gateway = "$mask.0.1"
 $services_cidr = "$Mask.4.0/22"
 $services_range = "$mask.4.1-$mask.4.10"
 $services_gateway = "$mask.4.1"
@@ -407,17 +410,17 @@ $services_gateway = "$mask.4.1"
 Write-Host "Using the following Network Assignments:" -ForegroundColor Magenta
 Write-Host "$resourceGroup-virtual-network/$resourceGroup-infrastructure-subnet  : cidr $infrastructure_cidr,exclude_range $infrastructure_range,gateway $infrastructure_gateway"
 Write-Host "$resourceGroup-virtual-network/$resourceGroup-services-subnet        : cidr $services_cidr,exclude_range $services_range,gateway $services_gateway"
-Write-Host "$resourceGroup-virtual-network/$resourceGroup-pas-subnet             : cidr $pas_cidr,exclude_range $pas_range,gateway $pas_gateway"
+Write-Host "$resourceGroup-virtual-network/$resourceGroup-tas-subnet             : cidr $tas_cidr,exclude_range $tas_range,gateway $tas_gateway"
 Write-Host "$resourceGroup-virtual-network/$resourceGroup-lb-subnet              : cidr $internal_lb_cidr,exclude_range $internal_lb_range,gateway $internal_lb_gateway"
 Write-Host "$($opsManFQDNPrefix)green $Mask.8.4/32"
 Write-Host "$($opsManFQDNPrefix)blue $Mask.8.5/32"
-Write-Host "Selected loadbalancer type is $PCFlbType"
+Write-Host "Selected loadbalancer type is $taslbType"
 Write-Host "Using $Authentication as Identity provider for Azure"
 Write-Host
 
 if ($PsCmdlet.ParameterSetName -eq "install") {
     if ($tiles) {
-        [switch]$PAS_AUTOPILOT = $true
+        [switch]$TAS_AUTOPILOT = $true
         if ($tiles -contains 'p-spring-cloud-services') {
             $tiles = ('pivotal-mysql', 'p-rabbitmq', 'p-spring-cloud-services') + $tiles
             $tiles = $tiles | Select-Object -Unique
@@ -451,11 +454,11 @@ to be set correctly with role `contributor`for the Service Principal at the AZUR
 
   
         } 
-        Write-Host -ForegroundColor White -NoNewline "Going to deploy PCF $PASTYPE with the Following Tiles: "
+        Write-Host -ForegroundColor White -NoNewline "Going to deploy tas $TASTYPE with the Following Tiles: "
         Write-Host -ForegroundColor Green  "$($tiles -join ",")"
     }
-    elseif ($PAS_AUTOPILOT.IsPresent) {
-        Write-Host -ForegroundColor White "Going to deploy PCF $PASTYPE without Tiles"
+    elseif ($TAS_AUTOPILOT.IsPresent) {
+        Write-Host -ForegroundColor White "Going to deploy tas $TASTYPE without Tiles"
     }    
 
 }
@@ -642,12 +645,12 @@ $parameters.Add("OpsManImageURI", $urlOfUploadedImageVhd)
 $StopWatch_deploy.Start()
 #     $parameters.Add("storageEndpoint", "blob.$blobbaseuri")
 
-Write-host "Starting deployment of PCF Control Plane using ARM template and  $deploymentcolor deployment of $opsManFQDNPrefix $opsmanVersion" -ForegroundColor $deploymentcolor
+Write-host "Starting deployment of tas Control Plane using ARM template and  $deploymentcolor deployment of $opsManFQDNPrefix $opsmanVersion" -ForegroundColor $deploymentcolor
 if (!$OpsmanUpdate) {
     $parameters.Add("dnsZoneName", $dnsZoneName)
     $parameters.Add("boshStorageAccountName", $boshstorageaccount)
     $parameters.Add("Environment", $Environment)
-    $parameters.Add("pcflbConnection", $PCFlbType)
+    $parameters.Add("taslbConnection", $taslbType)
     $parameters.Add("useManagedDisks", $ManagedDisks)
     
  
@@ -690,15 +693,15 @@ if (!$OpsmanUpdate) {
         $JSon = [ordered]@{
             OM_TARGET                = "$OM_TARGET"
             domain                   = "$($location).$($dnsdomain)"
-            PCF_SUBDOMAIN_NAME       = $PCF_SUBDOMAIN_NAME
+            tas_SUBDOMAIN_NAME       = $tas_SUBDOMAIN_NAME
             boshstorageaccountname   = $boshstorageaccount 
             RG                       = $resourceGroup
             mysqlstorageaccountname  = $mysql_storage_account
             mysql_storage_key        = $mysql_storage_key
             deploymentstorageaccount = $deployment_storage_account
-            pas_cidr                 = $pas_cidr
-            pas_range                = $pas_range
-            pas_gateway              = $pas_gateway 
+            tas_cidr                 = $tas_cidr
+            tas_range                = $tas_range
+            tas_gateway              = $tas_gateway 
             infrastructure_range     = $infrastructure_range
             infrastructure_cidr      = $infrastructure_cidr 
             infrastructure_gateway   = $infrastructure_gateway
@@ -742,37 +745,37 @@ if (!$OpsmanUpdate) {
                 }   
 
             }
-            switch ($pastype){
+            switch ($tastype){
             'cf' {
                 $compute_instances = [math]::ceiling($compute_instances/3)*3
             }
 }
             Write-Host "Calling $command" 
-            Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/init-om-$(get-date -f yyyyMMddhhmmss).log"
+            Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/tasdeployer/logs/init-om-$(get-date -f yyyyMMddhhmmss).log"
             $StopWatch_deploy_opsman.Stop()
             $DeployTimes += "opsman deployment took $($StopWatch_deploy_opsman.Elapsed.Hours) hours, $($StopWatch_deploy_opsman.Elapsed.Minutes) minutes and  $($StopWatch_deploy_opsman.Elapsed.Seconds) seconds"
             $ScriptHome = $PSScriptRoot
-            if ($PAS_AUTOPILOT.IsPresent) {
+            if ($TAS_AUTOPILOT.IsPresent) {
                 $StopWatch_deploy_stemcells = New-Object System.Diagnostics.Stopwatch
                 $StopWatch_deploy_stemcells.Start()
                 $command = "$ScriptDir/get-lateststemcells.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -Families 97,170,250"
                 Write-Host "Calling $command" 
-                Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/stemcells-$(get-date -f yyyyMMddhhmmss).log"
+                Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/tasdeployer/logs/stemcells-$(get-date -f yyyyMMddhhmmss).log"
                 $StopWatch_deploy_stemcells.Stop()
                 $DeployTimes += "Stemcell deployment took $($StopWatch_deploy_stemcells.Elapsed.Hours) hours, $($StopWatch_deploy_stemcells.Elapsed.Minutes) minutes and  $($StopWatch_deploy_stemcells.Elapsed.Seconds) seconds"
                 
-                $StopWatch_deploy_pas = New-Object System.Diagnostics.Stopwatch
-                $StopWatch_deploy_pas.Start()
+                $StopWatch_deploy_tas = New-Object System.Diagnostics.Stopwatch
+                $StopWatch_deploy_tas.Start()
                 if (($tiles) -or ($DO_NOT_APPLY.IsPresent)) {
-                    $command = "$ScriptHome/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -compute_instances $compute_instances -DO_NOT_APPLY"
+                    $command = "$ScriptHome/scripts/deploy_tas.ps1 -PRODUCT_NAME $TASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -compute_instances $compute_instances -DO_NOT_APPLY"
                 }
                 else {
-                    $command = "$ScriptHome/scripts/deploy_pas.ps1 -PRODUCT_NAME $PASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -compute_instances $compute_instances"
+                    $command = "$ScriptHome/scripts/deploy_tas.ps1 -PRODUCT_NAME $TASTYPE -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -compute_instances $compute_instances"
                 }
                 Write-Host "Calling $command" 
-                Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/pas-$(get-date -f yyyyMMddhhmmss).log"
-                $StopWatch_deploy_pas.Stop()
-                $DeployTimes += "PAS deployment took $($StopWatch_deploy_pas.Elapsed.Hours) hours, $($StopWatch_deploy_pas.Elapsed.Minutes) minutes and  $($StopWatch_deploy_pas.Elapsed.Seconds) seconds"
+                Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/tasdeployer/logs/tas-$(get-date -f yyyyMMddhhmmss).log"
+                $StopWatch_deploy_tas.Stop()
+                $DeployTimes += "TAS deployment took $($StopWatch_deploy_tas.Elapsed.Hours) hours, $($StopWatch_deploy_tas.Elapsed.Minutes) minutes and  $($StopWatch_deploy_tas.Elapsed.Seconds) seconds"
 
 
                 $StopWatch_deploy = New-Object System.Diagnostics.Stopwatch
@@ -786,7 +789,7 @@ if (!$OpsmanUpdate) {
                         $command = "$ScriptHome/scripts/tile_deployer.ps1 -DIRECTOR_CONF_FILE $DIRECTOR_CONF_FILE -tiles $($tiles -join ',')"
                     }
                     Write-Host "Calling $command" 
-                    Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/pcfdeployer/logs/deployment-$(get-date -f yyyyMMddhhmmss).log"
+                    Invoke-Expression -Command $Command | Tee-Object -Append -FilePath "$($HOME)/tasdeployer/logs/deployment-$(get-date -f yyyyMMddhhmmss).log"
                     $StopWatch_deploy.Stop()
                     $DeployTimes += "$tile deployment took $($StopWatch_deploy.Elapsed.Hours) hours, $($StopWatch_deploy.Elapsed.Minutes) minutes and  $($StopWatch_deploy.Elapsed.Seconds) seconds"
                 }

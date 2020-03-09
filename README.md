@@ -128,7 +128,7 @@ if the installation  succeeds, be happy, everything is fine.
 to install the PAS Tile now, run
 
 ```Powershell
-.\scripts\deploy_pas.ps1 -DIRECTOR_CONF_FILE $HOME\director_pcftest.json
+.\scripts\deploy_tas.ps1 -DIRECTOR_CONF_FILE $HOME\director_pcftest.json
 ```
 **note**: *the file name is director_**rgname**.json* 
 

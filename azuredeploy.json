@@ -16,7 +16,7 @@
         "description": "Uri of the Operations Manager VHD"
       }
     },
-    "pcflbConnection": {
+    "taslbConnection": {
       "type": "string",
       "defaultValue": "private",
       "allowedValues": [
@@ -24,7 +24,7 @@
         "public"
       ],
       "metadata": {
-        "description": "Use managed disks, otherwise, storageaccounts will be created"
+        "description": "Loadbalancer Connection to use"
       }
     },
     "useManagedDisks": {
@@ -59,7 +59,7 @@
     },
     "opsManFQDNPrefix": {
       "type": "string",
-      "defaultValue": "pcf",
+      "defaultValue": "vmw",
       "metadata": {
         "description": "Domain prefix for opsman."
       }
@@ -67,7 +67,7 @@
     "opsManVHD": {
       "type": "string",
       "metadata": {
-        "description": "Opsman VHD Name / name that the managed dosk woill be named"
+        "description": "Opsman VHD Name / name that the managed disk woill be named"
       }
     },
     "mask": {
@@ -117,18 +117,19 @@
     },
     "dnsZoneName": {
       "type": "string",
-      "defaultValue": "pcfpas.local.azurestack.external",
+      "defaultValue": "tanzutas.local.azurestack.external",
       "metadata": {
         "description": "The name of the DNS zone."
       }
     }
   },
   "variables": {
+    "Provisioner": "TAS_opsman_template",
     "mysqlStorageAccountName": "[concat('mysqlstrg',uniquestring(resourceGroup().id, deployment().name))]",
     "boshExtraStorageAccountName": "[concat('xtrastrg',uniquestring(resourceGroup().id, deployment().name))]",
     "location": "[parameters('location')]",
     "virtualNetworkName": "[concat(resourceGroup().name,'-virtual-network')]",
-    "pas_subnet_name": "[concat(resourceGroup().name,'-pas-subnet')]",
+    "tas_subnet_name": "[concat(resourceGroup().name,'-tas-subnet')]",
     "services_subnet_name": "[concat(resourceGroup().name,'-services-subnet')]",
     "infrastructure_subnet_name": "[concat(resourceGroup().name,'-infrastructure-subnet')]",
     "internallb_subnet_name": "[concat(resourceGroup().name,'-lb-subnet')]",
@@ -139,14 +140,14 @@
     "internallbaddressPrefix": "[concat(parameters('mask'),'.8.64/28')]",
     "internallb_subnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('internallb_subnet_name'))]",
     "servicesaddressPrefix": "[concat(parameters('mask'),'.4.0/22')]",
-    "pasaddressPrefix": "[concat(parameters('mask'),'.0.0/22')]",
+    "tasaddressPrefix": "[concat(parameters('mask'),'.0.0/22')]",
     "opsManPrivateIPAddress": "[concat(parameters('mask'),'.8.4')]",
-    "pcflbName": "[concat(resourceGroup().name,'-web-lb')]",
-    "pcflbID": "[resourceId('Microsoft.Network/loadBalancers',variables('pcflbName'))]",
-    "pcffrontEndIPConfigID": "[concat(variables('pcflbID'),'/frontendIPConfigurations/pcf-fe-ip')]",
-    "pcflbPoolID": "[concat(variables('pcflbID'),'/backendAddressPools/pcf-backend-pool')]",
-    "pcflbProbeID80": "[concat(variables('pcflbID'),'/probes/tcp80')]",
-    "pcflbProbeID443": "[concat(variables('pcflbID'),'/probes/tcp443')]",
+    "taslbName": "[concat(resourceGroup().name,'-web-lb')]",
+    "taslbID": "[resourceId('Microsoft.Network/loadBalancers',variables('taslbName'))]",
+    "tasfrontEndIPConfigID": "[concat(variables('taslbID'),'/frontendIPConfigurations/tas-fe-ip')]",
+    "taslbPoolID": "[concat(variables('taslbID'),'/backendAddressPools/tas-backend-pool')]",
+    "taslbProbeID80": "[concat(variables('taslbID'),'/probes/tcp80')]",
+    "taslbProbeID443": "[concat(variables('taslbID'),'/probes/tcp443')]",
     "diegosshlbName": "[concat(resourceGroup().name,'-diego-ssh-lb')]",
     "diegosshlbID": "[resourceId('Microsoft.Network/loadBalancers',variables('diegosshlbName'))]",
     "diegosshfrontEndIPConfigID": "[concat(variables('diegosshlbID'),'/frontendIPConfigurations/diegossh-fe-ip')]",
@@ -186,13 +187,13 @@
     "OpsManVersion": "[replace(parameters('opsManVHD'),'.vhd', '')]",
     "ops_manager_security_group_name": "[concat(resourceGroup().name,'-ops-manager-security-group')]",
     "bosh_deployed_vms_security_group_name": "[concat(resourceGroup().name,'-bosh-deployed-vms-security-group')]",
-    "pcf-lb-ip-name": "web-lb-public-ip",
-    "pcflbPrivateIP": "[concat(parameters('mask'),'.8.73')]",
-    "pcflbPulicIPID": "[resourceId('Microsoft.Network/publicIPAddresses','web-lb-public-ip')]",
-    "pcflbFrontendIPConfig": "[if(equals(parameters('pcflbConnection'),'public'), variables('pcflbpublicFrontendIPConfig'), variables('pcflbprivateFrontendIPConfig'))]",
-    "pcflbpublicFrontendIPConfig": [
+    "tas-lb-ip-name": "web-lb-public-ip",
+    "taslbPrivateIP": "[concat(parameters('mask'),'.8.73')]",
+    "taslbPulicIPID": "[resourceId('Microsoft.Network/publicIPAddresses','web-lb-public-ip')]",
+    "taslbFrontendIPConfig": "[if(equals(parameters('taslbConnection'),'public'), variables('taslbpublicFrontendIPConfig'), variables('taslbprivateFrontendIPConfig'))]",
+    "taslbpublicFrontendIPConfig": [
       {
-        "name": "pcf-fe-ip",
+        "name": "tas-fe-ip",
         "properties": {
           "publicIPAddress": {
             "id": "[resourceId('Microsoft.Network/publicIPAddresses','web-lb-public-ip')]"
@@ -200,21 +201,21 @@
         }
       }
     ],
-    "pcflbprivateFrontendIPConfig": [
+    "taslbprivateFrontendIPConfig": [
       {
-        "name": "pcf-fe-ip",
+        "name": "tas-fe-ip",
         "properties": {
           "subnet": {
             "id": "[variables('internallb_subnetID')]"
           },
-          "privateIPAddress": "[variables('pcflbPrivateIP')]",
+          "privateIPAddress": "[variables('taslbPrivateIP')]",
           "privateIPAllocationMethod": "Static"
         }
       }
     ],
   "istiolbPrivateIP": "[concat(parameters('mask'),'.8.73')]",
   "istiolbPulicIPID": "[resourceId('Microsoft.Network/publicIPAddresses','istio-lb-public-ip')]",
-  "istiolbFrontendIPConfig": "[if(equals(parameters('pcflbConnection'),'public'), variables('istiolbpublicFrontendIPConfig'), variables('istiolbprivateFrontendIPConfig'))]",
+  "istiolbFrontendIPConfig": "[if(equals(parameters('taslbConnection'),'public'), variables('istiolbpublicFrontendIPConfig'), variables('istiolbprivateFrontendIPConfig'))]",
   "istiolbpublicFrontendIPConfig": [
     {
       "name": "istio-fe-ip",
@@ -239,7 +240,7 @@
   ],
   "viewlbPrivateIP": "[concat(parameters('mask'),'.8.73')]",
   "viewlbPulicIPID": "[resourceId('Microsoft.Network/publicIPAddresses','view-lb-public-ip')]",
-  "viewlbFrontendIPConfig": "[if(equals(parameters('pcflbConnection'),'public'), variables('viewlbpublicFrontendIPConfig'), variables('viewlbprivateFrontendIPConfig'))]",
+  "viewlbFrontendIPConfig": "[if(equals(parameters('taslbConnection'),'public'), variables('viewlbpublicFrontendIPConfig'), variables('viewlbprivateFrontendIPConfig'))]",
   "viewlbpublicFrontendIPConfig": [
     {
       "name": "view-fe-ip",
@@ -270,7 +271,7 @@
       "name": "[variables('OpsManVersion')]",
       "location": "[parameters('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "properties": {
         "storageProfile": {
@@ -291,7 +292,7 @@
       "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "sku": {
         "name": "Standard_LRS"
@@ -305,7 +306,7 @@
       "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "sku": {
         "name": "Standard_LRS"
@@ -320,7 +321,7 @@
       "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "sku": {
         "name": "Standard_LRS"
@@ -335,7 +336,7 @@
       "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "sku": {
         "name": "Standard_LRS"
@@ -350,7 +351,7 @@
       "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "sku": {
         "name": "Standard_LRS"
@@ -365,7 +366,7 @@
       "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "sku": {
         "name": "Standard_LRS"
@@ -380,7 +381,7 @@
       "apiVersion": "2017-10-01",
       "location": "[variables('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "sku": {
         "name": "Standard_LRS"
@@ -394,7 +395,7 @@
       "apiVersion": "2017-10-01",
       "location": "[resourceGroup().location]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "sku": {
         "name": "[variables('diagnosticsStorageAccountType')]"
@@ -409,7 +410,7 @@
       "location": "[variables('location')]",
       "tags": {
         "deployment": "[parameters('deploymentcolor')]",
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "properties": {
         "publicIPAllocationMethod": "Static"
@@ -420,7 +421,7 @@
       "condition": "[equals(parameters('Environment'),'AzureStack')]",
       "name": "[parameters('dnsZoneName')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "apiVersion": "2016-04-01",
       "location": "global",
@@ -465,7 +466,7 @@
     {
       "type": "Microsoft.Network/dnszones/A",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "name": "[concat(parameters('dnsZoneName'), '/*.sys')]",
       "apiVersion": "2016-04-01",
@@ -477,7 +478,7 @@
         "TTL": 3600,
         "ARecords": [
           {
-            "ipv4Address": "[if(equals(parameters('pcflbConnection'),'public'),reference('Microsoft.Network/publicIPAddresses/web-lb-public-ip').IpAddress,variables('pcflbPrivateIP'))]"
+            "ipv4Address": "[if(equals(parameters('taslbConnection'),'public'),reference('Microsoft.Network/publicIPAddresses/web-lb-public-ip').IpAddress,variables('taslbPrivateIP'))]"
           }
         ]
       }
@@ -488,7 +489,7 @@
       "apiVersion": "2016-04-01",
       "location": "[variables('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "dependsOn": [
         "[parameters('dnsZoneName')]"
@@ -497,7 +498,7 @@
         "TTL": 3600,
         "ARecords": [
           {
-            "ipv4Address": "[if(equals(parameters('pcflbConnection'),'public'),reference('Microsoft.Network/publicIPAddresses/web-lb-public-ip').IpAddress,variables('pcflbPrivateIP'))]"
+            "ipv4Address": "[if(equals(parameters('taslbConnection'),'public'),reference('Microsoft.Network/publicIPAddresses/web-lb-public-ip').IpAddress,variables('taslbPrivateIP'))]"
           }
         ]
       }
@@ -508,7 +509,7 @@
       "apiVersion": "2016-04-01",
       "location": "[variables('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "dependsOn": [
         "[parameters('dnsZoneName')]"
@@ -517,19 +518,19 @@
         "TTL": 3600,
         "ARecords": [
           {
-            "ipv4Address": "[if(equals(parameters('pcflbConnection'),'public'),reference('Microsoft.Network/publicIPAddresses/istio-lb-public-ip').IpAddress,variables('istiolbPrivateIP'))]"
+            "ipv4Address": "[if(equals(parameters('taslbConnection'),'public'),reference('Microsoft.Network/publicIPAddresses/istio-lb-public-ip').IpAddress,variables('istiolbPrivateIP'))]"
           }
         ]
       }
     },
     {
       "apiVersion": "2017-10-01",
-      "condition": "[equals(parameters('pcflbConnection'),'public')]",
+      "condition": "[equals(parameters('taslbConnection'),'public')]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('pcf-lb-ip-name')]",
+      "name": "[variables('tas-lb-ip-name')]",
       "location": "[variables('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "properties": {
         "publicIPAllocationMethod": "Static"
@@ -538,12 +539,12 @@
 
     {
       "apiVersion": "2017-10-01",
-      "condition": "[equals(parameters('pcflbConnection'),'public')]",
+      "condition": "[equals(parameters('taslbConnection'),'public')]",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('istio-lb-ip-name')]",
       "location": "[variables('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "properties": {
         "publicIPAllocationMethod": "Static"
@@ -552,12 +553,12 @@
 
     {
       "apiVersion": "2017-10-01",
-      "condition": "[equals(parameters('pcflbConnection'),'public')]",
+      "condition": "[equals(parameters('taslbConnection'),'public')]",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('view-lb-ip-name')]",
       "location": "[variables('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "properties": {
         "publicIPAllocationMethod": "Static"
@@ -569,7 +570,7 @@
       "apiVersion": "2017-10-01",
       "location": "[parameters('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "type": "Microsoft.Network/networkSecurityGroups",
       "properties": {
@@ -913,7 +914,7 @@
       "apiVersion": "2017-10-01",
       "location": "[parameters('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "type": "Microsoft.Network/networkSecurityGroups",
       "properties": {
@@ -1088,7 +1089,7 @@
       "name": "[variables('virtualNetworkName')]",
       "location": "[variables('location')]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "dependsOn": [],
       "properties": {
@@ -1117,9 +1118,9 @@
             }
           },
           {
-            "name": "[variables('pas_subnet_name')]",
+            "name": "[variables('tas_subnet_name')]",
             "properties": {
-              "addressPrefix": "[variables('pasaddressPrefix')]"
+              "addressPrefix": "[variables('tasaddressPrefix')]"
             }
           }
         ]
@@ -1127,20 +1128,20 @@
     },
     {
       "apiVersion": "2017-10-01",
-      "name": "[variables('pcflbName')]",
+      "name": "[variables('taslbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "dependsOn": [
-        "[if(equals(parameters('pcflbConnection'),'public'), variables('pcflbPulicIPID'),resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName')))]"
+        "[if(equals(parameters('taslbConnection'),'public'), variables('taslbPulicIPID'),resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName')))]"
       ],
       "properties": {
-        "frontendIPConfigurations": "[variables('pcflbFrontendIPConfig')]",
+        "frontendIPConfigurations": "[variables('taslbFrontendIPConfig')]",
         "backendAddressPools": [
           {
-            "name": "pcf-backend-pool"
+            "name": "tas-backend-pool"
           }
         ],
         "loadBalancingRules": [
@@ -1148,10 +1149,10 @@
             "name": "web-https-rule",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[variables('pcffrontEndIPConfigID')]"
+                "id": "[variables('tasfrontEndIPConfigID')]"
               },
               "backendAddressPool": {
-                "id": "[variables('pcflbPoolID')]"
+                "id": "[variables('taslbPoolID')]"
               },
               "protocol": "Tcp",
               "frontendPort": 443,
@@ -1159,7 +1160,7 @@
               "enableFloatingIP": false,
               "idleTimeoutInMinutes": 4,
               "probe": {
-                "id": "[variables('pcflbProbeID443')]"
+                "id": "[variables('taslbProbeID443')]"
               }
             }
           },
@@ -1167,10 +1168,10 @@
             "name": "web-http-rule",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[variables('pcffrontEndIPConfigID')]"
+                "id": "[variables('tasfrontEndIPConfigID')]"
               },
               "backendAddressPool": {
-                "id": "[variables('pcflbPoolID')]"
+                "id": "[variables('taslbPoolID')]"
               },
               "protocol": "Tcp",
               "frontendPort": 80,
@@ -1178,7 +1179,7 @@
               "enableFloatingIP": false,
               "idleTimeoutInMinutes": 4,
               "probe": {
-                "id": "[variables('pcflbProbeID80')]"
+                "id": "[variables('taslbProbeID80')]"
               }
             }
           },
@@ -1186,10 +1187,10 @@
             "name": "web-ntp-rule",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[variables('pcffrontEndIPConfigID')]"
+                "id": "[variables('tasfrontEndIPConfigID')]"
               },
               "backendAddressPool": {
-                "id": "[variables('pcflbPoolID')]"
+                "id": "[variables('taslbPoolID')]"
               },
               "protocol": "Udp",
               "frontendPort": 123,
@@ -1227,7 +1228,7 @@
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]"      ],
@@ -1402,7 +1403,7 @@
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]"      ],
@@ -1483,7 +1484,7 @@
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]"      ],
@@ -1563,10 +1564,10 @@
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "dependsOn": [
-        "[if(equals(parameters('pcflbConnection'),'public'), variables('istiolbPulicIPID'),resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName')))]"
+        "[if(equals(parameters('taslbConnection'),'public'), variables('istiolbPulicIPID'),resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName')))]"
       ],
       "properties": {
         "frontendIPConfigurations": "[variables('istiolbFrontendIPConfig')]",
@@ -1654,10 +1655,10 @@
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
       "tags": {
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "dependsOn": [
-        "[if(equals(parameters('pcflbConnection'),'public'), variables('viewlbPulicIPID'),resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName')))]"
+        "[if(equals(parameters('taslbConnection'),'public'), variables('viewlbPulicIPID'),resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName')))]"
       ],
       "properties": {
         "frontendIPConfigurations": "[variables('viewlbFrontendIPConfig')]",
@@ -1709,7 +1710,7 @@
       "location": "[variables('location')]",
       "tags": {
         "deployment": "[parameters('deploymentcolor')]",
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "dependsOn": [
         "[concat('Microsoft.Network/networkSecurityGroups/', variables('ops_manager_security_group_name'))]",
@@ -1747,7 +1748,7 @@
       "tags": {
         "deployment": "[parameters('deploymentcolor')]",
         "opsmanversion": "[variables('OpsManVersion')]",
-        "provisioner": "pcf_opsman_template"
+        "provisioner": "[variables('Provisioner')]"
       },
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/',variables('opsManNicName'))]",
