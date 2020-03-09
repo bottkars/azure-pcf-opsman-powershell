@@ -141,7 +141,7 @@
     "virtualNetworkName": "[concat(resourceGroup().name,'-virtual-network')]",
     "tas_subnet_name": "[concat(resourceGroup().name,'-tas-subnet')]",
     "services_subnet_name": "[concat(resourceGroup().name,'-services-subnet')]",
-    "infrastructure_subnet_name": "[concat(resourceGroup().name,'-infrastructure-subnet')]",
+    "infrastructure_subnet_name": "[concat(resourceGroup().name,'-platform-subnet')]",
     "internallb_subnet_name": "[concat(resourceGroup().name,'-lb-subnet')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
     "opsManNicName": "OPSMANNIC",
