@@ -69,6 +69,17 @@
       "metadata": {
         "description": "location where you want to deploy resources"
       }
+    },
+    "useAzureStackDNSzones": {
+      "type": "string",
+      "defaultValue": "no",
+      "allowedValues": [
+        "yes",
+        "no"
+      ],
+      "metadata": {
+        "description": "Create Azurestack DNS Zone  or use external / exiting hostes"
+      }
     }
   },
   "variables": {
