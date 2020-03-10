@@ -11,7 +11,7 @@
     },
     "opsManFQDNPrefix": {
       "type": "string",
-      "defaultValue": "pcf-opsman",
+      "defaultValue": "vmw",
       "metadata": {
         "description": "Domain prefix for opsman."
       }
@@ -72,7 +72,7 @@
     }
   },
   "variables": {
-    "infrastructure_subnet_name": "[concat(resourceGroup().name,'-infrastructure-subnet')]",
+    "infrastructure_subnet_name": "[concat(resourceGroup().name,'-platform-subnet')]",
     "location": "[parameters('location')]",
     "virtualNetworkName": "[concat(resourceGroup().name,'-virtual-network')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
