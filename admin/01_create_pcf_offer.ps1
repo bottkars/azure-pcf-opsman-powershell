@@ -3,8 +3,8 @@
 #requires -module Azs.Storage.Admin
 [CmdletBinding(HelpUri = "https://github.com/bottkars/azurestack-kickstart")]
 param (
-[Parameter(ParameterSetName = "1", Mandatory = $false,Position = 1)]$offer = "PCF_Offer",
-$plan = "PCF_PLAN",
+[Parameter(ParameterSetName = "1", Mandatory = $false,Position = 1)]$offer = "Tanzu_Offer",
+$plan = "Tanzu_PLAN",
 $rg_name = "plans_and_offers",
 $owner = $Global:Service_RM_Account.Context.Account.Id
 #$SubscriptionID = $Global:SubscriptionID
@@ -41,15 +41,17 @@ if  ($AZSOffer)
         Write-Host "Offer with name $offer already exists in $rg_name"
         break
     }
-if (!($ComputeQuota = Get-AzsComputeQuota -Name pcf-compute))
+if (!($ComputeQuota = Get-AzsComputeQuota -Name Tanzu-compute))
     {
-    $ComputeQuota = New-AzsComputeQuota -Name pcf-compute `
+    $ComputeQuota = New-AzsComputeQuota -Name Tanzu-compute `
     -Location local -VirtualMachineCount 5000 `
-    -AvailabilitySetCount 60 -CoresCount 5000 -VmScaleSetCount 10     
+    -AvailabilitySetCount 100 -CoresCount 5000 -VmScaleSetCount 10 `
+    -PremiumManagedDiskAndSnapshotSize 4096 `
+    -StandardManagedDiskAndSnapshotSize 4096  
     }
-if (!($NetworkQuota = Get-AzsNetworkQuota -Name pcf-network))
+if (!($NetworkQuota = Get-AzsNetworkQuota -Name Tanzu-network))
     {
-    $NetworkQuota = New-AzsNetworkQuota -Name pcf-network `
+    $NetworkQuota = New-AzsNetworkQuota -Name Tanzu-network `
     -Location local -MaxPublicIpsPerSubscription 20 `
     -MaxVNetsPerSubscription 20 `
     -MaxVirtualNetworkGatewaysPerSubscription 20 `
@@ -57,23 +59,23 @@ if (!($NetworkQuota = Get-AzsNetworkQuota -Name pcf-network))
     }
 
 
-if (!($StorageQuota = Get-AzsStorageQuota -Name pcf-storage))
+if (!($StorageQuota = Get-AzsStorageQuota -Name Tanzu-storage))
        {
-           $StorageQuota = New-AzsStorageQuota -Name pcf-storage -Location local `
+           $StorageQuota = New-AzsStorageQuota -Name Tanzu-storage -Location local `
            -NumberOfStorageAccounts 300 -CapacityInGB 5000
        }
 
 
-$PCF_PLAN = Get-AZSPlan -Name $plan -ResourceGroupName $rg_name -ErrorAction SilentlyContinue
-if (!$PCF_PLAN) {
+$Tanzu_PLAN = Get-AZSPlan -Name $plan -ResourceGroupName $rg_name -ErrorAction SilentlyContinue
+if (!$Tanzu_PLAN) {
         Write-Host "$plan not found in $rg_name, creating now"
-        $PCF_PLAN = New-AzsPlan -Name $plan -DisplayName "Offer for PCF" `
+        $Tanzu_PLAN = New-AzsPlan -Name $plan -DisplayName "Offer for Tanzu" `
     	    -ResourceGroupName $rg_name `
-            -QuotaIds $StorageQuota.Id,$NetworkQuota.Id,$ComputeQuota.Id -ArmLocation local
+            -QuotaIds $StorageQuota.Id,$NetworkQuota.Id,$ComputeQuota.Id -Location local
     }
 
 
-$AZSOffer = New-AzsOffer -Name $offer -DisplayName "Offer for PCF / Cloud Foundry" `
- -BasePlanIds $PCF_PLAN.Id -State Private -ArmLocation local -ResourceGroupName $rg_name
-New-AzsUserSubscription -DisplayName "Azure PCF Subscription" -Owner $owner -OfferId $AZSOffer.Id #-SubscriptionId $SubscriptionID
+$AZSOffer = New-AzsOffer -Name $offer -DisplayName "Offer for Tanzu / Cloud Foundry" `
+ -BasePlanIds $Tanzu_PLAN.Id -State Private -Location local -ResourceGroupName $rg_name
+New-AzsUserSubscription -DisplayName "Azure Tanzu Subscription" -Owner $owner -OfferId $AZSOffer.Id #-SubscriptionId $SubscriptionID
 Write-Output $AZSOffer
