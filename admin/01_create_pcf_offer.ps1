@@ -22,12 +22,12 @@ if (!$Global:Service_RM_Account.Context)
 
 try {
     Write-Host -ForegroundColor White -NoNewline "Checking for RG $rg_name"
-    $RG=Get-AzureRmResourceGroup -Name $rg_name -Location local -ErrorAction Stop  
+    $RG=Get-AzResourceGroup -Name $rg_name -Location local -ErrorAction Stop  
 }
 catch {
     Write-Host -ForegroundColor Red [failed]
     Write-Host -ForegroundColor White -NoNewline "Creating RG $rg_name"        
-    $RG = New-AzureRmResourceGroup -Name $rg_name -Location local
+    $RG = New-AzResourceGroup -Name $rg_name -Location local
 }
 Write-Host -ForegroundColor Green [Done]
 try {
@@ -69,11 +69,11 @@ if (!$PCF_PLAN) {
         Write-Host "$plan not found in $rg_name, creating now"
         $PCF_PLAN = New-AzsPlan -Name $plan -DisplayName "Offer for PCF" `
     	    -ResourceGroupName $rg_name `
-            -QuotaIds $StorageQuota.Id,$NetworkQuota.Id,$ComputeQuota.Id -ArmLocation local
+            -QuotaIds $StorageQuota.Id,$NetworkQuota.Id,$ComputeQuota.Id -Location local
     }
 
 
 $AZSOffer = New-AzsOffer -Name $offer -DisplayName "Offer for PCF / Cloud Foundry" `
- -BasePlanIds $PCF_PLAN.Id -State Private -ArmLocation local -ResourceGroupName $rg_name
+ -BasePlanIds $PCF_PLAN.Id -State Private -Location local -ResourceGroupName $rg_name
 New-AzsUserSubscription -DisplayName "Azure PCF Subscription" -Owner $owner -OfferId $AZSOffer.Id #-SubscriptionId $SubscriptionID
 Write-Output $AZSOffer
